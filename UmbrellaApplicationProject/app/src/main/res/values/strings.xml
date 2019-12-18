@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_name">UmbrellaApplicationProject</string>
+    <string name="title_activity_loading">LoadingActivity</string>
+
+    <!--메인화면-->
+    <string name="main_title">Current Alarm Setting</string>
+
+    <!--알라미 추가 프래그먼트-->
+    <string name="frag_title">Add Alarm</string>
+</resources>

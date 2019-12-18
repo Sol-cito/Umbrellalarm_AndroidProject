@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frag_mainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_layoutshape"
+    android:orientation="vertical"
+    tools:context=".Fragment_alarmSetting">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/frag_backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="20sp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:src="@android:drawable/ic_menu_revert" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10sp"
+            android:gravity="center_vertical"
+            android:text="@string/frag_title"
+            android:textColor="#ffffff"
+            android:textSize="22sp" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:layout_marginTop="30sp"
+                android:text="알람을 원하는 요일을 선택하세요"
+                android:textColor="#ffffff"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/valid_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:text=" * 요일을 선택하세요"
+                android:textColor="#FF0000"
+                android:visibility="gone"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="20sp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/button_monday"
+                    android:layout_width="50sp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_customized_day_unselected"
+                    android:text="월"
+                    android:textColor="#ffffff" />
+
+                <Button
+                    android:id="@+id/button_tuesday"
+                    android:layout_width="50sp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_customized_day_unselected"
+                    android:text="화"
+                    android:textColor="#ffffff" />
+
+                <Button
+                    android:id="@+id/button_wednesday"
+                    android:layout_width="50sp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_customized_day_unselected"
+                    android:text="수"
+                    android:textColor="#ffffff" />
+
+                <Button
+                    android:id="@+id/button_thursday"
+                    android:layout_width="50sp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_customized_day_unselected"
+                    android:text="목"
+                    android:textColor="#ffffff" />
+
+                <Button
+                    android:id="@+id/button_friday"
+                    android:layout_width="50sp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_customized_day_unselected"
+                    android:text="금"
+                    android:textColor="#ffffff" />
+
+                <Button
+                    android:id="@+id/button_saturday"
+                    android:layout_width="50sp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_customized_day_unselected"
+                    android:text="토"
+                    android:textColor="#ffffff" />
+
+                <Button
+                    android:id="@+id/button_sunday"
+                    android:layout_width="50sp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_customized_day_unselected"
+                    android:text="일"
+                    android:textColor="#ffffff" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:layout_marginTop="20sp"
+                android:text="강수확률 정보를 받을 지역을 선택하세요"
+                android:textColor="#ffffff"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15sp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#ffffff">
+
+                    <Spinner
+                        android:id="@+id/location_province"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/province"
+                        android:spinnerMode="dropdown" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="50sp"
+                    android:background="#ffffff">
+
+                    <Spinner
+                        android:id="@+id/location_seoul"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/seoul"
+                        android:spinnerMode="dialog"
+                        android:visibility="invisible" />
+
+                    <Spinner
+                        android:id="@+id/location_kyeunggi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/kyeunggi"
+                        android:spinnerMode="dialog"
+                        android:visibility="invisible" />
+
+                </FrameLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:layout_marginTop="20sp"
+                android:text="강수확률을 예측할 시간대를 선택하세요"
+                android:textColor="#ffffff"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10sp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/time_sixAMToNine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_customized_day_unselected"
+                        android:text="오전6시~오전9시"
+                        android:textColor="#ffffff" />
+
+                    <Button
+                        android:id="@+id/time_nineAMToTwelve"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10sp"
+                        android:layout_marginRight="10sp"
+                        android:background="@drawable/btn_customized_day_unselected"
+                        android:text="오전9시~오후12시"
+                        android:textColor="#ffffff" />
+
+                    <Button
+                        android:id="@+id/time_twelveToThree"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_customized_day_unselected"
+                        android:text="오후12시~오후3시"
+                        android:textColor="#ffffff" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10sp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/time_threeToSix"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_customized_day_unselected"
+                        android:text="오후3시~오후6시"
+                        android:textColor="#ffffff" />
+
+                    <Button
+                        android:id="@+id/time_sixToNine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10sp"
+                        android:layout_marginRight="10sp"
+                        android:background="@drawable/btn_customized_day_unselected"
+                        android:text="오후6시 ~ 오후9시"
+                        android:textColor="#ffffff" />
+
+                    <Button
+                        android:id="@+id/time_ninePMToTwelve"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_customized_day_unselected"
+                        android:text="오후9시~오전12시"
+                        android:textColor="#ffffff" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:layout_marginTop="20sp"
+                android:text="예측할 강수확률을 설정하세요"
+                android:textColor="#ffffff"
+                android:textSize="20sp" />
+
+            <RadioGroup
+                android:layout_marginLeft="15sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#ffffff"
+                    android:text="30% 이상"
+                    android:textColor="#ffffff" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#ffffff"
+                    android:text="50% 이상"
+                    android:textColor="#ffffff" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#ffffff"
+                    android:text="70% 이상"
+                    android:textColor="#ffffff" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#ffffff"
+                    android:text="90% 이상"
+                    android:textColor="#ffffff" />
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:layout_marginTop="20sp"
+                android:text="푸시알람을 받을 시간을 선택하세요"
+                android:textColor="#ffffff"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20sp"
+                android:layout_marginTop="5sp"
+                android:layout_marginBottom="20sp"
+                android:text="* 설정시간을 기준으로 강수확률을 예측합니다."
+                android:textColor="#ffffff"
+                android:textSize="15sp" />
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="80sp"
+                    android:buttonTint="#ffffff"
+                    android:text="푸시알람 전날"
+                    android:textColor="#ffffff" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#ffffff"
+                    android:text="푸시알람 당일"
+                    android:textColor="#ffffff" />
+
+            </RadioGroup>
+
+            <TimePicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20sp"
+                android:background="#ffffff"
+                android:timePickerMode="spinner" />
+
+            <Button
+                android:id="@+id/alarmAddButton"
+                android:layout_width="150sp"
+                android:layout_height="50sp"
+                android:layout_gravity="center"
+                android:layout_marginTop="30sp"
+                android:layout_marginBottom="20sp"
+                android:background="@drawable/main_click_selector"
+                android:clickable="true"
+                android:text="설정하기"
+                android:textColor="#8C2CFF"
+                android:textSize="22sp" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
