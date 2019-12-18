@@ -19,9 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
-    private Bundle bundle;
-
+public class MainActivity extends AppCompatActivity implements Fragment_alarmSetting.ThrowData{
     private Button addButton;
     private Fragment_alarmSetting fragment_alarmSetting;
     private long lastBackPresseed = 0;
@@ -32,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private String currentTime;
 
     /* 프래그먼트로부터 받은 데이터 */
-    private boolean[] dayList;
+    private boolean[] dayListFromFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
         /*알람 세팅 프래그먼트 추가*/
         fragment_alarmSetting = new Fragment_alarmSetting();
-        bundle = new Bundle();
 
         /*추가 버튼 클릭 로직 구현*/
         addButton = findViewById(R.id.addButton);
@@ -51,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "우산알라미를 추가합니다", Toast.LENGTH_SHORT).show();
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container, fragment_alarmSetting);
+                fragmentTransaction.replace(R.id.container, fragment_alarmSetting, "fragment");
                 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 fragmentTransaction.commit();
             }
@@ -102,10 +99,10 @@ public class MainActivity extends AppCompatActivity {
         alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                setAlarm();
+                setAlarm(); //volley 호출
                 getCurrentDateAndTime(); //현재 시간 얻기
-                bundle.putString("dialogClick", "yes");
-                fragment_alarmSetting.setArguments(bundle);
+                getDataFromFragment();
+                /* 예 누르면 다른 함수 호출 -> 이 함수가 프래그먼트에서 값 가져오도록*/
             }
         });
         alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
@@ -138,12 +135,17 @@ public class MainActivity extends AppCompatActivity {
                 "base_date=20191215&base_time=0230&nx=55&ny=127&_type=json";
     }
 
-    /* 프래그먼트로부터 데이터 받는 메소드 */
-    public void getDataFromFragment(boolean[] dayListFromFragment) {
-        dayList = dayListFromFragment;
-        for (boolean each : dayList) {
-            Log.e("log", "요일 불 : " + each);
-        }
+    public void getDataFromFragment(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
+        fragment_alarmSetting.throwData();
+    }
+
+    /* Data receiver method from fragment*/
+    @Override
+    public void receiveData(boolean[] dayList) {
+        dayListFromFragment = dayList;
+
         finishFragment();
     }
 }

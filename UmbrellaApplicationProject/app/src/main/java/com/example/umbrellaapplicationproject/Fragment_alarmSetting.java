@@ -1,5 +1,6 @@
 package com.example.umbrellaapplicationproject;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,13 +18,14 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 public class Fragment_alarmSetting extends Fragment {
     private LinearLayout frag_mainLayout;
     private ScrollView scrollView;
     private ImageButton frag_backButton;
-    private Bundle bundle;
 
     /* 요일 버튼 및 boolean */
     private Button button_monday;
@@ -62,7 +64,22 @@ public class Fragment_alarmSetting extends Fragment {
 
     private Button alarmAddButton;
 
-    private String resultOfDialog;
+    /* Data sets to transfer to MainActivity */
+    private boolean[] dayList = new boolean[7];
+
+    /* Interface to deliver setting data to MainActivity */
+    public interface ThrowData{
+        void receiveData(boolean[] dayList);
+        /* receiveData 안에 넣을 데이터 : 지금은 dayList만 넣었지만 setting할 때 모든 데이터 넘겨야 함.*/
+    }
+
+    private ThrowData throwData;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        throwData = (ThrowData)getActivity();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
@@ -233,7 +250,7 @@ public class Fragment_alarmSetting extends Fragment {
             @Override
             public void onClick(View v) {
                 TextView valid_day = rootView.findViewById(R.id.valid_day);
-                /*유효성 검사*/
+                /* checking validity */
                 if (bol_monday == false && bol_tuesday == false && bol_wednesday == false &&
                         bol_thursday == false && bol_friday == false && bol_saturday == false && bol_sunday == false) {
                     scrollView.smoothScrollTo(0, 0);
@@ -242,7 +259,6 @@ public class Fragment_alarmSetting extends Fragment {
                 } else {
                     valid_day.setVisibility(View.GONE);
                 }
-                boolean[] dayList = new boolean[7];
                 dayList[0] = bol_monday;
                 dayList[1] = bol_tuesday;
                 dayList[2] = bol_wednesday;
@@ -251,7 +267,6 @@ public class Fragment_alarmSetting extends Fragment {
                 dayList[5] = bol_saturday;
                 dayList[6] = bol_sunday;
                 ((MainActivity) getActivity()).setDialogForSetting();
-                ((MainActivity) getActivity()).getDataFromFragment(dayList);
             }
         });
 
@@ -274,5 +289,10 @@ public class Fragment_alarmSetting extends Fragment {
         } else {
             return true;
         }
+    }
+
+    /* MainActivity 에서 setting data 얻기 위해 호출하는 메소드*/
+    public void throwData(){
+        throwData.receiveData(dayList);
     }
 }
