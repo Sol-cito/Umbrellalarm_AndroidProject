@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 public class LoadingActivity extends AppCompatActivity {
-
+    /* 깃 테스트*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
