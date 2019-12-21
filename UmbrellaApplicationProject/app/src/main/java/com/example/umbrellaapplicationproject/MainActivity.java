@@ -12,14 +12,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements Fragment_alarmSetting.ThrowData{
+public class MainActivity extends AppCompatActivity implements Fragment_alarmSetting.ThrowData {
     private Button addButton;
     private Fragment_alarmSetting fragment_alarmSetting;
     private long lastBackPresseed = 0;
@@ -31,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
 
     /* 프래그먼트로부터 받은 데이터 */
     private boolean[] dayListFromFragment;
+
+    /* Korean Weather API service Key */
+    private static final String SERVICE_KEY = "c1g26jTnByGW5kb0HXyLjLfpLsO%2FcByKq4WxxOygJ2GBxWCHOVvFPVSbrHJ6LY2uMqkHDT7kkLVAUKyit3ykEg%3D%3D";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                scrollUptotheTopOfFragmentDisplay();
                 finishFragment();
             }
         });
@@ -99,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                scrollUptotheTopOfFragmentDisplay();
                 setAlarm(); //volley 호출
                 getCurrentDateAndTime(); //현재 시간 얻기
                 getDataFromFragment();
@@ -122,7 +131,14 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         fragmentTransaction.commit();
     }
 
-    /* 현재 시간 구하기 메소드*/
+    /* calling scollUpToTheTop method of the Fragment */
+    public void scrollUptotheTopOfFragmentDisplay() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
+        fragment_alarmSetting.scrollUptotheTop();
+    }
+
+    /* Method for getting the current time */
     public void getCurrentDateAndTime() {
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
         Date date = new Date();
@@ -130,12 +146,33 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
     }
 
     public void setAlarm() {
+        String base_Date = "";
+        String base_time = "";
+        String nx = "";
+        String ny = "";
+
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        String url = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?" +
-                "base_date=20191215&base_time=0230&nx=55&ny=127&_type=json";
+        String url = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?"
+                + "serviceKey=" + SERVICE_KEY +
+                "&base_date=20191221&base_time=1430&nx=55&ny=127&_type=json";
+        Log.e("log", url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("log", "요청성공");
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("log", "요청 실패");
+                    }
+                });
+        requestQueue.add(stringRequest);
     }
 
-    public void getDataFromFragment(){
+    public void getDataFromFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
         fragment_alarmSetting.throwData();
@@ -145,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
     @Override
     public void receiveData(boolean[] dayList) {
         dayListFromFragment = dayList;
-
         finishFragment();
     }
 }

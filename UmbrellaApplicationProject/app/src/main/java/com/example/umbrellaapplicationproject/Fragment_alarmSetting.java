@@ -250,7 +250,7 @@ public class Fragment_alarmSetting extends Fragment {
             @Override
             public void onClick(View v) {
                 TextView valid_day = rootView.findViewById(R.id.valid_day);
-                /* checking validity */
+                /* validation */
                 if (bol_monday == false && bol_tuesday == false && bol_wednesday == false &&
                         bol_thursday == false && bol_friday == false && bol_saturday == false && bol_sunday == false) {
                     scrollView.smoothScrollTo(0, 0);
@@ -291,8 +291,13 @@ public class Fragment_alarmSetting extends Fragment {
         }
     }
 
-    /* MainActivity 에서 setting data 얻기 위해 호출하는 메소드*/
+    /* Method for the MainActivity to get the data set on the fragment*/
     public void throwData(){
         throwData.receiveData(dayList);
+    }
+
+    /* Method for scrolling up the the top of the fragment (called by the MainActivity) */
+    public void scrollUptotheTop(){
+        scrollView.scrollTo(0,0);
     }
 }
