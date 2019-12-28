@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -57,18 +58,21 @@ public class Fragment_alarmSetting extends Fragment {
     private Button time_ninePMToTwelve;
     private boolean bool_time_ninePMToTwelve;
 
-    /*위치 선택 스피너*/
+    /* Layout and spinners for selecting location*/
     private Spinner location_province;
     private Spinner location_seoul;
     private Spinner location_kyeunggi;
+    private FrameLayout locationBundle;
+    private boolean checkLocationSelection;
 
     private Button alarmAddButton;
 
     /* Data sets to transfer to MainActivity */
     private boolean[] dayList = new boolean[7];
+    private String[] locationList = new String[2];
 
     /* Interface to deliver setting data to MainActivity */
-    public interface ThrowData{
+    public interface ThrowData {
         void receiveData(boolean[] dayList);
         /* receiveData 안에 넣을 데이터 : 지금은 dayList만 넣었지만 setting할 때 모든 데이터 넘겨야 함.*/
     }
@@ -78,7 +82,7 @@ public class Fragment_alarmSetting extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        throwData = (ThrowData)getActivity();
+        throwData = (ThrowData) getActivity();
     }
 
     @Override
@@ -219,6 +223,7 @@ public class Fragment_alarmSetting extends Fragment {
             }
         });
 
+        locationBundle = rootView.findViewById(R.id.locationBundle);
         location_kyeunggi = rootView.findViewById(R.id.location_kyeunggi);
         location_seoul = rootView.findViewById(R.id.location_seoul);
 
@@ -227,20 +232,59 @@ public class Fragment_alarmSetting extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 /* 지역선택 : 0 , 서울코드 : 1, 경기 : 2*/
-                if (position == 1) {
+                if (position == 1) { //서울
+                    locationBundle.setVisibility(View.VISIBLE);
                     location_seoul.setVisibility(View.VISIBLE);
                     location_kyeunggi.setVisibility(View.INVISIBLE);
-                } else if (position == 2) {
+                } else if (position == 2) { //경기
+                    locationBundle.setVisibility(View.VISIBLE);
                     location_seoul.setVisibility(View.INVISIBLE);
                     location_kyeunggi.setVisibility(View.VISIBLE);
-                } else {
-                    location_seoul.setVisibility(View.INVISIBLE);
-                    location_kyeunggi.setVisibility(View.INVISIBLE);
+                } else { // 아무선택안함
+                    locationBundle.setVisibility(View.INVISIBLE);
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        location_seoul.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    checkLocationSelection = false;
+                    Log.e("log", "서울에서 아무선택 안함");
+                } else {
+                    checkLocationSelection = true;
+                    locationList[0] = "서울";
+                    locationList[1] = location_seoul.getSelectedItem().toString();
+                    Log.e("log", "서울에서 선택 : "+location_seoul.getSelectedItem().toString());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        location_kyeunggi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    checkLocationSelection = false;
+                    Log.e("log", "경기에서 아무선택 안함");
+                } else {
+                    checkLocationSelection = true;
+                    locationList[0] = "경기";
+                    locationList[1] = location_kyeunggi.getSelectedItem().toString();
+                    Log.e("log", "경기에서 선택 : "+location_kyeunggi.getSelectedItem().toString());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -292,12 +336,12 @@ public class Fragment_alarmSetting extends Fragment {
     }
 
     /* Method for the MainActivity to get the data set on the fragment*/
-    public void throwData(){
+    public void throwData() {
         throwData.receiveData(dayList);
     }
 
     /* Method for scrolling up the the top of the fragment (called by the MainActivity) */
-    public void scrollUptotheTop(){
-        scrollView.scrollTo(0,0);
+    public void scrollUptotheTop() {
+        scrollView.scrollTo(0, 0);
     }
 }

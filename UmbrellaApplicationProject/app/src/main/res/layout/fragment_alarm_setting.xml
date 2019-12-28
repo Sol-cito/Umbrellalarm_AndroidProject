@@ -64,8 +64,8 @@
                 android:layout_marginLeft="10sp"
                 android:text=" * 요일을 선택하세요"
                 android:textColor="#FF0000"
-                android:visibility="gone"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -161,26 +161,26 @@
                 </FrameLayout>
 
                 <FrameLayout
+                    android:id="@+id/locationBundle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="50sp"
-                    android:background="#ffffff">
+                    android:background="#ffffff"
+                    android:visibility="invisible">
 
                     <Spinner
                         android:id="@+id/location_seoul"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:entries="@array/seoul"
-                        android:spinnerMode="dialog"
-                        android:visibility="invisible" />
+                        android:spinnerMode="dialog" />
 
                     <Spinner
                         android:id="@+id/location_kyeunggi"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:entries="@array/kyeunggi"
-                        android:spinnerMode="dialog"
-                        android:visibility="invisible" />
+                        android:spinnerMode="dialog" />
 
                 </FrameLayout>
             </LinearLayout>
@@ -278,9 +278,9 @@
                 android:textSize="20sp" />
 
             <RadioGroup
-                android:layout_marginLeft="15sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="15sp"
                 android:orientation="vertical">
 
                 <RadioButton
