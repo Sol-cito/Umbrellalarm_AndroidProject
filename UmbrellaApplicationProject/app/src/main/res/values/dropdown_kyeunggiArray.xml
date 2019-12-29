@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="kyeunggi">
-        <item>선택</item>
+        <item>--선택--</item>
         <item >가평군</item>
         <item >고양시</item>
         <item >과천시</item>

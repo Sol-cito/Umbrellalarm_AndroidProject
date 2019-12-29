@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="province">
-        <item >선택</item>
+        <item >--선택--</item>
         <item >서울</item>
         <item >경기</item>
     </string-array>

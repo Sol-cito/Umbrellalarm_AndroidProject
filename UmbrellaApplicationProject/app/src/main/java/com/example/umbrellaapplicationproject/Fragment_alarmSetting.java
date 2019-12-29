@@ -67,13 +67,21 @@ public class Fragment_alarmSetting extends Fragment {
 
     private Button alarmAddButton;
 
+    /* TextView for validation */
+    private TextView valid_day;
+    private TextView valid_location;
+    private TextView valid_time;
+
     /* Data sets to transfer to MainActivity */
     private boolean[] dayList = new boolean[7];
     private String[] locationList = new String[2];
+    private boolean[] timeList = new boolean[6];
+    private int precipitation;
+    private boolean pushAlarmSet;
 
     /* Interface to deliver setting data to MainActivity */
     public interface ThrowData {
-        void receiveData(boolean[] dayList);
+        void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList);
         /* receiveData 안에 넣을 데이터 : 지금은 dayList만 넣었지만 setting할 때 모든 데이터 넘겨야 함.*/
     }
 
@@ -88,7 +96,7 @@ public class Fragment_alarmSetting extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
-        final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_alarm_setting, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_alarm_setting, container, false);
         scrollView = rootView.findViewById(R.id.scrollView);
 
         /* 뒤 액티비티 버튼 클릭 방지*/
@@ -236,17 +244,23 @@ public class Fragment_alarmSetting extends Fragment {
                     locationBundle.setVisibility(View.VISIBLE);
                     location_seoul.setVisibility(View.VISIBLE);
                     location_kyeunggi.setVisibility(View.INVISIBLE);
+                    location_kyeunggi.setSelection(0);
                 } else if (position == 2) { //경기
                     locationBundle.setVisibility(View.VISIBLE);
                     location_seoul.setVisibility(View.INVISIBLE);
                     location_kyeunggi.setVisibility(View.VISIBLE);
+                    location_seoul.setSelection(0);
                 } else { // 아무선택안함
                     locationBundle.setVisibility(View.INVISIBLE);
+                    location_seoul.setSelection(0);
+                    location_kyeunggi.setSelection(0);
+                    checkLocationSelection = false;
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
         location_seoul.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -254,12 +268,10 @@ public class Fragment_alarmSetting extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
                     checkLocationSelection = false;
-                    Log.e("log", "서울에서 아무선택 안함");
                 } else {
                     checkLocationSelection = true;
                     locationList[0] = "서울";
                     locationList[1] = location_seoul.getSelectedItem().toString();
-                    Log.e("log", "서울에서 선택 : "+location_seoul.getSelectedItem().toString());
                 }
             }
 
@@ -268,17 +280,16 @@ public class Fragment_alarmSetting extends Fragment {
 
             }
         });
+        /* When clicking '경기' */
         location_kyeunggi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
                     checkLocationSelection = false;
-                    Log.e("log", "경기에서 아무선택 안함");
                 } else {
                     checkLocationSelection = true;
                     locationList[0] = "경기";
                     locationList[1] = location_kyeunggi.getSelectedItem().toString();
-                    Log.e("log", "경기에서 선택 : "+location_kyeunggi.getSelectedItem().toString());
                 }
             }
 
@@ -287,21 +298,19 @@ public class Fragment_alarmSetting extends Fragment {
 
             }
         });
+
+        valid_day = rootView.findViewById(R.id.valid_day);
+        valid_location = rootView.findViewById(R.id.valid_location);
+        valid_time = rootView.findViewById(R.id.valid_time);
 
         /* 설정 버튼 클릭*/
         alarmAddButton = rootView.findViewById(R.id.alarmAddButton);
         alarmAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView valid_day = rootView.findViewById(R.id.valid_day);
                 /* validation */
-                if (bol_monday == false && bol_tuesday == false && bol_wednesday == false &&
-                        bol_thursday == false && bol_friday == false && bol_saturday == false && bol_sunday == false) {
-                    scrollView.smoothScrollTo(0, 0);
-                    valid_day.setVisibility(View.VISIBLE);
+                if(!validation()){
                     return;
-                } else {
-                    valid_day.setVisibility(View.GONE);
                 }
                 dayList[0] = bol_monday;
                 dayList[1] = bol_tuesday;
@@ -310,6 +319,14 @@ public class Fragment_alarmSetting extends Fragment {
                 dayList[4] = bol_friday;
                 dayList[5] = bol_saturday;
                 dayList[6] = bol_sunday;
+
+                timeList[0] = bool_time_sixAMToNine;
+                timeList[1] = bool_time_nineAMToTwelve;
+                timeList[2] = bool_time_twelveToThree;
+                timeList[3] = bool_time_threeToSix;
+                timeList[4] = bool_time_sixToNine;
+                timeList[5] = bool_time_ninePMToTwelve;
+
                 ((MainActivity) getActivity()).setDialogForSetting();
             }
         });
@@ -335,13 +352,47 @@ public class Fragment_alarmSetting extends Fragment {
         }
     }
 
-    /* Method for the MainActivity to get the data set on the fragment*/
+    /* Method for the MainActivity to get the data set from the fragment*/
     public void throwData() {
-        throwData.receiveData(dayList);
+        throwData.receiveData(dayList, locationList, timeList);
     }
 
     /* Method for scrolling up the the top of the fragment (called by the MainActivity) */
     public void scrollUptotheTop() {
         scrollView.scrollTo(0, 0);
+    }
+
+    public boolean validation(){
+        /* Checking set day*/
+        if (bol_monday == false && bol_tuesday == false && bol_wednesday == false &&
+                bol_thursday == false && bol_friday == false && bol_saturday == false && bol_sunday == false) {
+            scrollView.smoothScrollTo(0, 0);
+            valid_day.setVisibility(View.VISIBLE);
+        } else {
+            valid_day.setVisibility(View.GONE);
+        }
+
+        /* checking set location */
+        if(checkLocationSelection == false){
+            valid_location.setVisibility(View.VISIBLE);
+            scrollView.smoothScrollTo(0, 0);
+        }else{
+            valid_location.setVisibility(View.GONE);
+        }
+
+        /* checking set time */
+        if (bool_time_sixAMToNine == false && bool_time_nineAMToTwelve == false && bool_time_twelveToThree == false &&
+                bool_time_threeToSix == false && bool_time_sixToNine == false && bool_time_ninePMToTwelve == false) {
+            scrollView.smoothScrollTo(0, 0);
+            valid_time.setVisibility(View.VISIBLE);
+        } else {
+            valid_time.setVisibility(View.GONE);
+        }
+
+        if(valid_day.getVisibility() == View.VISIBLE || valid_location.getVisibility() == View.VISIBLE
+        || valid_time.getVisibility() == View.VISIBLE){
+            return false;
+        }
+        return true;
     }
 }
