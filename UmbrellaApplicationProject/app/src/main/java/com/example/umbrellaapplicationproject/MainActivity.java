@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
     private boolean[] dayListFromFragment;
     private String[] locationListFromFragment;
     private boolean[] timeListFromFragment;
+    private int precipitationFromFragment;
 
     /* Korean Weather API service Key */
     private static final String SERVICE_KEY = "c1g26jTnByGW5kb0HXyLjLfpLsO%2FcByKq4WxxOygJ2GBxWCHOVvFPVSbrHJ6LY2uMqkHDT7kkLVAUKyit3ykEg%3D%3D";
@@ -182,11 +183,11 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
 
     /* Data receiver method from fragment*/
     @Override
-    public void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList) {
+    public void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList, int precipitation) {
         dayListFromFragment = dayList;
         locationListFromFragment = locationList;
         timeListFromFragment = timeList;
-
+        precipitationFromFragment = precipitation;
         finishFragment();
     }
 }

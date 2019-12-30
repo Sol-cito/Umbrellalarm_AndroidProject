@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -58,6 +59,9 @@ public class Fragment_alarmSetting extends Fragment {
     private Button time_ninePMToTwelve;
     private boolean bool_time_ninePMToTwelve;
 
+    /* precipitation radio */
+    private RadioGroup radioGroup;
+
     /* Layout and spinners for selecting location*/
     private Spinner location_province;
     private Spinner location_seoul;
@@ -71,6 +75,7 @@ public class Fragment_alarmSetting extends Fragment {
     private TextView valid_day;
     private TextView valid_location;
     private TextView valid_time;
+    private TextView valid_precipitation;
 
     /* Data sets to transfer to MainActivity */
     private boolean[] dayList = new boolean[7];
@@ -81,7 +86,7 @@ public class Fragment_alarmSetting extends Fragment {
 
     /* Interface to deliver setting data to MainActivity */
     public interface ThrowData {
-        void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList);
+        void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList, int precipitation);
         /* receiveData 안에 넣을 데이터 : 지금은 dayList만 넣었지만 setting할 때 모든 데이터 넘겨야 함.*/
     }
 
@@ -299,9 +304,26 @@ public class Fragment_alarmSetting extends Fragment {
             }
         });
 
+        /* Set precipitation */
+        radioGroup = rootView.findViewById(R.id.radioGroup);
+        precipitation = 0;
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == 1){
+                    precipitation = 30;
+                }else if(checkedId == 2){
+                    precipitation = 50;
+                }else{
+                    precipitation = 70;
+                }
+            }
+        });
+
         valid_day = rootView.findViewById(R.id.valid_day);
         valid_location = rootView.findViewById(R.id.valid_location);
         valid_time = rootView.findViewById(R.id.valid_time);
+        valid_precipitation = rootView.findViewById(R.id.valid_precipitation);
 
         /* 설정 버튼 클릭*/
         alarmAddButton = rootView.findViewById(R.id.alarmAddButton);
@@ -354,7 +376,7 @@ public class Fragment_alarmSetting extends Fragment {
 
     /* Method for the MainActivity to get the data set from the fragment*/
     public void throwData() {
-        throwData.receiveData(dayList, locationList, timeList);
+        throwData.receiveData(dayList, locationList, timeList, precipitation);
     }
 
     /* Method for scrolling up the the top of the fragment (called by the MainActivity) */
@@ -389,8 +411,16 @@ public class Fragment_alarmSetting extends Fragment {
             valid_time.setVisibility(View.GONE);
         }
 
+        /* checking set precipitation */
+        if(precipitation == 0){
+            scrollView.smoothScrollTo(0, 0);
+            valid_precipitation.setVisibility(View.VISIBLE);
+        }else{
+            valid_precipitation.setVisibility(View.GONE);
+        }
+
         if(valid_day.getVisibility() == View.VISIBLE || valid_location.getVisibility() == View.VISIBLE
-        || valid_time.getVisibility() == View.VISIBLE){
+        || valid_time.getVisibility() == View.VISIBLE || valid_precipitation.getVisibility() == View.VISIBLE){
             return false;
         }
         return true;
