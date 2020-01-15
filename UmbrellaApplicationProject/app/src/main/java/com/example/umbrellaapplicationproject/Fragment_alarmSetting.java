@@ -104,6 +104,8 @@ public class Fragment_alarmSetting extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_alarm_setting, container, false);
         scrollView = rootView.findViewById(R.id.scrollView);
 
+        Log.e("log2", "불?"+checkLocationSelection);
+
         /* 뒤 액티비티 버튼 클릭 방지*/
         frag_mainLayout = rootView.findViewById(R.id.frag_mainLayout);
         frag_mainLayout.setOnTouchListener(new View.OnTouchListener() {
@@ -310,11 +312,11 @@ public class Fragment_alarmSetting extends Fragment {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == 1){
+                if (checkedId == 1) {
                     precipitation = 30;
-                }else if(checkedId == 2){
+                } else if (checkedId == 2) {
                     precipitation = 50;
-                }else{
+                } else {
                     precipitation = 70;
                 }
             }
@@ -331,7 +333,7 @@ public class Fragment_alarmSetting extends Fragment {
             @Override
             public void onClick(View v) {
                 /* validation */
-                if(!validation()){
+                if (!validation()) {
                     return;
                 }
                 dayList[0] = bol_monday;
@@ -384,7 +386,7 @@ public class Fragment_alarmSetting extends Fragment {
         scrollView.scrollTo(0, 0);
     }
 
-    public boolean validation(){
+    public boolean validation() {
         /* Checking set day*/
         if (bol_monday == false && bol_tuesday == false && bol_wednesday == false &&
                 bol_thursday == false && bol_friday == false && bol_saturday == false && bol_sunday == false) {
@@ -395,10 +397,10 @@ public class Fragment_alarmSetting extends Fragment {
         }
 
         /* checking set location */
-        if(checkLocationSelection == false){
+        if (checkLocationSelection == false) {
             valid_location.setVisibility(View.VISIBLE);
             scrollView.smoothScrollTo(0, 0);
-        }else{
+        } else {
             valid_location.setVisibility(View.GONE);
         }
 
@@ -412,17 +414,37 @@ public class Fragment_alarmSetting extends Fragment {
         }
 
         /* checking set precipitation */
-        if(precipitation == 0){
+        if (precipitation == 0) {
             scrollView.smoothScrollTo(0, 0);
             valid_precipitation.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             valid_precipitation.setVisibility(View.GONE);
         }
 
-        if(valid_day.getVisibility() == View.VISIBLE || valid_location.getVisibility() == View.VISIBLE
-        || valid_time.getVisibility() == View.VISIBLE || valid_precipitation.getVisibility() == View.VISIBLE){
+        if (valid_day.getVisibility() == View.VISIBLE || valid_location.getVisibility() == View.VISIBLE
+                || valid_time.getVisibility() == View.VISIBLE || valid_precipitation.getVisibility() == View.VISIBLE) {
             return false;
         }
         return true;
+    }
+
+    public void cancelAlarmSetting() {
+        bol_monday = false;
+        bol_tuesday = false;
+        bol_wednesday = false;
+        bol_thursday = false;
+        bol_friday = false;
+        bol_saturday = false;
+        bol_sunday = false;
+
+        bool_time_sixAMToNine = false;
+        bool_time_nineAMToTwelve = false;
+        bool_time_twelveToThree = false;
+        bool_time_threeToSix = false;
+        bool_time_sixToNine = false;
+        bool_time_ninePMToTwelve = false;
+
+        checkLocationSelection = false;
+        location_province.setSelection(0);
     }
 }

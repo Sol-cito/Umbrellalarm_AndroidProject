@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 scrollUptotheTopOfFragmentDisplay();
+                cancelAlarmSetting();
                 finishFragment();
             }
         });
@@ -189,5 +190,11 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         timeListFromFragment = timeList;
         precipitationFromFragment = precipitation;
         finishFragment();
+    }
+
+    public void cancelAlarmSetting(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
+        fragment_alarmSetting.cancelAlarmSetting();
     }
 }
