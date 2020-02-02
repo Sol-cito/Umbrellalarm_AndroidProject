@@ -308,7 +308,7 @@
                 android:visibility="gone" />
 
             <RadioGroup
-                android:id="@+id/radioGroup"
+                android:id="@+id/radioGroupOfPrecipitation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15sp"
@@ -342,9 +342,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10sp"
                 android:layout_marginTop="20sp"
-                android:text="푸시알람을 받을 시간을 선택하세요"
+                android:text="푸시알람을 받을 시간을 설정하세요"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/valid_alarmTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:text=" * 푸시알람 시간을 설정하세요"
+                android:textColor="#FF0000"
+                android:textSize="15sp"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -352,11 +362,12 @@
                 android:layout_marginLeft="20sp"
                 android:layout_marginTop="5sp"
                 android:layout_marginBottom="20sp"
-                android:text="* 설정시간을 기준으로 강수확률을 예측합니다."
+                android:text="* 설정시간을 기준으로 강수확률 정보를 받아옵니다."
                 android:textColor="#ffffff"
                 android:textSize="15sp" />
 
             <RadioGroup
+                android:id="@+id/radioGroupOfAlarmPoint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -367,14 +378,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="80sp"
                     android:buttonTint="#ffffff"
-                    android:text="푸시알람 전날"
+                    android:text="알람 전날"
                     android:textColor="#ffffff" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:buttonTint="#ffffff"
-                    android:text="푸시알람 당일"
+                    android:text="알람 당일"
                     android:textColor="#ffffff" />
 
             </RadioGroup>

@@ -60,7 +60,8 @@ public class Fragment_alarmSetting extends Fragment {
     private boolean bool_time_ninePMToTwelve;
 
     /* precipitation radio */
-    private RadioGroup radioGroup;
+    private RadioGroup radioGroupOfPrecipitation;
+    private RadioGroup radioGroupOfAlarmPoint;
 
     /* Layout and spinners for selecting location*/
     private Spinner location_province;
@@ -76,6 +77,7 @@ public class Fragment_alarmSetting extends Fragment {
     private TextView valid_location;
     private TextView valid_time;
     private TextView valid_precipitation;
+    private TextView valid_alarmTime;
 
     /* Data sets to transfer to MainActivity */
     private boolean[] dayList = new boolean[7];
@@ -83,6 +85,9 @@ public class Fragment_alarmSetting extends Fragment {
     private boolean[] timeList = new boolean[6];
     private int precipitation;
     private boolean pushAlarmSet;
+    //알람 시점 세팅중
+    private int alarmPoint; //0 : default, 1 : a day ahead , 2 : on the very day
+    private int alarmTime;
 
     /* Interface to deliver setting data to MainActivity */
     public interface ThrowData {
@@ -103,8 +108,6 @@ public class Fragment_alarmSetting extends Fragment {
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_alarm_setting, container, false);
         scrollView = rootView.findViewById(R.id.scrollView);
-
-        Log.e("log2", "불?"+checkLocationSelection);
 
         /* 뒤 액티비티 버튼 클릭 방지*/
         frag_mainLayout = rootView.findViewById(R.id.frag_mainLayout);
@@ -307,9 +310,9 @@ public class Fragment_alarmSetting extends Fragment {
         });
 
         /* Set precipitation */
-        radioGroup = rootView.findViewById(R.id.radioGroup);
+        radioGroupOfPrecipitation = rootView.findViewById(R.id.radioGroupOfPrecipitation);
         precipitation = 0;
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        radioGroupOfPrecipitation.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == 1) {
@@ -322,10 +325,27 @@ public class Fragment_alarmSetting extends Fragment {
             }
         });
 
+        /* Set AlarmPoint */
+        radioGroupOfAlarmPoint = rootView.findViewById(R.id.radioGroupOfAlarmPoint);
+        alarmPoint = 0; // Default value when radiobuttons are left blank
+        alarmTime = 0; //Default value
+        radioGroupOfAlarmPoint.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // 4: 알람 전날, 5: 알람 당일
+                if (checkedId == 4) {
+                    alarmPoint = 1;
+                } else {
+                    alarmPoint = 2;
+                }
+            }
+        });
+
         valid_day = rootView.findViewById(R.id.valid_day);
         valid_location = rootView.findViewById(R.id.valid_location);
         valid_time = rootView.findViewById(R.id.valid_time);
         valid_precipitation = rootView.findViewById(R.id.valid_precipitation);
+        valid_alarmTime = rootView.findViewById(R.id.valid_alarmTime);
 
         /* 설정 버튼 클릭*/
         alarmAddButton = rootView.findViewById(R.id.alarmAddButton);
@@ -415,14 +435,23 @@ public class Fragment_alarmSetting extends Fragment {
 
         /* checking set precipitation */
         if (precipitation == 0) {
-            scrollView.smoothScrollTo(0, 0);
+            scrollView.smoothScrollTo(0, 600);
             valid_precipitation.setVisibility(View.VISIBLE);
         } else {
             valid_precipitation.setVisibility(View.GONE);
         }
+        /* checking set alarmtime */
+//        if (alarmPoint == 0 || alarmTime == 0) {
+        if (alarmPoint == 0) {
+            scrollView.smoothScrollTo(0, 1500);
+            valid_alarmTime.setVisibility(View.VISIBLE);
+        } else {
+            valid_alarmTime.setVisibility(View.GONE);
+        }
 
         if (valid_day.getVisibility() == View.VISIBLE || valid_location.getVisibility() == View.VISIBLE
-                || valid_time.getVisibility() == View.VISIBLE || valid_precipitation.getVisibility() == View.VISIBLE) {
+                || valid_time.getVisibility() == View.VISIBLE || valid_precipitation.getVisibility() == View.VISIBLE
+                || valid_alarmTime.getVisibility() == View.VISIBLE) {
             return false;
         }
         return true;
