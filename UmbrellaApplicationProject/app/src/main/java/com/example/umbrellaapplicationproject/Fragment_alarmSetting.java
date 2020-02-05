@@ -1,6 +1,7 @@
 package com.example.umbrellaapplicationproject;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +17,9 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -79,20 +82,22 @@ public class Fragment_alarmSetting extends Fragment {
     private TextView valid_precipitation;
     private TextView valid_alarmTime;
 
-    /* Data sets to transfer to MainActivity */
+    /* Data sets to transfer to MainActivity / to save in DB */
     private boolean[] dayList = new boolean[7];
     private String[] locationList = new String[2];
     private boolean[] timeList = new boolean[6];
     private int precipitation;
-    private boolean pushAlarmSet;
-    //알람 시점 세팅중
     private int alarmPoint; //0 : default, 1 : a day ahead , 2 : on the very day
-    private int alarmTime;
+    private int pickedHour;
+    private int pickedMinute;
+
+    /* timePicker vars */
+    private TimePicker timePicker;
 
     /* Interface to deliver setting data to MainActivity */
     public interface ThrowData {
-        void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList, int precipitation);
-        /* receiveData 안에 넣을 데이터 : 지금은 dayList만 넣었지만 setting할 때 모든 데이터 넘겨야 함.*/
+        void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList, int precipitation,
+                         int alarmPoint, int pickedHour, int pickedMinute);
     }
 
     private ThrowData throwData;
@@ -103,6 +108,7 @@ public class Fragment_alarmSetting extends Fragment {
         throwData = (ThrowData) getActivity();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
@@ -328,7 +334,6 @@ public class Fragment_alarmSetting extends Fragment {
         /* Set AlarmPoint */
         radioGroupOfAlarmPoint = rootView.findViewById(R.id.radioGroupOfAlarmPoint);
         alarmPoint = 0; // Default value when radiobuttons are left blank
-        alarmTime = 0; //Default value
         radioGroupOfAlarmPoint.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -375,6 +380,15 @@ public class Fragment_alarmSetting extends Fragment {
             }
         });
 
+
+        timePicker = rootView.findViewById(R.id.timePicker);
+        timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                pickedHour = hourOfDay;
+                pickedMinute = minute;
+            }
+        });
         return rootView;
     }
 
@@ -398,7 +412,7 @@ public class Fragment_alarmSetting extends Fragment {
 
     /* Method for the MainActivity to get the data set from the fragment*/
     public void throwData() {
-        throwData.receiveData(dayList, locationList, timeList, precipitation);
+        throwData.receiveData(dayList, locationList, timeList, precipitation, alarmPoint, pickedHour, pickedMinute);
     }
 
     /* Method for scrolling up the the top of the fragment (called by the MainActivity) */
@@ -440,8 +454,7 @@ public class Fragment_alarmSetting extends Fragment {
         } else {
             valid_precipitation.setVisibility(View.GONE);
         }
-        /* checking set alarmtime */
-//        if (alarmPoint == 0 || alarmTime == 0) {
+        /* checking set alarmPoint */
         if (alarmPoint == 0) {
             scrollView.smoothScrollTo(0, 1500);
             valid_alarmTime.setVisibility(View.VISIBLE);
