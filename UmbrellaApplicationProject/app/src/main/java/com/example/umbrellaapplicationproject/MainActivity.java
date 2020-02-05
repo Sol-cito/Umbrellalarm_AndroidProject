@@ -1,6 +1,7 @@
 package com.example.umbrellaapplicationproject;
 
 import android.content.DialogInterface;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,9 +39,16 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
     private String[] locationListFromFragment;
     private boolean[] timeListFromFragment;
     private int precipitationFromFragment;
+    private int alarmPointFromFragment;
+    private int pickedHourFromFragment;
+    private int pickedMinuteFromFragment;
 
     /* Korean Weather API service Key */
     private static final String SERVICE_KEY = "c1g26jTnByGW5kb0HXyLjLfpLsO%2FcByKq4WxxOygJ2GBxWCHOVvFPVSbrHJ6LY2uMqkHDT7kkLVAUKyit3ykEg%3D%3D";
+
+    /* DataBase */
+    private SQLiteDatabase sqLiteDatabase;
+    private String dbTableName = "alarmData";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
                 fragmentTransaction.commit();
             }
         });
-
+        createDB();
     } // onCreate End
 
     /*뒤로 가기 버튼 2번 누를 시 종료 & 알람 세팅 프래그먼트 끄기*/
@@ -180,21 +188,54 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
         fragment_alarmSetting.throwData();
+        dataInsertToDB();
     }
 
     /* Data receiver method from fragment*/
     @Override
-    public void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList, int precipitation) {
+    public void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList, int precipitation,
+                            int alarmPoint, int pickedHour, int pickedMinute) {
         dayListFromFragment = dayList;
         locationListFromFragment = locationList;
         timeListFromFragment = timeList;
         precipitationFromFragment = precipitation;
+        alarmPointFromFragment = alarmPoint;
+        pickedHourFromFragment = pickedHour;
+        pickedMinuteFromFragment = pickedMinute;
         finishFragment();
     }
 
-    public void cancelAlarmSetting(){
+    public void cancelAlarmSetting() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
         fragment_alarmSetting.cancelAlarmSetting();
+    }
+
+    public void createDB() {
+        sqLiteDatabase = openOrCreateDatabase(dbTableName, MODE_PRIVATE, null);
+        String querie = "create table if not exists " + dbTableName + "( id integer PRIMARY KEY autoincrement, " +
+                " mon integer, tue integer, wed integer, thu integer, fri integer, sat integer, sun integer, " +
+                "prov text, subProv text, time1 integer, time2 integer, time3 integer, time4 integer," +
+                " time5 integer, time6 integer, precipitation integer, alarmPoint integer, setHour integer, setMinute integer)";
+        sqLiteDatabase.execSQL(querie);
+    }
+
+    public void dataInsertToDB() {
+        /*
+        아래 Fragment에서 담아온 놈들을 검증한 후 아래 String value 에 담으면 됨.
+        boolean[] dayListFromFragment; -> true or false
+        String[] locationListFromFragment; ->String 으로 받아옴
+        boolean[] timeListFromFragment; -> true or false
+        int precipitationFromFragment; -> 30, 50, 70
+        int alarmPointFromFragment; -> 1 : a day ahead , 2 : on the very day
+        int pickedHourFromFragment; -> int
+        int pickedMinuteFromFragment; -> int
+        */
+
+        String values = "1, 2, 3, 4, 5, 6, 7, '서울', '경기', 1, 2, 3, 4, 5, 6, 100, 1, 1, 2"; //테스트
+        String querie = "insert into " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, " +
+                "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
+                " values ( " + values + " )";
+        sqLiteDatabase.execSQL(querie);
     }
 }
