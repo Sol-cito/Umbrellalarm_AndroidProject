@@ -1,6 +1,7 @@
 package com.example.umbrellaapplicationproject;
 
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -188,9 +189,9 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
         fragment_alarmSetting.throwData();
-        dataInsertToDB();
+//        dataInsertToDB();
+        selectDB();
     }
-
     /* Data receiver method from fragment*/
     @Override
     public void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList, int precipitation,
@@ -211,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         fragment_alarmSetting.cancelAlarmSetting();
     }
 
+    /* DB create */
     public void createDB() {
         sqLiteDatabase = openOrCreateDatabase(dbTableName, MODE_PRIVATE, null);
         String querie = "create table if not exists " + dbTableName + "( id integer PRIMARY KEY autoincrement, " +
@@ -223,19 +225,56 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
     public void dataInsertToDB() {
         /*
         아래 Fragment에서 담아온 놈들을 검증한 후 아래 String value 에 담으면 됨.
-        boolean[] dayListFromFragment; -> true or false
+        boolean[] dayListFromFragment; -> true(1) or false(0)
         String[] locationListFromFragment; ->String 으로 받아옴
-        boolean[] timeListFromFragment; -> true or false
+        boolean[] timeListFromFragment; -> true(1) or false(0)
         int precipitationFromFragment; -> 30, 50, 70
         int alarmPointFromFragment; -> 1 : a day ahead , 2 : on the very day
         int pickedHourFromFragment; -> int
         int pickedMinuteFromFragment; -> int
         */
 
-        String values = "1, 2, 3, 4, 5, 6, 7, '서울', '경기', 1, 2, 3, 4, 5, 6, 100, 1, 1, 2"; //테스트
+        /* dayListFromFragment insert */
+        String dayList = "";
+        for (int i = 0; i < dayListFromFragment.length; i++) {
+            if (dayListFromFragment[i] == true) {
+                dayList += "1, ";
+            } else {
+                dayList += "0, ";
+            }
+        }
+        /* locationListFromFragment insert */
+        String prov = locationListFromFragment[0];
+        String subProv = locationListFromFragment[1];
+
+        /* timeListFromFragment insert */
+        String timeList = "";
+        for (int i = 0; i < timeListFromFragment.length; i++) {
+            if (timeListFromFragment[i] == true) {
+                timeList += "1, ";
+            } else {
+                timeList += "0, ";
+            }
+        }
+        String precipitation = "" + precipitationFromFragment;
+        String alarmPoint = "" + alarmPointFromFragment;
+        String hour = "" + pickedHourFromFragment;
+        String minute = "" + pickedMinuteFromFragment;
+
+        String values = dayList + "'" + prov + "', '" + subProv + "', " +
+                timeList + precipitation + ", " + alarmPoint + ", " + hour + ", " + minute;
         String querie = "insert into " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, " +
                 "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
                 " values ( " + values + " )";
         sqLiteDatabase.execSQL(querie);
+    }
+
+    /* select test */
+    public void selectDB() {
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from " + dbTableName, null);
+        Log.e("log", "레코드 개수 : " + cursor.getCount());
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToNext();
+        }
     }
 }
