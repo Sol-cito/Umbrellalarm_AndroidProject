@@ -46,6 +46,35 @@
                     android:textColor="#8C2CFF"
                     android:textSize="22sp" />
 
+                <LinearLayout
+                    android:id="@+id/addAndDeleteLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/adjustButton"
+                        android:layout_width="150sp"
+                        android:layout_height="50sp"
+                        android:layout_marginRight="40sp"
+                        android:background="@drawable/main_click_selector"
+                        android:clickable="true"
+                        android:text="수 정"
+                        android:textColor="#8C2CFF"
+                        android:textSize="22sp" />
+
+                    <Button
+                        android:id="@+id/deleteButton"
+                        android:layout_width="150sp"
+                        android:layout_height="50sp"
+                        android:background="@drawable/main_click_selector"
+                        android:clickable="true"
+                        android:text="삭 제"
+                        android:textColor="#8C2CFF"
+                        android:textSize="22sp" />
+                </LinearLayout>
             </LinearLayout>
 
             <!--<LinearLayout

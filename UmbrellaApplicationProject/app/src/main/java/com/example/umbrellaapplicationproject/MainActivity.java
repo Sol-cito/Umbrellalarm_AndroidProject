@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
     /* DataBase */
     private SQLiteDatabase sqLiteDatabase;
     private String dbTableName = "alarmData";
+
+    private LinearLayout addAndDeleteLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,8 +192,11 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
         fragment_alarmSetting.throwData();
-//        dataInsertToDB();
-        selectDB();
+        dataInsertToDB();
+        addAndDeleteLayout = findViewById(R.id.addAndDeleteLayout);
+        /* The buttons on the main hide & show */
+        addAndDeleteLayout.setVisibility(View.VISIBLE);
+        addButton.setVisibility(View.GONE);
     }
     /* Data receiver method from fragment*/
     @Override
@@ -267,14 +273,5 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
                 "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
                 " values ( " + values + " )";
         sqLiteDatabase.execSQL(querie);
-    }
-
-    /* select test */
-    public void selectDB() {
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from " + dbTableName, null);
-        Log.e("log", "레코드 개수 : " + cursor.getCount());
-        for (int i = 0; i < cursor.getCount(); i++) {
-            cursor.moveToNext();
-        }
     }
 }
