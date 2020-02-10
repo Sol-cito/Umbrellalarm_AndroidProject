@@ -3,6 +3,7 @@ package com.example.umbrellaapplicationproject;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -54,10 +55,14 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
 
     private LinearLayout addAndDeleteLayout;
 
+    /* 임시 DB삭제버튼 */
+    private Button tempDeleteButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        createDB();
 
         /*알람 세팅 프래그먼트 추가*/
         fragment_alarmSetting = new Fragment_alarmSetting();
@@ -75,7 +80,24 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
                 fragmentTransaction.commit();
             }
         });
-        createDB();
+
+        /* 임시 DB삭제 버튼 */
+        tempDeleteButton = findViewById(R.id.tempDeleteButton);
+        tempDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteDB();
+            }
+        });
+
+        /* Check if DB has been created */
+        addAndDeleteLayout = findViewById(R.id.addAndDeleteLayout);
+        Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
+        int recordCount = cursor.getCount();
+        if (recordCount > 0) {
+            buttonsHideAndShow();
+
+        }
     } // onCreate End
 
     /*뒤로 가기 버튼 2번 누를 시 종료 & 알람 세팅 프래그먼트 끄기*/
@@ -193,11 +215,9 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
         fragment_alarmSetting.throwData();
         dataInsertToDB();
-        addAndDeleteLayout = findViewById(R.id.addAndDeleteLayout);
-        /* The buttons on the main hide & show */
-        addAndDeleteLayout.setVisibility(View.VISIBLE);
-        addButton.setVisibility(View.GONE);
+        buttonsHideAndShow();
     }
+
     /* Data receiver method from fragment*/
     @Override
     public void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList, int precipitation,
@@ -273,5 +293,22 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
                 "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
                 " values ( " + values + " )";
         sqLiteDatabase.execSQL(querie);
+    }
+
+
+    public void deleteDB() {
+        String querie = "drop table " + dbTableName;
+        try {
+            sqLiteDatabase.execSQL(querie);
+        } catch (SQLiteException e) {
+            e.getStackTrace();
+            Toast.makeText(this, "테이블 다 삭제됨", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void buttonsHideAndShow() {
+        /* The buttons on the main hide & show */
+        addAndDeleteLayout.setVisibility(View.VISIBLE);
+        addButton.setVisibility(View.GONE);
     }
 }

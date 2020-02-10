@@ -10,6 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- 임시 버튼 -->
+        <Button
+            android:id="@+id/tempDeleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DB 전체 삭제" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -34,6 +41,69 @@
                 android:background="@drawable/main_layoutshape"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20sp"
+                    android:background="#000000"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/dayText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40sp"
+                        android:gravity="center"
+                        android:text="야야야야야"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/locationText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40sp"
+                        android:gravity="center"
+                        android:text="야야야야야"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/timeText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40sp"
+                        android:gravity="center"
+                        android:text="야야야야야"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/precipitationText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40sp"
+                        android:gravity="center"
+                        android:text="야야야야야"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/alarmTimeText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40sp"
+                        android:gravity="center"
+                        android:text="야야야야야"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/alarmPointText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40sp"
+                        android:gravity="center"
+                        android:text="야야야야야"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
                 <Button
                     android:id="@+id/addButton"
                     android:layout_width="150sp"
@@ -44,15 +114,16 @@
                     android:clickable="true"
                     android:text="+  추 가"
                     android:textColor="#8C2CFF"
-                    android:textSize="22sp" />
+                    android:textSize="22sp"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:id="@+id/addAndDeleteLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:orientation="horizontal">
+                    <!--                    android:visibility="gone">-->
 
                     <Button
                         android:id="@+id/adjustButton"
