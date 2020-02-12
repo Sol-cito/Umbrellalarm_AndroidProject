@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -54,6 +55,14 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
     private String dbTableName = "alarmData";
 
     private LinearLayout addAndDeleteLayout;
+    private LinearLayout dataBoard;
+
+    private TextView dayText;
+    private TextView locationText;
+    private TextView timeText;
+    private TextView precipitationText;
+    private TextView alarmTimeText;
+    private TextView alarmPointText;
 
     /* 임시 DB삭제버튼 */
     private Button tempDeleteButton;
@@ -63,6 +72,14 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createDB();
+
+        /* Data display by text */
+        dayText = findViewById(R.id.dayText);
+        locationText = findViewById(R.id.locationText);
+        timeText = findViewById(R.id.timeText);
+        precipitationText = findViewById(R.id.precipitationText);
+        alarmTimeText = findViewById(R.id.alarmTimeText);
+        alarmPointText = findViewById(R.id.alarmPointText);
 
         /*알람 세팅 프래그먼트 추가*/
         fragment_alarmSetting = new Fragment_alarmSetting();
@@ -91,13 +108,14 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         });
 
         /* Check if DB has been created */
+        dataBoard = findViewById(R.id.dataBoard);
         addAndDeleteLayout = findViewById(R.id.addAndDeleteLayout);
         Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
         int recordCount = cursor.getCount();
         if (recordCount > 0) {
-            buttonsHideAndShow();
-        }else{
-            Toast.makeText(this, "레코드 숫자 0", Toast.LENGTH_SHORT).show();
+            addAndDeleteHideAndShow(true);
+        } else {
+            addAndDeleteHideAndShow(false);
         }
     } // onCreate End
 
@@ -217,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
         fragment_alarmSetting.throwData();
         dataInsertToDB();
-        buttonsHideAndShow();
+        addAndDeleteHideAndShow(true);
     }
 
     /* Data receiver method from fragment*/
@@ -295,8 +313,22 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
                 "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
                 " values ( " + values + " )";
         sqLiteDatabase.execSQL(querie);
+        selectDB();
     }
 
+    public void selectDB() {
+        /* 데이터 조회 후 얘네 넣으면 됨
+        dayText
+        locationText
+        timeText
+        precipitationText
+        alarmTimeText
+        alarmPointText
+        */
+        Cursor cursor = sqLiteDatabase.rawQuery("select precipitation from " + dbTableName, null);
+        cursor.moveToNext();
+        precipitationText.setText("설정 강수량 : " + cursor.getString(0) + "%");
+    }
 
     public void deleteDB() {
         String querie = "drop table " + dbTableName;
@@ -308,9 +340,21 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         }
     }
 
-    public void buttonsHideAndShow() {
+    public void addAndDeleteHideAndShow(boolean check) {
         /* The buttons on the main hide & show */
-        addAndDeleteLayout.setVisibility(View.VISIBLE);
-        addButton.setVisibility(View.GONE);
+        if (check == true) { // DB에 데이터 있을 때
+            addAndDeleteLayout.setVisibility(View.VISIBLE);
+            dataBoard.setVisibility(View.VISIBLE);
+            addButton.setVisibility(View.GONE);
+            showingDataOnDisplay();
+        } else {
+            addAndDeleteLayout.setVisibility(View.GONE);
+            dataBoard.setVisibility(View.GONE);
+            addButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void showingDataOnDisplay() {
+        selectDB();
     }
 }

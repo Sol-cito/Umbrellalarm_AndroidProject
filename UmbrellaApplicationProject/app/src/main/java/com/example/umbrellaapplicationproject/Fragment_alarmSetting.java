@@ -1,6 +1,7 @@
 package com.example.umbrellaapplicationproject;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;

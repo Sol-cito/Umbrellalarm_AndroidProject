@@ -42,6 +42,7 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/dataBoard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="20sp"
@@ -114,8 +115,7 @@
                     android:clickable="true"
                     android:text="+  추 가"
                     android:textColor="#8C2CFF"
-                    android:textSize="22sp"
-                    android:visibility="gone" />
+                    android:textSize="22sp" />
 
                 <LinearLayout
                     android:id="@+id/addAndDeleteLayout"
