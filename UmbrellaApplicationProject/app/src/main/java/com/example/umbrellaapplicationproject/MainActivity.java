@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         int recordCount = cursor.getCount();
         if (recordCount > 0) {
             buttonsHideAndShow();
-
+        }else{
+            Toast.makeText(this, "레코드 숫자 0", Toast.LENGTH_SHORT).show();
         }
     } // onCreate End
 
@@ -174,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
         fragment_alarmSetting.scrollUptotheTop();
+
     }
 
     /* Method for getting the current time */
