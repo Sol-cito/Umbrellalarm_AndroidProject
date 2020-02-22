@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
     /* 임시 DB삭제버튼 */
     private Button tempDeleteButton;
 
-    private Button test2;
+    private Button test2    ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
