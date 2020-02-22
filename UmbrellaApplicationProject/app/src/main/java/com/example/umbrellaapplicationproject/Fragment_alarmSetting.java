@@ -95,21 +95,9 @@ public class Fragment_alarmSetting extends Fragment {
     /* timePicker vars */
     private TimePicker timePicker;
 
-    /* Interface to deliver setting data to MainActivity */
-    public interface ThrowData {
-        void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList, int precipitation,
-                         int alarmPoint, int pickedHour, int pickedMinute);
-    }
+    /* DB */
+    private String dbTableName = "alarmData";
 
-    private ThrowData throwData;
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        throwData = (ThrowData) getActivity();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
@@ -378,9 +366,9 @@ public class Fragment_alarmSetting extends Fragment {
                 timeList[5] = bool_time_ninePMToTwelve;
 
                 ((MainActivity) getActivity()).setDialogForSetting();
+                dataInsertToDB();
             }
         });
-
 
         timePicker = rootView.findViewById(R.id.timePicker);
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
@@ -409,11 +397,6 @@ public class Fragment_alarmSetting extends Fragment {
         } else {
             return true;
         }
-    }
-
-    /* Method for the MainActivity to get the data set from the fragment*/
-    public void throwData() {
-        throwData.receiveData(dayList, locationList, timeList, precipitation, alarmPoint, pickedHour, pickedMinute);
     }
 
     /* Method for scrolling up the the top of the fragment (called by the MainActivity) */
@@ -489,5 +472,37 @@ public class Fragment_alarmSetting extends Fragment {
 
         checkLocationSelection = false;
         location_province.setSelection(0);
+    }
+
+    public void dataInsertToDB() {
+        /* dayList insert */
+        String dayListResult = "";
+        for (int i = 0; i < dayList.length; i++) {
+            if (dayList[i] == true) {
+                dayListResult += "1, ";
+            } else {
+                dayListResult += "0, ";
+            }
+        }
+        /* location insert */
+        String prov = locationList[0];
+        String subProv = locationList[1];
+
+        /* timeList insert */
+        String timeListResult = "";
+        for (int i = 0; i < timeList.length; i++) {
+            if (timeList[i] == true) {
+                timeListResult += "1, ";
+            } else {
+                timeListResult += "0, ";
+            }
+        }
+        String values = dayListResult + "'" + prov + "', '" + subProv + "', " +
+                timeListResult + precipitation + ", " + alarmPoint + ", " + pickedHour + ", " + pickedMinute;
+        String querie = "insert into " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, " +
+                "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
+                " values ( " + values + " )";
+        SQLiteDatabase sqLiteDatabase = ((MainActivity) getActivity()).sqLiteDatabaseGetter();
+        sqLiteDatabase.execSQL(querie);
     }
 }

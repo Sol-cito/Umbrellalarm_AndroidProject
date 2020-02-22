@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements Fragment_alarmSetting.ThrowData {
+public class MainActivity extends AppCompatActivity {
     private Button addButton;
     private Fragment_alarmSetting fragment_alarmSetting;
     private long lastBackPresseed = 0;
@@ -37,15 +37,6 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
     /* 강수확률 request 관련 변수*/
     private String currentDate;
     private String currentTime;
-
-    /* 프래그먼트로부터 받은 데이터 */
-    private boolean[] dayListFromFragment;
-    private String[] locationListFromFragment;
-    private boolean[] timeListFromFragment;
-    private int precipitationFromFragment;
-    private int alarmPointFromFragment;
-    private int pickedHourFromFragment;
-    private int pickedMinuteFromFragment;
 
     /* Korean Weather API service Key */
     private static final String SERVICE_KEY = "c1g26jTnByGW5kb0HXyLjLfpLsO%2FcByKq4WxxOygJ2GBxWCHOVvFPVSbrHJ6LY2uMqkHDT7kkLVAUKyit3ykEg%3D%3D";
@@ -57,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
     private LinearLayout addAndDeleteLayout;
     private LinearLayout dataBoard;
 
+    /* Display Data from DB */
     private TextView dayText;
     private TextView locationText;
     private TextView timeText;
@@ -66,8 +58,6 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
 
     /* 임시 DB삭제버튼 */
     private Button tempDeleteButton;
-
-    private Button thisIsBranch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,7 +159,8 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
                 scrollUptotheTopOfFragmentDisplay();
                 setAlarm(); //volley 호출
                 getCurrentDateAndTime(); //현재 시간 얻기
-                getDataFromFragment();
+                addAndDeleteHideAndShow(true);
+                finishFragment();
                 /* 예 누르면 다른 함수 호출 -> 이 함수가 프래그먼트에서 값 가져오도록*/
             }
         });
@@ -232,28 +223,6 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         requestQueue.add(stringRequest);
     }
 
-    public void getDataFromFragment() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
-        fragment_alarmSetting.throwData();
-        dataInsertToDB();
-        addAndDeleteHideAndShow(true);
-    }
-
-    /* Data receiver method from fragment*/
-    @Override
-    public void receiveData(boolean[] dayList, String[] locationList, boolean[] timeList, int precipitation,
-                            int alarmPoint, int pickedHour, int pickedMinute) {
-        dayListFromFragment = dayList;
-        locationListFromFragment = locationList;
-        timeListFromFragment = timeList;
-        precipitationFromFragment = precipitation;
-        alarmPointFromFragment = alarmPoint;
-        pickedHourFromFragment = pickedHour;
-        pickedMinuteFromFragment = pickedMinute;
-        finishFragment();
-    }
-
     public void cancelAlarmSetting() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
@@ -270,66 +239,80 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
         sqLiteDatabase.execSQL(querie);
     }
 
-    public void dataInsertToDB() {
-        /*
-        아래 Fragment에서 담아온 놈들을 검증한 후 아래 String value 에 담으면 됨.
-        boolean[] dayListFromFragment; -> true(1) or false(0)
-        String[] locationListFromFragment; ->String 으로 받아옴
-        boolean[] timeListFromFragment; -> true(1) or false(0)
-        int precipitationFromFragment; -> 30, 50, 70
-        int alarmPointFromFragment; -> 1 : a day ahead , 2 : on the very day
-        int pickedHourFromFragment; -> int
-        int pickedMinuteFromFragment; -> int
-        */
-
-        /* dayListFromFragment insert */
-        String dayList = "";
-        for (int i = 0; i < dayListFromFragment.length; i++) {
-            if (dayListFromFragment[i] == true) {
-                dayList += "1, ";
-            } else {
-                dayList += "0, ";
-            }
-        }
-        /* locationListFromFragment insert */
-        String prov = locationListFromFragment[0];
-        String subProv = locationListFromFragment[1];
-
-        /* timeListFromFragment insert */
-        String timeList = "";
-        for (int i = 0; i < timeListFromFragment.length; i++) {
-            if (timeListFromFragment[i] == true) {
-                timeList += "1, ";
-            } else {
-                timeList += "0, ";
-            }
-        }
-        String precipitation = "" + precipitationFromFragment;
-        String alarmPoint = "" + alarmPointFromFragment;
-        String hour = "" + pickedHourFromFragment;
-        String minute = "" + pickedMinuteFromFragment;
-
-        String values = dayList + "'" + prov + "', '" + subProv + "', " +
-                timeList + precipitation + ", " + alarmPoint + ", " + hour + ", " + minute;
-        String querie = "insert into " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, " +
-                "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
-                " values ( " + values + " )";
-        sqLiteDatabase.execSQL(querie);
-        selectDB();
-    }
-
     public void selectDB() {
-        /* 데이터 조회 후 얘네 넣으면 됨
-        dayText
-        locationText
-        timeText
-        precipitationText
-        alarmTimeText
-        alarmPointText
-        */
-        Cursor cursor = sqLiteDatabase.rawQuery("select precipitation from " + dbTableName, null);
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from " + dbTableName, null);
         cursor.moveToNext();
-        precipitationText.setText("설정 강수량 : " + cursor.getString(0) + "%");
+
+        /* set days */
+        String setDays = "설정 요일 : ";
+        for (int i = 1; i <= 7; i++) {
+            if (cursor.getInt(i) == 1) {
+                if (i == 1) {
+                    setDays += "월 ";
+                } else if (i == 2) {
+                    setDays += "화 ";
+                } else if (i == 3) {
+                    setDays += "수 ";
+                } else if (i == 4) {
+                    setDays += "목 ";
+                } else if (i == 5) {
+                    setDays += "금 ";
+                } else if (i == 6) {
+                    setDays += "토 ";
+                } else {
+                    setDays += "일 ";
+                }
+            }
+        }
+        dayText.setText(setDays);
+
+        /* set location */
+        String setLocation = cursor.getString(8) + " " + cursor.getString(9);
+        locationText.setText(setLocation);
+
+        /* set timeText */
+        String setTimeText = "";
+        for (int i = 10; i <= 15; i++) {
+            if (cursor.getInt(i) == 1) {
+                if (i == 10) {
+                    setTimeText += "6AM - 9AM ";
+                } else if (i == 11) {
+                    setTimeText += "9AM - 12PM ";
+                } else if (i == 12) {
+                    setTimeText += "12PM - 3PM";
+                } else if (i == 13) {
+                    setTimeText += "3PM - 6PM";
+                } else if (i == 14) {
+                    setTimeText += "6PM - 9PM";
+                } else {
+                    setTimeText += "9PM - 12AM";
+                }
+            }
+        }
+        timeText.setText(setTimeText);
+
+        /* set precipitation */
+        precipitationText.setText("설정 강수량 : " + cursor.getString(16) + "%");
+
+        /*alarmPointText*/
+        int setPoint = cursor.getInt(17);
+        if (setPoint == 1) {
+            alarmPointText.setText("알람 전날");
+        } else {
+            alarmPointText.setText("알람 당일");
+        }
+
+        /*alarmTimeText*/
+        String setHour = "";
+        int intHour = cursor.getInt(18);
+        if (intHour - 13 < 0) {
+            setHour = "오전 " + intHour + "시";
+        } else {
+            intHour -= 12;
+            setHour = "오후 " + intHour + "시";
+        }
+        int setMinute = cursor.getInt(19);
+        alarmTimeText.setText(setHour + setMinute + "분");
     }
 
     public void deleteDB() {
@@ -358,5 +341,10 @@ public class MainActivity extends AppCompatActivity implements Fragment_alarmSet
 
     public void showingDataOnDisplay() {
         selectDB();
+    }
+
+    /*Method for the fragment to get SQLiteDatabase */
+    public SQLiteDatabase sqLiteDatabaseGetter() {
+        return sqLiteDatabase;
     }
 }
