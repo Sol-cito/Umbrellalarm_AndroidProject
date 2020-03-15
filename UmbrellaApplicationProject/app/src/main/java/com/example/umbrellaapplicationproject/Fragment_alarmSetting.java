@@ -1,10 +1,15 @@
+/*
+
+현재 버그 리스트(프래그먼트)
+1. timePicker 안건들면 DB에 들어가는 값이 0시 0분임 -> 현재 API로는 setHour, setMinute 안먹힘
+
+ */
+
+
 package com.example.umbrellaapplicationproject;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,13 +25,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 
 public class Fragment_alarmSetting extends Fragment {
     private LinearLayout frag_mainLayout;
@@ -118,7 +118,8 @@ public class Fragment_alarmSetting extends Fragment {
         frag_backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) getActivity()).setDialogBuilder();
+                ((MainActivity) getActivity()).setDialogBuilder(1);
+                // if user clicks the back button on the left-top, parameter is 1,
             }
         });
 

@@ -126,7 +126,7 @@
                     <!--                    android:visibility="gone">-->
 
                     <Button
-                        android:id="@+id/adjustButton"
+                        android:id="@+id/modifyButton"
                         android:layout_width="150sp"
                         android:layout_height="50sp"
                         android:layout_marginRight="40sp"

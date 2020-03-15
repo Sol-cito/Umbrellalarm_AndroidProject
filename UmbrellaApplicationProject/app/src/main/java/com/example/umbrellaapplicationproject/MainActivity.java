@@ -1,6 +1,19 @@
+/*
+
+현재 버그 리스트 (메인액티비티)
+1. 메인액티비티의 onCreate 에서 createDB() 메소드가 작동한다. 즉,
+DB삭제(tmp)버튼을 누르면 table 자체가 drop되어서, 그 다음에 프래그먼트로 간 다음 데이터를 insert하려 해도
+테이블 자체가 없으니 에러남   -> 이건 걍 tmp button 때문에 그럼. '삭제'버튼은 이런 현상 없음.
+2. Activity finish 하고 다시 intent로 받아오는거 animation이 너무 별로임...
+
+ */
+
+
 package com.example.umbrellaapplicationproject;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -59,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
     /* 임시 DB삭제버튼 */
     private Button tempDeleteButton;
 
+    /* Delete & Modify Buttons */
+    private Button deleteButton;
+    private Button modifyButton;
+
     private Button testBranch;
 
     @Override
@@ -101,6 +118,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /* Delete buttons function */
+        deleteButton = findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDialogBuilder(2);
+            }
+        });
+
+        modifyButton = findViewById(R.id.modifyButton);
+        modifyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDialogBuilder(3);
+            }
+        });
+
         /* Check if DB has been created */
         dataBoard = findViewById(R.id.dataBoard);
         addAndDeleteLayout = findViewById(R.id.addAndDeleteLayout);
@@ -117,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (fragment_alarmSetting.isAdded()) {// 알람세팅 프래그먼트에서 뒤로가기 누를 때
-            setDialogBuilder();
+            setDialogBuilder(1);
             return;
         }
         if (lastBackPresseed + 2000 < System.currentTimeMillis()) {
@@ -128,27 +162,78 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setDialogBuilder() {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle("알람 세팅 취소");
-        alertDialogBuilder.setMessage("우산알라미 설정을 취소하시겠습니까?");
-        alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                scrollUptotheTopOfFragmentDisplay();
-                cancelAlarmSetting();
-                finishFragment();
-            }
-        });
-        alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        alertDialogBuilder.show();
+    public void setDialogBuilder(int inputCase) {
+        if (inputCase == 0) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("알람 세팅 취소");
+            alertDialogBuilder.setMessage("우산알라미 설정을 취소하시겠습니까?");
+            alertDialogBuilder.setCancelable(false);
+            alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    scrollUptotheTopOfFragmentDisplay();
+                    cancelAlarmSetting();
+                    finishFragment();
+                }
+            });
+            alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            alertDialogBuilder.show();
+        }
+        if (inputCase == 2) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("알람 삭제");
+            alertDialogBuilder.setMessage("설정된 알람을 삭제하시겠습니까?");
+            alertDialogBuilder.setCancelable(false);
+            alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteDB();
+                    recreate();
+                }
+            });
+            alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            alertDialogBuilder.show();
+        }
+        if (inputCase == 3) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("알람 설정 수정");
+            alertDialogBuilder.setMessage("우산알라미 설정을 수정하시겠습니까?");
+            alertDialogBuilder.setCancelable(false);
+            alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.container, fragment_alarmSetting, "fragment");
+                    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    fragmentTransaction.commit();
+                    /*
+                    * 수정 시 DB에 있는 데이터 Fragment에 넘기고, 그 Data대로 Fragment의 버튼이 선택되어있어야 함.
+                    * 또한, 수정 완료 후 '저장'을 눌렀을 때 기존 DB insert가 아닌 update 쿼리를 타야함!
+                    */
+
+                }
+            });
+            alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            alertDialogBuilder.show();
+        }
     }
+
 
     public void setDialogForSetting() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -208,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
         String url = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?"
                 + "serviceKey=" + SERVICE_KEY +
                 "&base_date=20191221&base_time=1430&nx=55&ny=127&_type=json";
-        Log.e("log", url);
+//        Log.e("log", url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -318,6 +403,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void deleteDB() {
+        Toast.makeText(this, "DB를 삭제함", Toast.LENGTH_SHORT).show();
         String querie = "drop table " + dbTableName;
         try {
             sqLiteDatabase.execSQL(querie);
