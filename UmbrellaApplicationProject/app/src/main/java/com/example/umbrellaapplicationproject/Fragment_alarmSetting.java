@@ -8,8 +8,11 @@
 
 package com.example.umbrellaapplicationproject;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -97,12 +100,24 @@ public class Fragment_alarmSetting extends Fragment {
 
     /* DB */
     private String dbTableName = "alarmData";
+    private SQLiteDatabase sqLiteDatabase;
+    private String isDataInserted;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_alarm_setting, container, false);
         scrollView = rootView.findViewById(R.id.scrollView);
+
+        /* When attached, verify if there is DB already inserted */
+        sqLiteDatabase = ((MainActivity) getActivity()).sqLiteDatabaseGetter();
+        Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
+        int recordCount = cursor.getCount();
+        if (recordCount > 0) {
+            //DB 있는것
+        } else {
+            //DB 없는것
+        }
 
         /* 뒤 액티비티 버튼 클릭 방지*/
         frag_mainLayout = rootView.findViewById(R.id.frag_mainLayout);
@@ -370,8 +385,16 @@ public class Fragment_alarmSetting extends Fragment {
                 dataInsertToDB();
             }
         });
-
+        /* if onTimeChanged is not called, default hour and minute are selected */
         timePicker = rootView.findViewById(R.id.timePicker);
+        if (Build.VERSION.SDK_INT >= 23) {
+            pickedHour = timePicker.getHour();
+            pickedMinute = timePicker.getMinute();
+        } else {
+            pickedHour = timePicker.getCurrentHour();
+            pickedMinute = timePicker.getCurrentMinute();
+        }
+        /* otherwise */
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
@@ -503,7 +526,7 @@ public class Fragment_alarmSetting extends Fragment {
         String querie = "insert into " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, " +
                 "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
                 " values ( " + values + " )";
-        SQLiteDatabase sqLiteDatabase = ((MainActivity) getActivity()).sqLiteDatabaseGetter();
+        sqLiteDatabase = ((MainActivity) getActivity()).sqLiteDatabaseGetter();
         sqLiteDatabase.execSQL(querie);
     }
 }
