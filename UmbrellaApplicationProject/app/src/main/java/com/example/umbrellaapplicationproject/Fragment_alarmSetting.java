@@ -101,23 +101,12 @@ public class Fragment_alarmSetting extends Fragment {
     /* DB */
     private String dbTableName = "alarmData";
     private SQLiteDatabase sqLiteDatabase;
-    private String isDataInserted;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_alarm_setting, container, false);
         scrollView = rootView.findViewById(R.id.scrollView);
-
-        /* When attached, verify if there is DB already inserted */
-        sqLiteDatabase = ((MainActivity) getActivity()).sqLiteDatabaseGetter();
-        Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
-        int recordCount = cursor.getCount();
-        if (recordCount > 0) {
-            //DB 있는것
-        } else {
-            //DB 없는것
-        }
 
         /* 뒤 액티비티 버튼 클릭 방지*/
         frag_mainLayout = rootView.findViewById(R.id.frag_mainLayout);
@@ -326,9 +315,9 @@ public class Fragment_alarmSetting extends Fragment {
         radioGroupOfPrecipitation.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == 1) {
+                if (checkedId == R.id.precipitationRadioButtonAbove30) {
                     precipitation = 30;
-                } else if (checkedId == 2) {
+                } else if (checkedId == R.id.precipitationRadioButtonAbove50) {
                     precipitation = 50;
                 } else {
                     precipitation = 70;
@@ -343,7 +332,7 @@ public class Fragment_alarmSetting extends Fragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // 4: 알람 전날, 5: 알람 당일
-                if (checkedId == 4) {
+                if (checkedId == R.id.alarmPointRadioButtonBeforehand) {
                     alarmPoint = 1;
                 } else {
                     alarmPoint = 2;
@@ -402,8 +391,60 @@ public class Fragment_alarmSetting extends Fragment {
                 pickedMinute = minute;
             }
         });
+        /***********************************수정중*************************/
+        /* When attached, verify if there is DB already inserted */
+        sqLiteDatabase = ((MainActivity) getActivity()).sqLiteDatabaseGetter();
+        Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
+        int recordCount = cursor.getCount();
+        if (recordCount > 0) {
+            // if DB exists
+            setFragmentDatawhenDBexists(sqLiteDatabase);
+
+            colorChangeOnClick(button_wednesday, false);
+            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove30);
+            timePicker.setCurrentHour(5);
+            timePicker.setCurrentMinute(55);
+        }
+
         return rootView;
     }
+
+    public void setFragmentDatawhenDBexists(SQLiteDatabase sqLiteDatabase) {
+        // 요일 data 설정 끝
+        String querie = "SELECT " + "mon, tue, wed, thu, fri, sat, sun FROM " + dbTableName;
+        Cursor cursor = sqLiteDatabase.rawQuery(querie, null);
+        cursor.moveToNext();
+        // DB에 1인 요일을 dayList에 true로 만들어야 함과 동시에, 색을 설정함 //
+        for (int i = 0; i < 7; i++) {
+            if (cursor.getInt(i) == 1) {
+                dayList[i] = true;
+                if (i == 0) {
+                    colorChangeOnClick(button_monday, false);
+                    bol_monday = switchBolean(bol_monday);
+                } else if (i == 1) {
+                    colorChangeOnClick(button_tuesday, false);
+                    bol_tuesday = switchBolean(bol_tuesday);
+                } else if (i == 2) {
+                    colorChangeOnClick(button_wednesday, false);
+                    bol_wednesday = switchBolean(bol_wednesday);
+                } else if (i == 3) {
+                    colorChangeOnClick(button_thursday, false);
+                    bol_thursday = switchBolean(bol_thursday);
+                } else if (i == 4) {
+                    colorChangeOnClick(button_friday, false);
+                    bol_friday = switchBolean(bol_friday);
+                } else if (i == 5) {
+                    colorChangeOnClick(button_saturday, false);
+                    bol_saturday = switchBolean(bol_saturday);
+                } else {
+                    colorChangeOnClick(button_sunday, false);
+                    bol_sunday = switchBolean(bol_sunday);
+                }
+            }
+        }
+        //=========요일 설정 끝. 나머지 Data들도 설정하면 됨 ===//
+    }
+
 
     /* 요일, 날짜 버튼 클릭 시 색 변경 메소드*/
     public void colorChangeOnClick(Button intputButton, Boolean dayBoolean) {

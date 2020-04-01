@@ -76,8 +76,6 @@ public class MainActivity extends AppCompatActivity {
     private Button deleteButton;
     private Button modifyButton;
 
-    private Button testBranch;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "우산알라미를 추가합니다", Toast.LENGTH_SHORT).show();
-                attachFragment();
+                replaceFragment();
             }
         });
 
@@ -138,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
         int recordCount = cursor.getCount();
         if (recordCount > 0) {
             addAndDeleteHideAndShow(true);
+            /* if DB exists, premtively add Fragment */
+//            addFragment();
         } else {
             addAndDeleteHideAndShow(false);
         }
@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
             alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    attachFragment();
+                    replaceFragment();
                     /*
                      * 수정 시 DB에 있는 데이터 Fragment에 넘기고, 그 Data대로 Fragment의 버튼이 선택되어있어야 함.
                      * 또한, 수정 완료 후 '저장'을 눌렀을 때 기존 DB insert가 아닌 update 쿼리를 타야함!
@@ -251,6 +251,15 @@ public class MainActivity extends AppCompatActivity {
         alertDialogBuilder.show();
     }
 
+    public void addFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(fragment_alarmSetting, "fragment");
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        fragmentTransaction.commit();
+    }
+
+
     public void removeFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -259,15 +268,13 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    public void attachFragment() {
+    public void replaceFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.attach(fragment_alarmSetting);
+        fragmentTransaction.replace(R.id.container, fragment_alarmSetting, "fragment");
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         fragmentTransaction.commit();
     }
-
-
 
     /* calling scollUpToTheTop method of the Fragment */
     public void scrollUptotheTopOfFragmentDisplay() {
@@ -384,6 +391,8 @@ public class MainActivity extends AppCompatActivity {
 
         /*alarmPointText*/
         int setPoint = cursor.getInt(17);
+        Log.e("log", "셋 포인트 : "+setPoint);
+
         if (setPoint == 1) {
             alarmPointText.setText("알람 전날");
         } else {
