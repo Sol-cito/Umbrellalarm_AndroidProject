@@ -362,8 +362,9 @@ public class MainActivity extends AppCompatActivity {
         dayText.setText(setDays);
 
         /* set location */
-        String setLocation = cursor.getString(8) + " " + cursor.getString(9);
-        locationText.setText(setLocation);
+        String getProvince = cursor.getString(8);
+        String getSubProvince = cursor.getString(9).substring(1);
+        locationText.setText(getProvince+ " " +getSubProvince);
 
         /* set timeText */
         String setTimeText = "";
@@ -391,7 +392,6 @@ public class MainActivity extends AppCompatActivity {
 
         /*alarmPointText*/
         int setPoint = cursor.getInt(17);
-        Log.e("log", "셋 포인트 : "+setPoint);
 
         if (setPoint == 1) {
             alarmPointText.setText("알람 전날");

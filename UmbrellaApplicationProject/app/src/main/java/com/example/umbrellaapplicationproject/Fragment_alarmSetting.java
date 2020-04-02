@@ -281,7 +281,8 @@ public class Fragment_alarmSetting extends Fragment {
                 } else {
                     checkLocationSelection = true;
                     locationList[0] = "서울";
-                    locationList[1] = location_seoul.getSelectedItem().toString();
+                    /* put the position number together as an index */
+                    locationList[1] = position + location_seoul.getSelectedItem().toString();
                 }
             }
 
@@ -299,7 +300,8 @@ public class Fragment_alarmSetting extends Fragment {
                 } else {
                     checkLocationSelection = true;
                     locationList[0] = "경기";
-                    locationList[1] = location_kyeunggi.getSelectedItem().toString();
+                    /* put the position number together as an index */
+                    locationList[1] = position + location_kyeunggi.getSelectedItem().toString();
                 }
             }
 
@@ -410,30 +412,32 @@ public class Fragment_alarmSetting extends Fragment {
     }
 
     public void setFragmentDatawhenDBexists(SQLiteDatabase sqLiteDatabase) {
-        // 요일 data 설정 끝
-        String querie = "SELECT " + "mon, tue, wed, thu, fri, sat, sun FROM " + dbTableName;
+        String querie = "SELECT * FROM " + dbTableName;
         Cursor cursor = sqLiteDatabase.rawQuery(querie, null);
         cursor.moveToNext();
-        // DB에 1인 요일을 dayList에 true로 만들어야 함과 동시에, 색을 설정함 //
-        for (int i = 0; i < 7; i++) {
+        /*
+         * set days and switch the color of the buttons
+         * The number of day columns is seven starting from the index of 1
+         */
+        for (int i = 1; i < 8; i++) {
             if (cursor.getInt(i) == 1) {
-                dayList[i] = true;
-                if (i == 0) {
+                dayList[i - 1] = true;
+                if (i == 1) {
                     colorChangeOnClick(button_monday, false);
                     bol_monday = switchBolean(bol_monday);
-                } else if (i == 1) {
+                } else if (i == 2) {
                     colorChangeOnClick(button_tuesday, false);
                     bol_tuesday = switchBolean(bol_tuesday);
-                } else if (i == 2) {
+                } else if (i == 3) {
                     colorChangeOnClick(button_wednesday, false);
                     bol_wednesday = switchBolean(bol_wednesday);
-                } else if (i == 3) {
+                } else if (i == 4) {
                     colorChangeOnClick(button_thursday, false);
                     bol_thursday = switchBolean(bol_thursday);
-                } else if (i == 4) {
+                } else if (i == 5) {
                     colorChangeOnClick(button_friday, false);
                     bol_friday = switchBolean(bol_friday);
-                } else if (i == 5) {
+                } else if (i == 6) {
                     colorChangeOnClick(button_saturday, false);
                     bol_saturday = switchBolean(bol_saturday);
                 } else {
@@ -441,8 +445,22 @@ public class Fragment_alarmSetting extends Fragment {
                     bol_sunday = switchBolean(bol_sunday);
                 }
             }
+            /* set location and display of the spinner */
+            String getProvince = cursor.getString(8);
+            String getSubProv = cursor.getString(9);
+            locationList[0] = getProvince;
+            locationList[1] = getSubProv;
+            if (getProvince.charAt(0) == '서') {
+                location_province.setSelection(1);
+                int subProvIndex = getSubProv.charAt(0) - '0'; // Numbers in Char start from ASC|| code 48
+                location_seoul.setSelection(subProvIndex);
+            } else {
+                location_province.setSelection(2);
+                int subProvIndex = getSubProv.charAt(0) - '0'; // Numbers in Char start from ASC|| code 48
+                location_kyeunggi.setSelection(subProvIndex);
+            }
         }
-        //=========요일 설정 끝. 나머지 Data들도 설정하면 됨 ===//
+        //=========요일/province 설정 끝. 나머지 Data들도 설정하면 됨 ===//
     }
 
 
