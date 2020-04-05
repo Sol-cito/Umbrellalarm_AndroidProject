@@ -38,33 +38,22 @@ public class Fragment_alarmSetting extends Fragment {
 
     /* 요일 버튼 및 boolean */
     private Button button_monday;
-    private boolean bol_monday;
     private Button button_tuesday;
-    private boolean bol_tuesday;
     private Button button_wednesday;
-    private boolean bol_wednesday;
     private Button button_thursday;
-    private boolean bol_thursday;
     private Button button_friday;
-    private boolean bol_friday;
     private Button button_saturday;
-    private boolean bol_saturday;
     private Button button_sunday;
-    private boolean bol_sunday;
+    private Button[] dayButtonArr;
 
     /* 시간 버튼 및 boolean*/
     private Button time_sixAMToNine;
-    private boolean bool_time_sixAMToNine;
     private Button time_nineAMToTwelve;
-    private boolean bool_time_nineAMToTwelve;
     private Button time_twelveToThree;
-    private boolean bool_time_twelveToThree;
     private Button time_threeToSix;
-    private boolean bool_time_threeToSix;
     private Button time_sixToNine;
-    private boolean bool_time_sixToNine;
     private Button time_ninePMToTwelve;
-    private boolean bool_time_ninePMToTwelve;
+    private Button[] timeButtonArr;
 
     /* precipitation radio */
     private RadioGroup radioGroupOfPrecipitation;
@@ -87,13 +76,16 @@ public class Fragment_alarmSetting extends Fragment {
     private TextView valid_alarmTime;
 
     /* Data sets to transfer to MainActivity / to save in DB */
-    private boolean[] dayList = new boolean[7];
+    private boolean[] dayList;
     private String[] locationList = new String[2];
-    private boolean[] timeList = new boolean[6];
+    private boolean[] timeList;
     private int precipitation;
     private int alarmPoint; //0 : default, 1 : a day ahead , 2 : on the very day
     private int pickedHour;
     private int pickedMinute;
+
+    /* boolean whether DB exists */
+    private boolean DBexist;
 
     /* timePicker vars */
     private TimePicker timePicker;
@@ -107,6 +99,11 @@ public class Fragment_alarmSetting extends Fragment {
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_alarm_setting, container, false);
         scrollView = rootView.findViewById(R.id.scrollView);
+
+        /* When attached, verify if there is DB already inserted */
+        sqLiteDatabase = ((MainActivity) getActivity()).sqLiteDatabaseGetter();
+        Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
+        DBexist = cursor.moveToFirst(); // when no DB, false will be returned
 
         /* 뒤 액티비티 버튼 클릭 방지*/
         frag_mainLayout = rootView.findViewById(R.id.frag_mainLayout);
@@ -122,122 +119,165 @@ public class Fragment_alarmSetting extends Fragment {
         frag_backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) getActivity()).setDialogBuilder(1);
-                // if user clicks the back button on the left-top, parameter is 1,
+                if (DBexist) {
+                    ((MainActivity) getActivity()).setDialogBuilder(4);
+                    // if user clicks the back button on the left-top when DB exists, parameter is 4,
+                } else {
+                    ((MainActivity) getActivity()).setDialogBuilder(1);
+                    // if user clicks the back button on the left-top when there is no DB, parameter is 1,
+                }
             }
         });
 
         /* 알람 요일 설정 관련 */
+        dayButtonArr = new Button[7];
+        /* dayList 초기화 */
+        dayList = new boolean[7];
+        for (int i = 0; i < 7; i++) {
+            dayList[i] = false;
+        }
         button_monday = rootView.findViewById(R.id.button_monday);
+        dayButtonArr[0] = button_monday;
         button_monday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(button_monday, bol_monday);
-                bol_monday = switchBolean(bol_monday);
+                colorChangeOnClick(button_monday, dayList[0]);
+                boolean switchBool = switchBoolean(dayList[0]);
+                dayList[0] = switchBool;
             }
         });
-//        button_monday.setOnTouchListener();
         button_tuesday = rootView.findViewById(R.id.button_tuesday);
+        dayButtonArr[1] = button_tuesday;
         button_tuesday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(button_tuesday, bol_tuesday);
-                bol_tuesday = switchBolean(bol_tuesday);
+                colorChangeOnClick(button_tuesday, dayList[1]);
+                boolean switchBool = switchBoolean(dayList[1]);
+                dayList[1] = switchBool;
             }
         });
         button_wednesday = rootView.findViewById(R.id.button_wednesday);
+        dayButtonArr[2] = button_wednesday;
         button_wednesday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(button_wednesday, bol_wednesday);
-                bol_wednesday = switchBolean(bol_wednesday);
+                colorChangeOnClick(button_wednesday, dayList[2]);
+                boolean switchBool = switchBoolean(dayList[2]);
+                dayList[2] = switchBool;
             }
         });
         button_thursday = rootView.findViewById(R.id.button_thursday);
+        dayButtonArr[3] = button_thursday;
         button_thursday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(button_thursday, bol_thursday);
-                bol_thursday = switchBolean(bol_thursday);
+                colorChangeOnClick(button_thursday, dayList[3]);
+                boolean switchBool = switchBoolean(dayList[3]);
+                dayList[3] = switchBool;
             }
         });
         button_friday = rootView.findViewById(R.id.button_friday);
+        dayButtonArr[4] = button_friday;
         button_friday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(button_friday, bol_friday);
-                bol_friday = switchBolean(bol_friday);
+                colorChangeOnClick(button_friday, dayList[4]);
+                boolean switchBool = switchBoolean(dayList[4]);
+                dayList[4] = switchBool;
             }
         });
         button_saturday = rootView.findViewById(R.id.button_saturday);
+        dayButtonArr[5] = button_saturday;
         button_saturday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(button_saturday, bol_saturday);
-                bol_saturday = switchBolean(bol_saturday);
+                colorChangeOnClick(button_saturday, dayList[5]);
+                boolean switchBool = switchBoolean(dayList[5]);
+                dayList[5] = switchBool;
             }
         });
         button_sunday = rootView.findViewById(R.id.button_sunday);
+        dayButtonArr[6] = button_sunday;
         button_sunday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(button_sunday, bol_sunday);
-                bol_sunday = switchBolean(bol_sunday);
+                colorChangeOnClick(button_sunday, dayList[6]);
+                boolean switchBool = switchBoolean(dayList[6]);
+                dayList[6] = switchBool;
             }
         });
 
         /* 알람 시간 설정 클릭 관련 */
+        timeButtonArr = new Button[6];
+        /* timeList 초기화 */
+        timeList = new boolean[6];
+        for (int i = 0; i < 6; i++) {
+            timeList[i] = false;
+        }
+
         time_sixAMToNine = rootView.findViewById(R.id.time_sixAMToNine);
+        timeButtonArr[0] = time_sixAMToNine;
         time_sixAMToNine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(time_sixAMToNine, bool_time_sixAMToNine);
-                bool_time_sixAMToNine = switchBolean(bool_time_sixAMToNine);
+                colorChangeOnClick(time_sixAMToNine, timeList[0]);
+                boolean switchBool = switchBoolean(timeList[0]);
+                timeList[0] = switchBool;
             }
         });
 
         time_nineAMToTwelve = rootView.findViewById(R.id.time_nineAMToTwelve);
+        timeButtonArr[1] = time_nineAMToTwelve;
         time_nineAMToTwelve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(time_nineAMToTwelve, bool_time_nineAMToTwelve);
-                bool_time_nineAMToTwelve = switchBolean(bool_time_nineAMToTwelve);
+                colorChangeOnClick(time_nineAMToTwelve, timeList[1]);
+                boolean switchBool = switchBoolean(timeList[1]);
+                timeList[1] = switchBool;
             }
         });
 
         time_twelveToThree = rootView.findViewById(R.id.time_twelveToThree);
+        timeButtonArr[2] = time_twelveToThree;
         time_twelveToThree.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(time_twelveToThree, bool_time_twelveToThree);
-                bool_time_twelveToThree = switchBolean(bool_time_twelveToThree);
+                colorChangeOnClick(time_twelveToThree, timeList[2]);
+                boolean switchBool = switchBoolean(timeList[2]);
+                timeList[2] = switchBool;
             }
         });
 
         time_threeToSix = rootView.findViewById(R.id.time_threeToSix);
+        timeButtonArr[3] = time_threeToSix;
         time_threeToSix.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(time_threeToSix, bool_time_threeToSix);
-                bool_time_threeToSix = switchBolean(bool_time_threeToSix);
+                colorChangeOnClick(time_threeToSix, timeList[3]);
+                boolean switchBool = switchBoolean(timeList[3]);
+                timeList[3] = switchBool;
             }
         });
 
         time_sixToNine = rootView.findViewById(R.id.time_sixToNine);
+        timeButtonArr[4] = time_sixToNine;
         time_sixToNine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(time_sixToNine, bool_time_sixToNine);
-                bool_time_sixToNine = switchBolean(bool_time_sixToNine);
+                colorChangeOnClick(time_sixToNine, timeList[4]);
+                boolean switchBool = switchBoolean(timeList[4]);
+                timeList[4] = switchBool;
             }
         });
 
         time_ninePMToTwelve = rootView.findViewById(R.id.time_ninePMToTwelve);
+        timeButtonArr[5] = time_ninePMToTwelve;
         time_ninePMToTwelve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorChangeOnClick(time_ninePMToTwelve, bool_time_ninePMToTwelve);
-                bool_time_ninePMToTwelve = switchBolean(bool_time_ninePMToTwelve);
+                colorChangeOnClick(time_ninePMToTwelve, timeList[5]);
+                boolean switchBool = switchBoolean(timeList[5]);
+                timeList[5] = switchBool;
             }
         });
 
@@ -357,34 +397,22 @@ public class Fragment_alarmSetting extends Fragment {
                 if (!validation()) {
                     return;
                 }
-                dayList[0] = bol_monday;
-                dayList[1] = bol_tuesday;
-                dayList[2] = bol_wednesday;
-                dayList[3] = bol_thursday;
-                dayList[4] = bol_friday;
-                dayList[5] = bol_saturday;
-                dayList[6] = bol_sunday;
-
-                timeList[0] = bool_time_sixAMToNine;
-                timeList[1] = bool_time_nineAMToTwelve;
-                timeList[2] = bool_time_twelveToThree;
-                timeList[3] = bool_time_threeToSix;
-                timeList[4] = bool_time_sixToNine;
-                timeList[5] = bool_time_ninePMToTwelve;
-
                 ((MainActivity) getActivity()).setDialogForSetting();
                 dataInsertToDB();
             }
         });
-        /* if onTimeChanged is not called, default hour and minute are selected */
+        /* if onTimeChanged is not called, default hour(6) and minute(0) are selected */
+        pickedHour = 6;
+        pickedMinute = 00;
         timePicker = rootView.findViewById(R.id.timePicker);
         if (Build.VERSION.SDK_INT >= 23) {
-            pickedHour = timePicker.getHour();
-            pickedMinute = timePicker.getMinute();
+            timePicker.setHour(6);
+            timePicker.setMinute(0);
         } else {
-            pickedHour = timePicker.getCurrentHour();
-            pickedMinute = timePicker.getCurrentMinute();
+            timePicker.setCurrentHour(6);
+            timePicker.setCurrentMinute(0);
         }
+
         /* otherwise */
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
@@ -393,21 +421,11 @@ public class Fragment_alarmSetting extends Fragment {
                 pickedMinute = minute;
             }
         });
-        /***********************************수정중*************************/
-        /* When attached, verify if there is DB already inserted */
-        sqLiteDatabase = ((MainActivity) getActivity()).sqLiteDatabaseGetter();
-        Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
-        int recordCount = cursor.getCount();
-        if (recordCount > 0) {
-            // if DB exists
+
+        // if DB exists
+        if (DBexist) {
             setFragmentDatawhenDBexists(sqLiteDatabase);
-
-            colorChangeOnClick(button_wednesday, false);
-            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove30);
-            timePicker.setCurrentHour(5);
-            timePicker.setCurrentMinute(55);
         }
-
         return rootView;
     }
 
@@ -415,52 +433,70 @@ public class Fragment_alarmSetting extends Fragment {
         String querie = "SELECT * FROM " + dbTableName;
         Cursor cursor = sqLiteDatabase.rawQuery(querie, null);
         cursor.moveToNext();
-        /*
-         * set days and switch the color of the buttons
-         * The number of day columns is seven starting from the index of 1
-         */
+        /* set days and switch the color of the buttons */
         for (int i = 1; i < 8; i++) {
             if (cursor.getInt(i) == 1) {
-                dayList[i - 1] = true;
-                if (i == 1) {
-                    colorChangeOnClick(button_monday, false);
-                    bol_monday = switchBolean(bol_monday);
-                } else if (i == 2) {
-                    colorChangeOnClick(button_tuesday, false);
-                    bol_tuesday = switchBolean(bol_tuesday);
-                } else if (i == 3) {
-                    colorChangeOnClick(button_wednesday, false);
-                    bol_wednesday = switchBolean(bol_wednesday);
-                } else if (i == 4) {
-                    colorChangeOnClick(button_thursday, false);
-                    bol_thursday = switchBolean(bol_thursday);
-                } else if (i == 5) {
-                    colorChangeOnClick(button_friday, false);
-                    bol_friday = switchBolean(bol_friday);
-                } else if (i == 6) {
-                    colorChangeOnClick(button_saturday, false);
-                    bol_saturday = switchBolean(bol_saturday);
-                } else {
-                    colorChangeOnClick(button_sunday, false);
-                    bol_sunday = switchBolean(bol_sunday);
-                }
-            }
-            /* set location and display of the spinner */
-            String getProvince = cursor.getString(8);
-            String getSubProv = cursor.getString(9);
-            locationList[0] = getProvince;
-            locationList[1] = getSubProv;
-            if (getProvince.charAt(0) == '서') {
-                location_province.setSelection(1);
-                int subProvIndex = getSubProv.charAt(0) - '0'; // Numbers in Char start from ASC|| code 48
-                location_seoul.setSelection(subProvIndex);
-            } else {
-                location_province.setSelection(2);
-                int subProvIndex = getSubProv.charAt(0) - '0'; // Numbers in Char start from ASC|| code 48
-                location_kyeunggi.setSelection(subProvIndex);
+                colorChangeOnClick(dayButtonArr[i - 1], false);
+                boolean switchBool = switchBoolean(dayList[i - 1]);
+                dayList[i - 1] = switchBool;
             }
         }
-        //=========요일/province 설정 끝. 나머지 Data들도 설정하면 됨 ===//
+        /* set location and display of the spinner */
+        String getProvince = cursor.getString(8);
+        String getSubProv = cursor.getString(9);
+        locationList[0] = getProvince;
+        locationList[1] = getSubProv;
+        /*=================='수정'시 지역 오류남. 아스키 코드랑 관련있는듯? 수정하기 ========*/
+        if (getProvince.charAt(0) == '서') {
+            location_province.setSelection(1);
+            int subProvIndex = getSubProv.charAt(0) - '0'; // Numbers in Char start from ASC|| code 48
+            location_seoul.setSelection(subProvIndex);
+        } else {
+            location_province.setSelection(2);
+            int subProvIndex = getSubProv.charAt(0) - '0'; // Numbers in Char start from ASC|| code 48
+            location_kyeunggi.setSelection(subProvIndex);
+        }
+        /* set time that is already set and display it */
+        for (int j = 10; j < 16; j++) {
+            int getSetTime = cursor.getInt(j);
+            if (getSetTime == 1) {
+                if (cursor.getInt(j) == 1) {
+                    colorChangeOnClick(timeButtonArr[j - 10], false);
+                    boolean switchBool = switchBoolean(timeList[j - 10]);
+                    timeList[j - 10] = switchBool;
+                }
+            }
+        }
+        /* set precipitation and display them */
+        int getPrecipitation = cursor.getInt(16);
+        if (precipitation == 30) {
+            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove30);
+        } else if (precipitation == 50) {
+            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove50);
+        } else {
+            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove70);
+        }
+        precipitation = getPrecipitation;
+
+        /* set alarm point and display them */
+        int getAlarmPoint = cursor.getInt(17);
+        if (getAlarmPoint == 1) {
+            radioGroupOfAlarmPoint.check(R.id.alarmPointRadioButtonBeforehand);
+        } else {
+            radioGroupOfAlarmPoint.check(R.id.alarmPointRadioButtonOnTheDay);
+        }
+        alarmPoint = getAlarmPoint;
+
+        /* set alarmtime and display them */
+        int getHour = cursor.getInt(18);
+        int getMinute = cursor.getInt(19);
+        if (Build.VERSION.SDK_INT >= 23) {
+            timePicker.setHour(getHour);
+            timePicker.setMinute(getMinute);
+        } else {
+            timePicker.setCurrentHour(getHour);
+            timePicker.setCurrentMinute(getMinute);
+        }
     }
 
 
@@ -474,7 +510,7 @@ public class Fragment_alarmSetting extends Fragment {
     }
 
     /* 요일, 날짜 boolean 변경 메소드*/
-    public boolean switchBolean(boolean target) {
+    public boolean switchBoolean(boolean target) {
         if (target) {
             return false;
         } else {
@@ -489,8 +525,13 @@ public class Fragment_alarmSetting extends Fragment {
 
     public boolean validation() {
         /* Checking set day*/
-        if (bol_monday == false && bol_tuesday == false && bol_wednesday == false &&
-                bol_thursday == false && bol_friday == false && bol_saturday == false && bol_sunday == false) {
+        int dayListCheck = 0;
+        for (boolean each : dayList) {
+            if (each == false) {
+                dayListCheck++;
+            }
+        }
+        if (dayListCheck == 6) {
             scrollView.smoothScrollTo(0, 0);
             valid_day.setVisibility(View.VISIBLE);
         } else {
@@ -506,8 +547,13 @@ public class Fragment_alarmSetting extends Fragment {
         }
 
         /* checking set time */
-        if (bool_time_sixAMToNine == false && bool_time_nineAMToTwelve == false && bool_time_twelveToThree == false &&
-                bool_time_threeToSix == false && bool_time_sixToNine == false && bool_time_ninePMToTwelve == false) {
+        int checkTimeList = 0;
+        for(boolean each : timeList){
+            if(each == false){
+                checkTimeList++;
+            }
+        }
+        if(checkTimeList == 6) {
             scrollView.smoothScrollTo(0, 0);
             valid_time.setVisibility(View.VISIBLE);
         } else {
@@ -538,23 +584,23 @@ public class Fragment_alarmSetting extends Fragment {
     }
 
     public void cancelAlarmSetting() {
-        bol_monday = false;
-        bol_tuesday = false;
-        bol_wednesday = false;
-        bol_thursday = false;
-        bol_friday = false;
-        bol_saturday = false;
-        bol_sunday = false;
-
-        bool_time_sixAMToNine = false;
-        bool_time_nineAMToTwelve = false;
-        bool_time_twelveToThree = false;
-        bool_time_threeToSix = false;
-        bool_time_sixToNine = false;
-        bool_time_ninePMToTwelve = false;
-
+        for (boolean each : dayList) {
+            each = false;
+        }
+        for (boolean each : timeList) {
+            each = false;
+        }
         checkLocationSelection = false;
         location_province.setSelection(0);
+        radioGroupOfPrecipitation.clearCheck();
+        radioGroupOfAlarmPoint.clearCheck();
+        if (Build.VERSION.SDK_INT >= 23) {
+            timePicker.setHour(6);
+            timePicker.setMinute(0);
+        } else {
+            timePicker.setCurrentHour(6);
+            timePicker.setCurrentMinute(0);
+        }
     }
 
     public void dataInsertToDB() {

@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
     private Button deleteButton;
     private Button modifyButton;
 
+    /* boolean whether DB exists */
+    private boolean DBexist;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,9 +92,6 @@ public class MainActivity extends AppCompatActivity {
         precipitationText = findViewById(R.id.precipitationText);
         alarmTimeText = findViewById(R.id.alarmTimeText);
         alarmPointText = findViewById(R.id.alarmPointText);
-
-        /*알람 세팅 프래그먼트 추가*/
-        fragment_alarmSetting = new Fragment_alarmSetting();
 
         /*추가 버튼 클릭 로직 구현*/
         addButton = findViewById(R.id.addButton);
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /* Delete buttons function */
+        /* Delete button function */
         deleteButton = findViewById(R.id.deleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /* Modify button function */
         modifyButton = findViewById(R.id.modifyButton);
         modifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,11 +134,9 @@ public class MainActivity extends AppCompatActivity {
         dataBoard = findViewById(R.id.dataBoard);
         addAndDeleteLayout = findViewById(R.id.addAndDeleteLayout);
         Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
-        int recordCount = cursor.getCount();
-        if (recordCount > 0) {
+        DBexist = cursor.moveToFirst();
+        if (DBexist) {
             addAndDeleteHideAndShow(true);
-            /* if DB exists, premtively add Fragment */
-//            addFragment();
         } else {
             addAndDeleteHideAndShow(false);
         }
@@ -146,8 +145,14 @@ public class MainActivity extends AppCompatActivity {
     /*뒤로 가기 버튼 2번 누를 시 종료 & 알람 세팅 프래그먼트 끄기*/
     @Override
     public void onBackPressed() {
-        if (fragment_alarmSetting.isAdded()) {// 알람세팅 프래그먼트에서 뒤로가기 누를 때
-            setDialogBuilder(1);
+        if (fragment_alarmSetting.isAdded()) {
+            Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
+            DBexist = cursor.moveToFirst();
+            if (DBexist) {
+                setDialogBuilder(4);
+            } else {
+                setDialogBuilder(1);
+            }
             return;
         }
         if (lastBackPresseed + 2000 < System.currentTimeMillis()) {
@@ -159,8 +164,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setDialogBuilder(int inputCase) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         if (inputCase == 1) {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle("알람 세팅 취소");
             alertDialogBuilder.setMessage("우산알라미 설정을 취소하시겠습니까?");
             alertDialogBuilder.setCancelable(false);
@@ -172,16 +177,8 @@ public class MainActivity extends AppCompatActivity {
                     removeFragment();
                 }
             });
-            alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            alertDialogBuilder.show();
         }
         if (inputCase == 2) {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle("알람 삭제");
             alertDialogBuilder.setMessage("설정된 알람을 삭제하시겠습니까?");
             alertDialogBuilder.setCancelable(false);
@@ -192,16 +189,8 @@ public class MainActivity extends AppCompatActivity {
                     recreate();
                 }
             });
-            alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            alertDialogBuilder.show();
         }
         if (inputCase == 3) {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle("알람 설정 수정");
             alertDialogBuilder.setMessage("우산알라미 설정을 수정하시겠습니까?");
             alertDialogBuilder.setCancelable(false);
@@ -209,20 +198,27 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     replaceFragment();
-                    /*
-                     * 수정 시 DB에 있는 데이터 Fragment에 넘기고, 그 Data대로 Fragment의 버튼이 선택되어있어야 함.
-                     * 또한, 수정 완료 후 '저장'을 눌렀을 때 기존 DB insert가 아닌 update 쿼리를 타야함!
-                     */
                 }
             });
-            alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+        }
+        if (inputCase == 4) {
+            alertDialogBuilder.setTitle("알람 설정 수정");
+            alertDialogBuilder.setMessage("우산알라미 수정을 취소하시겠습니까?");
+            alertDialogBuilder.setCancelable(false);
+            alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
+                    removeFragment();
                 }
             });
-            alertDialogBuilder.show();
         }
+        alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertDialogBuilder.show();
     }
 
 
@@ -251,15 +247,6 @@ public class MainActivity extends AppCompatActivity {
         alertDialogBuilder.show();
     }
 
-    public void addFragment() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(fragment_alarmSetting, "fragment");
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-        fragmentTransaction.commit();
-    }
-
-
     public void removeFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -269,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void replaceFragment() {
+        fragment_alarmSetting = new Fragment_alarmSetting();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.container, fragment_alarmSetting, "fragment");
@@ -363,8 +351,15 @@ public class MainActivity extends AppCompatActivity {
 
         /* set location */
         String getProvince = cursor.getString(8);
-        String getSubProvince = cursor.getString(9).substring(1);
-        locationText.setText(getProvince+ " " +getSubProvince);
+        char[] subProvCharArr = cursor.getString(9).toCharArray();
+        String getSubProvince = "";
+        for (int i = 1; i < subProvCharArr.length; i++) {
+            if((int)subProvCharArr[i] <= 57){
+                continue;
+            }
+            getSubProvince += subProvCharArr[i];
+        }
+        locationText.setText(getProvince + " " + getSubProvince);
 
         /* set timeText */
         String setTimeText = "";
@@ -425,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void addAndDeleteHideAndShow(boolean check) {
         /* The buttons on the main hide & show */
-        if (check == true) { // DB에 데이터 있을 때
+        if (check) { // DB에 데이터 있을 때
             addAndDeleteLayout.setVisibility(View.VISIBLE);
             dataBoard.setVisibility(View.VISIBLE);
             addButton.setVisibility(View.GONE);
