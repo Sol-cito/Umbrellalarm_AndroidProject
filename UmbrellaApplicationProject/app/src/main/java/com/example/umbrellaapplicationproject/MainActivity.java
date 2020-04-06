@@ -43,6 +43,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private Button addButton;
+    private int whichButtonClicked; // 0 = add clicked , 1 = modification clicked
     private Fragment_alarmSetting fragment_alarmSetting;
     private long lastBackPresseed = 0;
     private AlertDialog alertDialog;
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     /* 임시 DB삭제버튼 */
     private Button tempDeleteButton;
 
-    /* Delete & Modify Buttons */
+    /* Delete & Modify Buttons and flag */
     private Button deleteButton;
     private Button modifyButton;
 
@@ -108,7 +109,11 @@ public class MainActivity extends AppCompatActivity {
         tempDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteDB();
+                if (DBexist) {
+                    deleteDB();
+                } else {
+                    Toast.makeText(MainActivity.this, "DB전부삭제해서없음", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -137,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
         DBexist = cursor.moveToFirst();
         if (DBexist) {
             addAndDeleteHideAndShow(true);
+            selectDB();
         } else {
             addAndDeleteHideAndShow(false);
         }
@@ -173,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     scrollUptotheTopOfFragmentDisplay();
-                    cancelAlarmSetting();
                     removeFragment();
                 }
             });
@@ -221,21 +226,28 @@ public class MainActivity extends AppCompatActivity {
         alertDialogBuilder.show();
     }
 
-
+    /* when clicking addButton & modification button on the fragment */
     public void setDialogForSetting() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle("우산 알라미 설정");
-        alertDialogBuilder.setMessage("우산알라미를 설정하시겠습니까?");
-        alertDialogBuilder.setCancelable(false);
+        if (DBexist) {
+            alertDialogBuilder.setTitle("우산 알라미 수정");
+            alertDialogBuilder.setMessage("우산알라미를 수정하시겠습니까?");
+            alertDialogBuilder.setCancelable(false);
+            whichButtonClicked = 1;
+        } else {
+            alertDialogBuilder.setTitle("우산 알라미 설정");
+            alertDialogBuilder.setMessage("우산알라미를 설정하시겠습니까?");
+            alertDialogBuilder.setCancelable(false);
+            whichButtonClicked = 0;
+        }
         alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 scrollUptotheTopOfFragmentDisplay();
                 setAlarm(); //volley 호출
                 getCurrentDateAndTime(); //현재 시간 얻기
-                addAndDeleteHideAndShow(true);
+                dataInsertOrUpdate(whichButtonClicked);
                 removeFragment();
-                /* 예 누르면 다른 함수 호출 -> 이 함수가 프래그먼트에서 값 가져오도록*/
             }
         });
         alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
@@ -264,12 +276,27 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    /* calling scollUpToTheTop method of the Fragment */
+    /* calling scollUpToTheTop method from fragment */
     public void scrollUptotheTopOfFragmentDisplay() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
         fragment_alarmSetting.scrollUptotheTop();
+    }
 
+    /* calling dataInsertToDB or dataUpdate method from fragment */
+    public void dataInsertOrUpdate(int whichButtonClicked) {
+        if(whichButtonClicked == 0){ //add
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
+            fragment_alarmSetting.DBdataInsertOrUpdate(0);
+            addAndDeleteHideAndShow(true);
+            selectDB();
+        }else if(whichButtonClicked == 1){ //modify
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
+            fragment_alarmSetting.DBdataInsertOrUpdate(1);
+            selectDB();
+        }
     }
 
     /* Method for getting the current time */
@@ -306,18 +333,12 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-    public void cancelAlarmSetting() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
-        fragment_alarmSetting.cancelAlarmSetting();
-    }
-
     /* DB create */
     public void createDB() {
         sqLiteDatabase = openOrCreateDatabase(dbTableName, MODE_PRIVATE, null);
         String querie = "create table if not exists " + dbTableName + "( id integer PRIMARY KEY autoincrement, " +
                 " mon integer, tue integer, wed integer, thu integer, fri integer, sat integer, sun integer, " +
-                "prov text, subProv text, time1 integer, time2 integer, time3 integer, time4 integer," +
+                "prov text, subProv text, subProvSeq integer, time1 integer, time2 integer, time3 integer, time4 integer," +
                 " time5 integer, time6 integer, precipitation integer, alarmPoint integer, setHour integer, setMinute integer)";
         sqLiteDatabase.execSQL(querie);
     }
@@ -328,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
 
         /* set days */
         String setDays = "설정 요일 : ";
-        for (int i = 1; i <= 7; i++) {
+        for (int i = 1; i < 8; i++) {
             if (cursor.getInt(i) == 1) {
                 if (i == 1) {
                     setDays += "월 ";
@@ -351,29 +372,22 @@ public class MainActivity extends AppCompatActivity {
 
         /* set location */
         String getProvince = cursor.getString(8);
-        char[] subProvCharArr = cursor.getString(9).toCharArray();
-        String getSubProvince = "";
-        for (int i = 1; i < subProvCharArr.length; i++) {
-            if((int)subProvCharArr[i] <= 57){
-                continue;
-            }
-            getSubProvince += subProvCharArr[i];
-        }
+        String getSubProvince = cursor.getString(9);
         locationText.setText(getProvince + " " + getSubProvince);
 
         /* set timeText */
         String setTimeText = "";
-        for (int i = 10; i <= 15; i++) {
+        for (int i = 11; i < 17; i++) {
             if (cursor.getInt(i) == 1) {
-                if (i == 10) {
+                if (i == 11) {
                     setTimeText += "6AM - 9AM ";
-                } else if (i == 11) {
-                    setTimeText += "9AM - 12PM ";
                 } else if (i == 12) {
-                    setTimeText += "12PM - 3PM";
+                    setTimeText += "9AM - 12PM ";
                 } else if (i == 13) {
-                    setTimeText += "3PM - 6PM";
+                    setTimeText += "12PM - 3PM";
                 } else if (i == 14) {
+                    setTimeText += "3PM - 6PM";
+                } else if (i == 15) {
                     setTimeText += "6PM - 9PM";
                 } else {
                     setTimeText += "9PM - 12AM";
@@ -383,10 +397,10 @@ public class MainActivity extends AppCompatActivity {
         timeText.setText(setTimeText);
 
         /* set precipitation */
-        precipitationText.setText("설정 강수량 : " + cursor.getString(16) + "%");
+        precipitationText.setText("설정 강수량 : " + cursor.getString(17) + "%");
 
         /*alarmPointText*/
-        int setPoint = cursor.getInt(17);
+        int setPoint = cursor.getInt(18);
 
         if (setPoint == 1) {
             alarmPointText.setText("알람 전날");
@@ -396,26 +410,22 @@ public class MainActivity extends AppCompatActivity {
 
         /*alarmTimeText*/
         String setHour = "";
-        int intHour = cursor.getInt(18);
+        int intHour = cursor.getInt(19);
         if (intHour - 13 < 0) {
             setHour = "오전 " + intHour + "시";
         } else {
             intHour -= 12;
             setHour = "오후 " + intHour + "시";
         }
-        int setMinute = cursor.getInt(19);
+        int setMinute = cursor.getInt(20);
         alarmTimeText.setText(setHour + setMinute + "분");
     }
 
     public void deleteDB() {
         Toast.makeText(this, "DB를 삭제함", Toast.LENGTH_SHORT).show();
         String querie = "drop table " + dbTableName;
-        try {
-            sqLiteDatabase.execSQL(querie);
-        } catch (SQLiteException e) {
-            e.getStackTrace();
-            Toast.makeText(this, "테이블 다 삭제됨", Toast.LENGTH_SHORT).show();
-        }
+        sqLiteDatabase.execSQL(querie);
+        DBexist = false;
     }
 
     public void addAndDeleteHideAndShow(boolean check) {
@@ -424,16 +434,11 @@ public class MainActivity extends AppCompatActivity {
             addAndDeleteLayout.setVisibility(View.VISIBLE);
             dataBoard.setVisibility(View.VISIBLE);
             addButton.setVisibility(View.GONE);
-            showingDataOnDisplay();
         } else {
             addAndDeleteLayout.setVisibility(View.GONE);
             dataBoard.setVisibility(View.GONE);
             addButton.setVisibility(View.VISIBLE);
         }
-    }
-
-    public void showingDataOnDisplay() {
-        selectDB();
     }
 
     /*Method for the fragment to get SQLiteDatabase */

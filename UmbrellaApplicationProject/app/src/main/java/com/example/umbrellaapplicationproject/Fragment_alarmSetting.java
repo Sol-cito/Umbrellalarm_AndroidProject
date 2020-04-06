@@ -64,9 +64,12 @@ public class Fragment_alarmSetting extends Fragment {
     private Spinner location_seoul;
     private Spinner location_kyeunggi;
     private FrameLayout locationBundle;
-    private boolean checkLocationSelection;
+    private int spinnerPositionSeoul;
+    private int spinnerPositionKyeunggi;
 
+    /* Alarm Add & Modification button */
     private Button alarmAddButton;
+    private Button alarmModificationButton;
 
     /* TextView for validation */
     private TextView valid_day;
@@ -78,6 +81,7 @@ public class Fragment_alarmSetting extends Fragment {
     /* Data sets to transfer to MainActivity / to save in DB */
     private boolean[] dayList;
     private String[] locationList = new String[2];
+    private int subProvSeq;
     private boolean[] timeList;
     private int precipitation;
     private int alarmPoint; //0 : default, 1 : a day ahead , 2 : on the very day
@@ -281,6 +285,11 @@ public class Fragment_alarmSetting extends Fragment {
             }
         });
 
+        /* 지역선택 관련 */
+        /* 스피너 포지션 초기화 */
+        spinnerPositionSeoul = 0;
+        spinnerPositionKyeunggi = 0;
+
         locationBundle = rootView.findViewById(R.id.locationBundle);
         location_kyeunggi = rootView.findViewById(R.id.location_kyeunggi);
         location_seoul = rootView.findViewById(R.id.location_seoul);
@@ -295,16 +304,19 @@ public class Fragment_alarmSetting extends Fragment {
                     location_seoul.setVisibility(View.VISIBLE);
                     location_kyeunggi.setVisibility(View.INVISIBLE);
                     location_kyeunggi.setSelection(0);
+                    spinnerPositionKyeunggi = 0;
                 } else if (position == 2) { //경기
                     locationBundle.setVisibility(View.VISIBLE);
                     location_seoul.setVisibility(View.INVISIBLE);
                     location_kyeunggi.setVisibility(View.VISIBLE);
                     location_seoul.setSelection(0);
+                    spinnerPositionSeoul = 0;
                 } else { // 아무선택안함
                     locationBundle.setVisibility(View.INVISIBLE);
                     location_seoul.setSelection(0);
                     location_kyeunggi.setSelection(0);
-                    checkLocationSelection = false;
+                    spinnerPositionSeoul = 0;
+                    spinnerPositionKyeunggi = 0;
                 }
             }
 
@@ -316,14 +328,10 @@ public class Fragment_alarmSetting extends Fragment {
         location_seoul.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    checkLocationSelection = false;
-                } else {
-                    checkLocationSelection = true;
-                    locationList[0] = "서울";
-                    /* put the position number together as an index */
-                    locationList[1] = position + location_seoul.getSelectedItem().toString();
-                }
+                locationList[0] = "서울";
+                locationList[1] = location_seoul.getSelectedItem().toString();
+                spinnerPositionSeoul = position;
+                subProvSeq = position;
             }
 
             @Override
@@ -331,18 +339,15 @@ public class Fragment_alarmSetting extends Fragment {
 
             }
         });
+
         /* When clicking '경기' */
         location_kyeunggi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    checkLocationSelection = false;
-                } else {
-                    checkLocationSelection = true;
-                    locationList[0] = "경기";
-                    /* put the position number together as an index */
-                    locationList[1] = position + location_kyeunggi.getSelectedItem().toString();
-                }
+                locationList[0] = "경기";
+                locationList[1] = location_kyeunggi.getSelectedItem().toString();
+                spinnerPositionKyeunggi = position;
+                subProvSeq = position;
             }
 
             @Override
@@ -369,7 +374,7 @@ public class Fragment_alarmSetting extends Fragment {
 
         /* Set AlarmPoint */
         radioGroupOfAlarmPoint = rootView.findViewById(R.id.radioGroupOfAlarmPoint);
-        alarmPoint = 0; // Default value when radiobuttons are left blank
+        alarmPoint = 0; // Default value when radio buttons are left blank
         radioGroupOfAlarmPoint.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -394,13 +399,25 @@ public class Fragment_alarmSetting extends Fragment {
             @Override
             public void onClick(View v) {
                 /* validation */
-                if (!validation()) {
-                    return;
+                if (validation()) {
+                    ((MainActivity) getActivity()).setDialogForSetting();
                 }
-                ((MainActivity) getActivity()).setDialogForSetting();
-                dataInsertToDB();
             }
         });
+
+        /* Modification Button click function */
+        alarmModificationButton = rootView.findViewById(R.id.alarmModificationButton);
+        alarmModificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /* validation */
+                if (validation()) {
+                    ((MainActivity) getActivity()).setDialogForSetting();
+                }
+            }
+        });
+
+
         /* if onTimeChanged is not called, default hour(6) and minute(0) are selected */
         pickedHour = 6;
         pickedMinute = 00;
@@ -424,7 +441,13 @@ public class Fragment_alarmSetting extends Fragment {
 
         // if DB exists
         if (DBexist) {
+            /* hide add button and show modification button */
+            alarmAddButton.setVisibility(View.GONE);
+            alarmModificationButton.setVisibility(View.VISIBLE);
             setFragmentDatawhenDBexists(sqLiteDatabase);
+        } else {
+            alarmAddButton.setVisibility(View.VISIBLE);
+            alarmModificationButton.setVisibility(View.GONE);
         }
         return rootView;
     }
@@ -444,31 +467,32 @@ public class Fragment_alarmSetting extends Fragment {
         /* set location and display of the spinner */
         String getProvince = cursor.getString(8);
         String getSubProv = cursor.getString(9);
+        subProvSeq = cursor.getInt(10);
         locationList[0] = getProvince;
         locationList[1] = getSubProv;
-        /*=================='수정'시 지역 오류남. 아스키 코드랑 관련있는듯? 수정하기 ========*/
         if (getProvince.charAt(0) == '서') {
             location_province.setSelection(1);
-            int subProvIndex = getSubProv.charAt(0) - '0'; // Numbers in Char start from ASC|| code 48
-            location_seoul.setSelection(subProvIndex);
+            location_seoul.setSelection(subProvSeq);
+            spinnerPositionSeoul = subProvSeq;
         } else {
             location_province.setSelection(2);
-            int subProvIndex = getSubProv.charAt(0) - '0'; // Numbers in Char start from ASC|| code 48
-            location_kyeunggi.setSelection(subProvIndex);
+            location_kyeunggi.setSelection(subProvSeq);
+            spinnerPositionKyeunggi = subProvSeq;
         }
+
         /* set time that is already set and display it */
-        for (int j = 10; j < 16; j++) {
+        for (int j = 11; j < 17; j++) {
             int getSetTime = cursor.getInt(j);
             if (getSetTime == 1) {
                 if (cursor.getInt(j) == 1) {
-                    colorChangeOnClick(timeButtonArr[j - 10], false);
-                    boolean switchBool = switchBoolean(timeList[j - 10]);
-                    timeList[j - 10] = switchBool;
+                    colorChangeOnClick(timeButtonArr[j - 11], false);
+                    boolean switchBool = switchBoolean(timeList[j - 11]);
+                    timeList[j - 11] = switchBool;
                 }
             }
         }
         /* set precipitation and display them */
-        int getPrecipitation = cursor.getInt(16);
+        int getPrecipitation = cursor.getInt(17);
         if (precipitation == 30) {
             radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove30);
         } else if (precipitation == 50) {
@@ -479,7 +503,7 @@ public class Fragment_alarmSetting extends Fragment {
         precipitation = getPrecipitation;
 
         /* set alarm point and display them */
-        int getAlarmPoint = cursor.getInt(17);
+        int getAlarmPoint = cursor.getInt(18);
         if (getAlarmPoint == 1) {
             radioGroupOfAlarmPoint.check(R.id.alarmPointRadioButtonBeforehand);
         } else {
@@ -488,8 +512,8 @@ public class Fragment_alarmSetting extends Fragment {
         alarmPoint = getAlarmPoint;
 
         /* set alarmtime and display them */
-        int getHour = cursor.getInt(18);
-        int getMinute = cursor.getInt(19);
+        int getHour = cursor.getInt(19);
+        int getMinute = cursor.getInt(20);
         if (Build.VERSION.SDK_INT >= 23) {
             timePicker.setHour(getHour);
             timePicker.setMinute(getMinute);
@@ -531,7 +555,7 @@ public class Fragment_alarmSetting extends Fragment {
                 dayListCheck++;
             }
         }
-        if (dayListCheck == 6) {
+        if (dayListCheck == 7) {
             scrollView.smoothScrollTo(0, 0);
             valid_day.setVisibility(View.VISIBLE);
         } else {
@@ -539,7 +563,7 @@ public class Fragment_alarmSetting extends Fragment {
         }
 
         /* checking set location */
-        if (checkLocationSelection == false) {
+        if (spinnerPositionSeoul == 0 && spinnerPositionKyeunggi == 0) {
             valid_location.setVisibility(View.VISIBLE);
             scrollView.smoothScrollTo(0, 0);
         } else {
@@ -548,12 +572,12 @@ public class Fragment_alarmSetting extends Fragment {
 
         /* checking set time */
         int checkTimeList = 0;
-        for(boolean each : timeList){
-            if(each == false){
+        for (boolean each : timeList) {
+            if (each == false) {
                 checkTimeList++;
             }
         }
-        if(checkTimeList == 6) {
+        if (checkTimeList == 6) {
             scrollView.smoothScrollTo(0, 0);
             valid_time.setVisibility(View.VISIBLE);
         } else {
@@ -583,27 +607,7 @@ public class Fragment_alarmSetting extends Fragment {
         return true;
     }
 
-    public void cancelAlarmSetting() {
-        for (boolean each : dayList) {
-            each = false;
-        }
-        for (boolean each : timeList) {
-            each = false;
-        }
-        checkLocationSelection = false;
-        location_province.setSelection(0);
-        radioGroupOfPrecipitation.clearCheck();
-        radioGroupOfAlarmPoint.clearCheck();
-        if (Build.VERSION.SDK_INT >= 23) {
-            timePicker.setHour(6);
-            timePicker.setMinute(0);
-        } else {
-            timePicker.setCurrentHour(6);
-            timePicker.setCurrentMinute(0);
-        }
-    }
-
-    public void dataInsertToDB() {
+    public void DBdataInsertOrUpdate(int flag) {
         /* dayList insert */
         String dayListResult = "";
         for (int i = 0; i < dayList.length; i++) {
@@ -626,12 +630,37 @@ public class Fragment_alarmSetting extends Fragment {
                 timeListResult += "0, ";
             }
         }
-        String values = dayListResult + "'" + prov + "', '" + subProv + "', " +
-                timeListResult + precipitation + ", " + alarmPoint + ", " + pickedHour + ", " + pickedMinute;
-        String querie = "insert into " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, " +
-                "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
-                " values ( " + values + " )";
         sqLiteDatabase = ((MainActivity) getActivity()).sqLiteDatabaseGetter();
-        sqLiteDatabase.execSQL(querie);
+        String query = "";
+        if (flag == 0) {
+            String values = dayListResult + "'" + prov + "', '" + subProv + "', " + subProvSeq + ", " +
+                    timeListResult + precipitation + ", " + alarmPoint + ", " + pickedHour + ", " + pickedMinute;
+            query = "INSERT INTO " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, subProvSeq, " +
+                    "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
+                    " values ( " + values + " )";
+        } else if (flag == 1) {
+            query = "UPDATE " + dbTableName + " SET " +
+//                    "mon = " + dayList[0] + ", " +
+//                    "tue = " + dayList[1] + ", " +
+//                    "wed = " + dayList[2] + ", " +
+//                    "thu = " + dayList[3] + ", " +
+//                    "fri = " + dayList[4] + ", " +
+//                    "sat = " + dayList[5] + ", " +
+//                    "sun = " + dayList[6] + ", " +
+//                    "prov = " + prov + ", " +
+//                    "subProv = " + subProv + ", " +
+//                    "subProvSeq = " + subProvSeq + ", " +
+//                    "time1 = " + timeList[0] + ", " +
+//                    "time2 = " + timeList[1] + ", " +
+//                    "time3 = " + timeList[2] + ", " +
+//                    "time4 = " + timeList[3] + ", " +
+//                    "time5 = " + timeList[4] + ", " +
+//                    "time6 = " + timeList[5] + ", " +
+                    "precipitation = " + precipitation + ", " +
+                    "alarmPoint = " + alarmPoint + ", " +
+                    "setHour = " + pickedHour + " , " +
+                    "setMinute = " + pickedMinute;
+        }
+        sqLiteDatabase.execSQL(query);
     }
 }
