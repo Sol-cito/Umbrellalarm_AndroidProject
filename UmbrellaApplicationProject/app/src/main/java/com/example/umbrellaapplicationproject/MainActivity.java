@@ -77,9 +77,6 @@ public class MainActivity extends AppCompatActivity {
     private Button deleteButton;
     private Button modifyButton;
 
-    /* boolean whether DB exists */
-    private boolean DBexist;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         tempDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (DBexist) {
+                if (checkIfDBexists()) {
                     deleteDB();
                 } else {
                     Toast.makeText(MainActivity.this, "DB전부삭제해서없음", Toast.LENGTH_SHORT).show();
@@ -138,11 +135,9 @@ public class MainActivity extends AppCompatActivity {
         /* Check if DB has been created */
         dataBoard = findViewById(R.id.dataBoard);
         addAndDeleteLayout = findViewById(R.id.addAndDeleteLayout);
-        Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
-        DBexist = cursor.moveToFirst();
-        if (DBexist) {
+        if (checkIfDBexists()) {
             addAndDeleteHideAndShow(true);
-            selectDB();
+            selectDBAndDisplayDataOnMainActivity();
         } else {
             addAndDeleteHideAndShow(false);
         }
@@ -152,9 +147,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (fragment_alarmSetting.isAdded()) {
-            Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
-            DBexist = cursor.moveToFirst();
-            if (DBexist) {
+            if (checkIfDBexists()) {
                 setDialogBuilder(4);
             } else {
                 setDialogBuilder(1);
@@ -226,10 +219,16 @@ public class MainActivity extends AppCompatActivity {
         alertDialogBuilder.show();
     }
 
+    public boolean checkIfDBexists() {
+        Cursor cursor = sqLiteDatabase.rawQuery("select id from " + dbTableName, null);
+        boolean result = cursor.moveToFirst();
+        return result;
+    }
+
     /* when clicking addButton & modification button on the fragment */
     public void setDialogForSetting() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        if (DBexist) {
+        if (checkIfDBexists()) {
             alertDialogBuilder.setTitle("우산 알라미 수정");
             alertDialogBuilder.setMessage("우산알라미를 수정하시겠습니까?");
             alertDialogBuilder.setCancelable(false);
@@ -285,17 +284,17 @@ public class MainActivity extends AppCompatActivity {
 
     /* calling dataInsertToDB or dataUpdate method from fragment */
     public void dataInsertOrUpdate(int whichButtonClicked) {
-        if(whichButtonClicked == 0){ //add
+        if (whichButtonClicked == 0) { //add
             FragmentManager fragmentManager = getSupportFragmentManager();
             Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
             fragment_alarmSetting.DBdataInsertOrUpdate(0);
             addAndDeleteHideAndShow(true);
-            selectDB();
-        }else if(whichButtonClicked == 1){ //modify
+            selectDBAndDisplayDataOnMainActivity();
+        } else if (whichButtonClicked == 1) { //modify
             FragmentManager fragmentManager = getSupportFragmentManager();
             Fragment_alarmSetting fragment_alarmSetting = (Fragment_alarmSetting) fragmentManager.findFragmentByTag("fragment");
             fragment_alarmSetting.DBdataInsertOrUpdate(1);
-            selectDB();
+            selectDBAndDisplayDataOnMainActivity();
         }
     }
 
@@ -338,12 +337,13 @@ public class MainActivity extends AppCompatActivity {
         sqLiteDatabase = openOrCreateDatabase(dbTableName, MODE_PRIVATE, null);
         String querie = "create table if not exists " + dbTableName + "( id integer PRIMARY KEY autoincrement, " +
                 " mon integer, tue integer, wed integer, thu integer, fri integer, sat integer, sun integer, " +
-                "prov text, subProv text, subProvSeq integer, time1 integer, time2 integer, time3 integer, time4 integer," +
+                "prov string, subProv string, subProvSeq integer, time1 integer, time2 integer, time3 integer, time4 integer," +
                 " time5 integer, time6 integer, precipitation integer, alarmPoint integer, setHour integer, setMinute integer)";
         sqLiteDatabase.execSQL(querie);
     }
 
-    public void selectDB() {
+
+    public void selectDBAndDisplayDataOnMainActivity() {
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + dbTableName, null);
         cursor.moveToNext();
 
@@ -425,7 +425,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "DB를 삭제함", Toast.LENGTH_SHORT).show();
         String querie = "drop table " + dbTableName;
         sqLiteDatabase.execSQL(querie);
-        DBexist = false;
     }
 
     public void addAndDeleteHideAndShow(boolean check) {

@@ -295,6 +295,7 @@ public class Fragment_alarmSetting extends Fragment {
         location_seoul = rootView.findViewById(R.id.location_seoul);
 
         location_province = rootView.findViewById(R.id.location_province);
+        location_province.setSelection(0, false);
         location_province.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -325,6 +326,7 @@ public class Fragment_alarmSetting extends Fragment {
 
             }
         });
+        location_seoul.setSelection(0, false);
         location_seoul.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -341,6 +343,10 @@ public class Fragment_alarmSetting extends Fragment {
         });
 
         /* When clicking '경기' */
+        location_kyeunggi.setSelection(0, false);
+        /* 위 selection을 왜 했는지 궁금하면
+        * https://stackoverflow.com/questions/2562248/how-to-keep-onitemselected-from-firing-off-on-a-newly-instantiated-spinner?rq=1
+        * 참고 */
         location_kyeunggi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -470,6 +476,7 @@ public class Fragment_alarmSetting extends Fragment {
         subProvSeq = cursor.getInt(10);
         locationList[0] = getProvince;
         locationList[1] = getSubProv;
+
         if (getProvince.charAt(0) == '서') {
             location_province.setSelection(1);
             location_seoul.setSelection(subProvSeq);
@@ -493,9 +500,9 @@ public class Fragment_alarmSetting extends Fragment {
         }
         /* set precipitation and display them */
         int getPrecipitation = cursor.getInt(17);
-        if (precipitation == 30) {
+        if (getPrecipitation == 30) {
             radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove30);
-        } else if (precipitation == 50) {
+        } else if (getPrecipitation == 50) {
             radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove50);
         } else {
             radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove70);
@@ -640,27 +647,30 @@ public class Fragment_alarmSetting extends Fragment {
                     " values ( " + values + " )";
         } else if (flag == 1) {
             query = "UPDATE " + dbTableName + " SET " +
-//                    "mon = " + dayList[0] + ", " +
-//                    "tue = " + dayList[1] + ", " +
-//                    "wed = " + dayList[2] + ", " +
-//                    "thu = " + dayList[3] + ", " +
-//                    "fri = " + dayList[4] + ", " +
-//                    "sat = " + dayList[5] + ", " +
-//                    "sun = " + dayList[6] + ", " +
-//                    "prov = " + prov + ", " +
-//                    "subProv = " + subProv + ", " +
-//                    "subProvSeq = " + subProvSeq + ", " +
-//                    "time1 = " + timeList[0] + ", " +
-//                    "time2 = " + timeList[1] + ", " +
-//                    "time3 = " + timeList[2] + ", " +
-//                    "time4 = " + timeList[3] + ", " +
-//                    "time5 = " + timeList[4] + ", " +
-//                    "time6 = " + timeList[5] + ", " +
+                    /* dayList가 Boolean이라서 integer인 DB에 안들어감.....integer로 바꾸거나 DB를 수정 */
+//                    "mon = " + dayListResult[0] + ", " +
+//                    "tue = " + dayListResult[1] + ", " +
+//                    "wed = " + dayListResult[2] + ", " +
+//                    "thu = " + dayListResult[3] + ", " +
+//                    "fri = " + dayListResult[4] + ", " +
+//                    "sat = " + dayListResult[5] + ", " +
+//                    "sun = " + dayListResult[6] + ", " +
+                    /* 아래 두개는 왜 안될까....*/
+//                    "prov = " + locationList[0] + ", " +
+//                    "subProv = " + locationList[1] + ", " +
+                    "subProvSeq = " + subProvSeq + ", " +
+                    "time1 = " + timeList[0] + ", " +
+                    "time2 = " + timeList[1] + ", " +
+                    "time3 = " + timeList[2] + ", " +
+                    "time4 = " + timeList[3] + ", " +
+                    "time5 = " + timeList[4] + ", " +
+                    "time6 = " + timeList[5] + ", " +
                     "precipitation = " + precipitation + ", " +
                     "alarmPoint = " + alarmPoint + ", " +
-                    "setHour = " + pickedHour + " , " +
+                    "setHour = " + pickedHour + ", " +
                     "setMinute = " + pickedMinute;
         }
+        Log.e("log", "쿼리  : " + query);
         sqLiteDatabase.execSQL(query);
     }
 }
