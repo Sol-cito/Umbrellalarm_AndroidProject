@@ -617,10 +617,13 @@ public class Fragment_alarmSetting extends Fragment {
     public void DBdataInsertOrUpdate(int flag) {
         /* dayList insert */
         String dayListResult = "";
+        int[] dayListResult_int = new int[7];
         for (int i = 0; i < dayList.length; i++) {
             if (dayList[i] == true) {
+                dayListResult_int[i] = 1;
                 dayListResult += "1, ";
             } else {
+                dayListResult_int[i] = 0;
                 dayListResult += "0, ";
             }
         }
@@ -630,11 +633,14 @@ public class Fragment_alarmSetting extends Fragment {
 
         /* timeList insert */
         String timeListResult = "";
+        int[] timeListResult_int = new int[6];
         for (int i = 0; i < timeList.length; i++) {
             if (timeList[i] == true) {
                 timeListResult += "1, ";
+                timeListResult_int[i] = 1;
             } else {
                 timeListResult += "0, ";
+                timeListResult_int[i] = 0;
             }
         }
         sqLiteDatabase = ((MainActivity) getActivity()).sqLiteDatabaseGetter();
@@ -648,29 +654,28 @@ public class Fragment_alarmSetting extends Fragment {
         } else if (flag == 1) {
             query = "UPDATE " + dbTableName + " SET " +
                     /* dayList가 Boolean이라서 integer인 DB에 안들어감.....integer로 바꾸거나 DB를 수정 */
-//                    "mon = " + dayListResult[0] + ", " +
-//                    "tue = " + dayListResult[1] + ", " +
-//                    "wed = " + dayListResult[2] + ", " +
-//                    "thu = " + dayListResult[3] + ", " +
-//                    "fri = " + dayListResult[4] + ", " +
-//                    "sat = " + dayListResult[5] + ", " +
-//                    "sun = " + dayListResult[6] + ", " +
+                    "mon = " + dayListResult_int[0] + ", " +
+                    "tue = " + dayListResult_int[1] + ", " +
+                    "wed = " + dayListResult_int[2] + ", " +
+                    "thu = " + dayListResult_int[3] + ", " +
+                    "fri = " + dayListResult_int[4] + ", " +
+                    "sat = " + dayListResult_int[5] + ", " +
+                    "sun = " + dayListResult_int[6] + ", " +
                     /* 아래 두개는 왜 안될까....*/
-//                    "prov = " + locationList[0] + ", " +
-//                    "subProv = " + locationList[1] + ", " +
+                    "prov = '" + locationList[0] + "', " +
+                    "subProv = '" + locationList[1] + "', " +
                     "subProvSeq = " + subProvSeq + ", " +
-                    "time1 = " + timeList[0] + ", " +
-                    "time2 = " + timeList[1] + ", " +
-                    "time3 = " + timeList[2] + ", " +
-                    "time4 = " + timeList[3] + ", " +
-                    "time5 = " + timeList[4] + ", " +
-                    "time6 = " + timeList[5] + ", " +
+                    "time1 = " + timeListResult_int[0] + ", " +
+                    "time2 = " + timeListResult_int[1] + ", " +
+                    "time3 = " + timeListResult_int[2] + ", " +
+                    "time4 = " + timeListResult_int[3] + ", " +
+                    "time5 = " + timeListResult_int[4] + ", " +
+                    "time6 = " + timeListResult_int[5] + ", " +
                     "precipitation = " + precipitation + ", " +
                     "alarmPoint = " + alarmPoint + ", " +
                     "setHour = " + pickedHour + ", " +
                     "setMinute = " + pickedMinute;
         }
-        Log.e("log", "쿼리  : " + query);
         sqLiteDatabase.execSQL(query);
     }
 }
