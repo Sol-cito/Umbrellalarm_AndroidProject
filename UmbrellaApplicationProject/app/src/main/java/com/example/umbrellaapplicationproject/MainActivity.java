@@ -11,12 +11,9 @@ DB삭제(tmp)버튼을 누르면 table 자체가 drop되어서, 그 다음에 �
 
 package com.example.umbrellaapplicationproject;
 
-import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -37,7 +34,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -82,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createDB();
+
+        /* test. 이 메소드는 '설정한 알람 시간이 되면' 작동해야 함. */
+        getRSSdata();
 
         /* Data display by text */
         dayText = findViewById(R.id.dayText);
@@ -243,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 scrollUptotheTopOfFragmentDisplay();
-                setAlarm(); //volley 호출
                 getCurrentDateAndTime(); //현재 시간 얻기
                 dataInsertOrUpdate(whichButtonClicked);
                 removeFragment();
@@ -305,31 +310,32 @@ public class MainActivity extends AppCompatActivity {
         currentDate = format.format(date);
     }
 
+    /* Set alarm */
     public void setAlarm() {
-        String base_Date = "";
-        String base_time = "";
-        String nx = "";
-        String ny = "";
+        /* 알람을 설정하는 메소드 */
+    }
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        String url = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?"
-                + "serviceKey=" + SERVICE_KEY +
-                "&base_date=20191221&base_time=1430&nx=55&ny=127&_type=json";
-//        Log.e("log", url);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.e("log", "요청성공");
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("log", "요청 실패");
-                    }
-                });
-        requestQueue.add(stringRequest);
+    /* get data from RSS (by using AsyncTask) */
+    public void getRSSdata() {
+        /*
+        * RSS데이터를 Dom 형태로 받아왔다.
+        * tag = "pop"이 강수량이고, "pubDate" 로부터 관측시간 기준 "hour"이후의 "pop"을 알 수 있다 !
+        * 따라서, 알람을 설정한 location으로 URL zone을 설정(하드코딩)하고,
+        * 이를 기준으로 알람을 설정한 시간이 되면 url에 request하여 받아온 data를 통해 pop을 얻고,
+        * 얻은 pop에 따라 설정한 강수확률과 비교, 해당되면 우산 가져가라는 알람이 울리고, 아니면 맑다는 메시지를 띄운다.*/
+
+        Document doc = null;
+        BackgroundThreadForXML backgroundThreadForXML = new BackgroundThreadForXML();
+        try {
+            doc = backgroundThreadForXML.execute(0, 0, 0).get();
+            NodeList nodeList = doc.getElementsByTagName("wdKor");
+            for(int i = 0; i < nodeList.getLength(); i++){
+                Log.e("log", i+"번째 값 : "+nodeList.item(i).getTextContent());
+            }
+        } catch (Exception e) {
+            Log.e("log", "값 받아오기 실패");
+            e.printStackTrace();
+        }
     }
 
     /* DB create */
