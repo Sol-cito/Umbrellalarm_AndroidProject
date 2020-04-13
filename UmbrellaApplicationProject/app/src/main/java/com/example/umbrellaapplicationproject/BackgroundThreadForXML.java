@@ -1,6 +1,7 @@
 package com.example.umbrellaapplicationproject;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -10,13 +11,20 @@ import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-public class BackgroundThreadForXML extends AsyncTask<Integer, Integer, Document> {
+public class BackgroundThreadForXML extends AsyncTask<Long, Integer, Document> {
+    /*
+    * Long : parameter of doInBackground
+    * Integer : parameter of onProgressUpdate (not used here)
+    * Document : return value of doInBackground and also parameter of onPostExecute
+     */
     /* return document which is originally RSS data from the weather cast website below */
     @Override
-    protected Document doInBackground(Integer... integers) {
+    protected Document doInBackground(Long... Longs) {
+        Long zoneCode = Longs[0];
+        Log.e("log", "Async에서 얻은 zone code : "+zoneCode);
         Document doc = null;
         try {
-            URL url = new URL("https://www.kma.go.kr/wid/queryDFSRSS.jsp?zone=1120059000");
+            URL url = new URL("https://www.kma.go.kr/wid/queryDFSRSS.jsp?zone="+zoneCode);
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             doc = documentBuilder.parse(new InputSource(url.openStream()));
@@ -26,5 +34,4 @@ public class BackgroundThreadForXML extends AsyncTask<Integer, Integer, Document
         }
         return doc;
     }
-
 }
