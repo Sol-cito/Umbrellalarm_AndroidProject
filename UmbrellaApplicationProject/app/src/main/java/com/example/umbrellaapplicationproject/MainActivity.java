@@ -11,9 +11,13 @@ DB삭제(tmp)버튼을 누르면 table 자체가 drop되어서, 그 다음에 �
 
 package com.example.umbrellaapplicationproject;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +28,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -39,6 +44,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.nio.channels.Channel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -109,8 +115,9 @@ public class MainActivity extends AppCompatActivity {
         tempDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                notification(); //실험
                 if (checkIfDBexists()) {
-                    deleteDB();
+//                    deleteDB();
                 } else {
                     Toast.makeText(MainActivity.this, "DB전부삭제해서없음", Toast.LENGTH_SHORT).show();
                 }
@@ -315,6 +322,28 @@ public class MainActivity extends AppCompatActivity {
         /* 알람을 설정하는 메소드 */
     }
 
+    /* Set notification service */
+    public void notification() {
+        //알림 세부 내용 수정 요망
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (notificationManager.getNotificationChannel("channel1") == null) {
+                notificationManager.createNotificationChannel(new NotificationChannel(
+                        "channel_1", "createdChannel", NotificationManager.IMPORTANCE_DEFAULT
+                ));
+                builder = new NotificationCompat.Builder(this, "channel_1");
+            }
+        } else {
+            builder = new NotificationCompat.Builder(this);
+        }
+        builder.setContentTitle("알림 타이틀");
+        builder.setContentText("알림 내용");
+        builder.setSmallIcon(R.drawable.loading_icon); //알림 아이콘
+        Notification notification = builder.build();
+        notificationManager.notify(1, notification); //알림 실행
+    }
+
     /* get subProv data from DB */
     public String getSubProvFromDB() {
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT subProv FROM " + dbTableName, null);
@@ -335,12 +364,15 @@ public class MainActivity extends AppCompatActivity {
          * tag = "pop"이 강수량이고, "pubDate" 로부터 관측시간 기준 "hour"이후의 "pop"을 알 수 있다 ! (알고리즘 짜야함)
          * 따라서, 알람을 설정한 location으로 URL zone을 설정(하드코딩)하고, => 완료
          * 이를 기준으로 알람을 설정한 시간이 되면 url에 request하여 받아온 data를 통해 pop을 얻고,
-         * 얻은 pop에 따라 설정한 강수확률과 비교, 해당되면 우산 가져가라는 알람이 울리고, 아니면 맑다는 메시지를 띄운다.
+         * 얻은 pop에 따라 설정한 강수확률과 비교, 해당되면 우산 가져가라는 알람이 울리고(알람 로직 설정 완료),
+         * 아니면 맑다는 메시지를 띄운다(2번째 알람).
          *
          * <Tasks>
          * 1. hour / pop 알고리즘 짜기
          * 2. DB에 들어있는 설정된 강수확률(precipitation)과 비교, return 값 내기
-         * 3.
+         * 3. 설정한 시간이 되면 특정 위 1,2번 메소드가 작동하도록 하기
+         * 4. 1,2,번 메소드의 결과값으로 인해 notification 메소드가 동작하도록 하기.
+         * 5. notification contents should be more elaborated
          *
          * */
         Document doc = null;
@@ -357,6 +389,9 @@ public class MainActivity extends AppCompatActivity {
             Log.e("log", "값 받아오기 실패");
             e.printStackTrace();
         }
+
+
+        notification(); //상단 알림 설정
     }
 
     /* Hardcoding to get zone code */
