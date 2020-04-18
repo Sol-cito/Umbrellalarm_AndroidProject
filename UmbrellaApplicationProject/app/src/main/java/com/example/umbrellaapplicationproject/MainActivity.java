@@ -149,6 +149,15 @@ public class MainActivity extends AppCompatActivity {
     /*뒤로 가기 버튼 2번 누를 시 종료 & 알람 세팅 프래그먼트 끄기*/
     @Override
     public void onBackPressed() {
+        if (fragment_alarmSetting == null || !fragment_alarmSetting.isAdded()) {
+            if (lastBackPresseed + 2000 < System.currentTimeMillis()) {
+                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다", Toast.LENGTH_LONG).show();
+                lastBackPresseed = System.currentTimeMillis();
+            } else {
+                finish();
+            }
+            return;
+        }
         if (fragment_alarmSetting.isAdded()) {
             if (checkIfDBexists()) {
                 setDialogBuilder(4);
@@ -156,12 +165,6 @@ public class MainActivity extends AppCompatActivity {
                 setDialogBuilder(1);
             }
             return;
-        }
-        if (lastBackPresseed + 2000 < System.currentTimeMillis()) {
-            Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다", Toast.LENGTH_LONG).show();
-            lastBackPresseed = System.currentTimeMillis();
-        } else {
-            finish();
         }
     }
 
