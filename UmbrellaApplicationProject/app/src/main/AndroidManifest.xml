@@ -12,10 +12,14 @@
         <activity android:name=".LoadingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity"></activity>
+        <receiver android:name=".AlarmReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.umbrellaapplicationproject.ALARM_START"/>
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

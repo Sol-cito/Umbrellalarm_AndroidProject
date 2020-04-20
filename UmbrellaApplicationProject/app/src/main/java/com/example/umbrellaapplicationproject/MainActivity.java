@@ -11,10 +11,16 @@ DB삭제(tmp)버튼을 누르면 table 자체가 drop되어서, 그 다음에 �
 
 package com.example.umbrellaapplicationproject;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
@@ -47,6 +53,7 @@ import org.w3c.dom.NodeList;
 import java.nio.channels.Channel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -83,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
     private Button deleteButton;
     private Button modifyButton;
 
+    /* Alarm components */
+    private Calendar calendar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
         tempDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                notification(); //실험
                 if (checkIfDBexists()) {
 //                    deleteDB();
                 } else {
@@ -258,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
                 scrollUptotheTopOfFragmentDisplay();
                 getCurrentDateAndTime(); //현재 시간 얻기
                 dataInsertOrUpdate(whichButtonClicked);
+                setCalender();
                 removeFragment();
             }
         });
@@ -268,6 +278,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         alertDialogBuilder.show();
+    }
+
+    public void setCalender() {
+//        Cursor cursor = sqLiteDatabase.rawQuery("SELECT setHour, setMinute FROM " + dbTableName, null);
+//        cursor.moveToNext();
+//        int setHour = cursor.getInt(0);
+//        int setMinute = cursor.getInt(1);
+        calendar = Calendar.getInstance();
+//        calendar.set(Calendar.HOUR_OF_DAY, setHour);
+//        calendar.set(Calendar.MINUTE, setMinute);
+//        calendar.set(Calendar.SECOND, 0); // DB에서 시간받아오기 -> 알람매니저 테스트를 위해 주석처리
+        /* Test (현재시간으로부터 10초 후)*/
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.SECOND, 10);
+        setAlarm();
     }
 
     public void removeFragment() {
@@ -319,7 +344,15 @@ public class MainActivity extends AppCompatActivity {
 
     /* Set alarm */
     public void setAlarm() {
+        Log.e("log", "셋 알람 메소드");
         /* 알람을 설정하는 메소드 */
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.putExtra("ID", 1);
+        intent.putExtra("time", calendar);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
     /* Set notification service */
@@ -389,9 +422,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("log", "값 받아오기 실패");
             e.printStackTrace();
         }
-
-
-        notification(); //상단 알림 설정
+//        notification(); //상단 알림 설정
     }
 
     /* Hardcoding to get zone code */
