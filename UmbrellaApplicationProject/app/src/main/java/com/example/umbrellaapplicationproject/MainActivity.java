@@ -99,8 +99,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         createDB();
 
-        /* test. 이 메소드는 '설정한 알람 시간이 되면' 작동해야 함. */
-        getRSSdata();
+        boolean extraFromAlarmReceiver = getIntent().getBooleanExtra("alarmFiring", false);
+        Log.e("log", "extraFromAlarmReceiver 값 : " + extraFromAlarmReceiver);
+        if (extraFromAlarmReceiver) { //알람리시버에서 값이 들어왔으면
+            getRSSdata();
+        }
 
         /* Data display by text */
         dayText = findViewById(R.id.dayText);
@@ -280,21 +283,6 @@ public class MainActivity extends AppCompatActivity {
         alertDialogBuilder.show();
     }
 
-    public void setCalender() {
-//        Cursor cursor = sqLiteDatabase.rawQuery("SELECT setHour, setMinute FROM " + dbTableName, null);
-//        cursor.moveToNext();
-//        int setHour = cursor.getInt(0);
-//        int setMinute = cursor.getInt(1);
-        calendar = Calendar.getInstance();
-//        calendar.set(Calendar.HOUR_OF_DAY, setHour);
-//        calendar.set(Calendar.MINUTE, setMinute);
-//        calendar.set(Calendar.SECOND, 0); // DB에서 시간받아오기 -> 알람매니저 테스트를 위해 주석처리
-        /* Test (현재시간으로부터 10초 후)*/
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.add(Calendar.SECOND, 10);
-        setAlarm();
-    }
-
     public void removeFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -342,9 +330,22 @@ public class MainActivity extends AppCompatActivity {
         currentDate = format.format(date);
     }
 
+    public void setCalender() {
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT setHour, setMinute FROM " + dbTableName, null);
+        cursor.moveToNext();
+        int setHour = cursor.getInt(0);
+        int setMinute = cursor.getInt(1);
+        calendar = Calendar.getInstance();
+//        calendar.set(Calendar.HOUR_OF_DAY, setHour);
+//        calendar.set(Calendar.MINUTE, setMinute);
+        /* test */
+        int currentTime = (int) System.currentTimeMillis();
+        calendar.set(Calendar.SECOND, currentTime + 10);
+        setAlarm();
+    }
+
     /* Set alarm */
     public void setAlarm() {
-        Log.e("log", "셋 알람 메소드");
         /* 알람을 설정하는 메소드 */
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("ID", 1);
@@ -353,6 +354,14 @@ public class MainActivity extends AppCompatActivity {
                 PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        // setRepeating 하면 반복알람임.
+        // https://debugdaldal.tistory.com/124 참고. 설명 잘 되어있음.
+
+        /*
+         * 알람 설정을 누르면 calender가 설정되고, setAlarm이 됨..
+         * AlarmReceiver에서 getRSSdata가 먼저 작동되고, DB에 있는 설정 강수확률에 따라
+         * Notification 함수가 작동되어야 함.*/
+
     }
 
     /* Set notification service */
