@@ -50,6 +50,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.lang.reflect.Array;
 import java.nio.channels.Channel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -368,12 +369,14 @@ public class MainActivity extends AppCompatActivity {
     public void notification() {
         //알림 세부 내용 수정 요망
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        NotificationCompat.Builder builder = null;
+        NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (notificationManager.getNotificationChannel("channel1") == null) {
+            if (notificationManager.getNotificationChannel("channel_1") == null) {
                 notificationManager.createNotificationChannel(new NotificationChannel(
-                        "channel_1", "createdChannel", NotificationManager.IMPORTANCE_DEFAULT
+                        "channel_id", "createdChannel", NotificationManager.IMPORTANCE_DEFAULT
                 ));
+                builder = new NotificationCompat.Builder(this, "channel_1");
+            } else {
                 builder = new NotificationCompat.Builder(this, "channel_1");
             }
         } else {
@@ -422,17 +425,37 @@ public class MainActivity extends AppCompatActivity {
         try {
             doc = backgroundThreadForXML.execute(zoneCode).get();
             NodeList nodeList = doc.getElementsByTagName("pop");
-            /* test */
             Log.e("log", "지역 : " + doc.getElementsByTagName("category").item(0).getTextContent());
+
+            /* 현재 시간 구하기 */
+            long currentTime = System.currentTimeMillis();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH");
+            int currentHour = Integer.parseInt(simpleDateFormat.format(currentTime));
+            ArrayList<Integer> castedHourList = new ArrayList<>();
+            HashMap<Integer, Integer> popMap = new HashMap<>();
             for (int i = 0; i < nodeList.getLength(); i++) {
-                Log.e("log", i + "번째 pop 값 : " + nodeList.item(i).getTextContent());
+                //이거 16개(48시간)을 받아오는데, 굳이 16개 다 안받아와도 될듯..? 당일 데이터만 받아오면 될듯(3*8개 = 24시간)
+                int castedHour = currentHour + 3 * (i + 1);
+                castedHourList.add(castedHour); //3시간 후의 시간을 list에 저장
+                popMap.put(castedHour, Integer.parseInt(nodeList.item(i).getTextContent()));
+                Log.e("log", "저장한 시간 : " + castedHour + " / pop : " + Integer.parseInt(nodeList.item(i).getTextContent()));
             }
+            /* 설정한 시간대+강수확률과 실제 받아온 데이터를 비교 */
+            compareSetdataAndWeatherCast(castedHourList, popMap);
+
         } catch (Exception e) {
             Log.e("log", "값 받아오기 실패");
             e.printStackTrace();
         }
-//        notification(); //상단 알림 설정
+        notification(); //푸시 알람 실행
     }
+
+    public void compareSetdataAndWeatherCast(ArrayList<Integer> castedHourList, HashMap<Integer, Integer> popMap) {
+        /* 내가 강수확률 예측을 희망한 시간대(DB에서 조회하기)의 강수확률을
+        * 실제 castedHourList의 pop과 비교(평균을 내던가 해야)하여 해당 희망 시간대의 강수확률을 return한다.
+        * return은 ArrayList(length = 6개)로 하고 내가 예측을 희망한 시간대가 아니면 null을 넣던가 여튼 flag 넣기*/
+    }
+
 
     /* Hardcoding to get zone code */
     public Long getZoneCode(String subProvFromDB) {

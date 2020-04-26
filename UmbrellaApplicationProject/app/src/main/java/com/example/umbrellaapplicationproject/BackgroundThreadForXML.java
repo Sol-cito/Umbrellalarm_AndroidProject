@@ -21,7 +21,6 @@ public class BackgroundThreadForXML extends AsyncTask<Long, Integer, Document> {
     @Override
     protected Document doInBackground(Long... Longs) {
         Long zoneCode = Longs[0];
-        Log.e("log", "Async에서 얻은 zone code : "+zoneCode);
         Document doc = null;
         try {
             URL url = new URL("https://www.kma.go.kr/wid/queryDFSRSS.jsp?zone="+zoneCode);

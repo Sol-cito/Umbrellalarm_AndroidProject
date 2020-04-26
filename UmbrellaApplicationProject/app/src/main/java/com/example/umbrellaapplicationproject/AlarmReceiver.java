@@ -17,8 +17,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         /* 위 INTENT가 전달되어 activity 실행될 때 애니메이션 제거해서 자연스럽긴 한데,
         * activity가 2개 겹쳐있는 상태라, 뒤에꺼 제거하는 로직 추가하면서 애니메이션 제거하면 될듯 */
         context.startActivity(activityIntent);
-//        mainActivity.getRSSdata();
-//        mainActivity.notification();
         // 알람이 울렸을 때 activity가 작동하게 해야한다
         // Intent로 setClass를 하여 MainActivity를 붙여야 할듯
 
