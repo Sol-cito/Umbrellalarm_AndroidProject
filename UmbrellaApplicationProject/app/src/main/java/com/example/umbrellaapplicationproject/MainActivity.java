@@ -441,19 +441,56 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("log", "저장한 시간 : " + castedHour + " / pop : " + Integer.parseInt(nodeList.item(i).getTextContent()));
             }
             /* 설정한 시간대+강수확률과 실제 받아온 데이터를 비교 */
-            compareSetdataAndWeatherCast(castedHourList, popMap);
+            HashMap<Integer, Integer> entirePopMap = compareSetTimedataWithWeatherCast(castedHourList, popMap);
+            compareSetPrecipitationDataWithPopMap(entirePopMap);
+            /* 위 두 함수 완료되면 Notification 함수 실행 */
 
         } catch (Exception e) {
             Log.e("log", "값 받아오기 실패");
             e.printStackTrace();
         }
-        notification(); //푸시 알람 실행
     }
 
-    public void compareSetdataAndWeatherCast(ArrayList<Integer> castedHourList, HashMap<Integer, Integer> popMap) {
-        /* 내가 강수확률 예측을 희망한 시간대(DB에서 조회하기)의 강수확률을
-        * 실제 castedHourList의 pop과 비교(평균을 내던가 해야)하여 해당 희망 시간대의 강수확률을 return한다.
-        * return은 ArrayList(length = 6개)로 하고 내가 예측을 희망한 시간대가 아니면 null을 넣던가 여튼 flag 넣기*/
+    /* 유저가 설정한 강수확률 예측 시간대에 속한 예보의 강수확률(pop)을 반환  */
+    public HashMap<Integer, Integer> compareSetTimedataWithWeatherCast(ArrayList<Integer> castedHourList, HashMap<Integer, Integer> popMap) {
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT time1, time2, time3, time4, time5, time6 " +
+                "FROM " + dbTableName, null);
+        cursor.moveToNext();
+        int[] timeArr = new int[6];
+        for (int i = 0; i < 6; i++) {
+            timeArr[i] = cursor.getInt(i);
+        }
+        int timeZoneStart = 6;
+        HashMap<Integer, Integer> entirePopMap = new HashMap<>(); // 설정 안해놓은 시간의 value는 -1
+        for (int i = 0; i < 6; i++) {
+            int eachPopValue = 0;
+            int count = 0;
+            if (timeArr[i] == 1) { //설정해놓은 시간일 때
+                for (int each : castedHourList) {
+                    if (each >= timeZoneStart && each <= timeZoneStart + 3) {
+                        eachPopValue += popMap.get(each);
+                        count++;
+                    }
+                    if (each > timeZoneStart + 3) {
+                        break;
+                    }
+                }
+                timeZoneStart += 3;
+                if (count <= 0) {
+                    entirePopMap.put(i, -1); // -1 : 알람 시간이 강수예측 시간보다 느림
+                } else {
+                    entirePopMap.put(i, eachPopValue / count);
+                }
+            } else { // 설정 안해놓은 시간일 때
+                entirePopMap.put(i, -1);
+            }
+        }
+        return entirePopMap;
+    }
+
+    /* 유저가 설정한 알람 작동 강수확률과 실제 예보 강수확률의 비교 결과를 반환 */
+    public void compareSetPrecipitationDataWithPopMap(HashMap<Integer, Integer> entirePopMap) {
+
     }
 
 
