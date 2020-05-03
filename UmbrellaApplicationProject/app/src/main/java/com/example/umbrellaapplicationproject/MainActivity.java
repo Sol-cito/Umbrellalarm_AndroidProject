@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* Set notification service */
-    public void notification() {
+    public void notification(String notificationMessage, String location) {
         //알림 세부 내용 수정 요망
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder;
@@ -382,19 +382,21 @@ public class MainActivity extends AppCompatActivity {
         } else {
             builder = new NotificationCompat.Builder(this);
         }
-        builder.setContentTitle("알림 타이틀");
-        builder.setContentText("알림 내용");
+        builder.setContentTitle("우산알라미 알림");
+        builder.setContentText(location + " 강수확률\n" + notificationMessage);
         builder.setSmallIcon(R.drawable.loading_icon); //알림 아이콘
         Notification notification = builder.build();
         notificationManager.notify(1, notification); //알림 실행
     }
 
     /* get subProv data from DB */
-    public String getSubProvFromDB() {
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT subProv FROM " + dbTableName, null);
+    public String[] getProvAndSubProvFromDB() {
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT prov, subProv FROM " + dbTableName, null);
         cursor.moveToNext();
-        String subProvFromDB = cursor.getString(0);
-        return subProvFromDB;
+        String[] provAndSub = new String[2];
+        provAndSub[0] = cursor.getString(0);
+        provAndSub[1] = cursor.getString(1);
+        return provAndSub;
     }
 
     /* get data from RSS (by using AsyncTask) */
@@ -402,8 +404,8 @@ public class MainActivity extends AppCompatActivity {
         if (!checkIfDBexists()) { // if there is no DB, this method is not executed
             return;
         }
-        String subProvFromDB = getSubProvFromDB();
-        Long zoneCode = getZoneCode(subProvFromDB);
+        String[] provAndSubProvFromDBFromDB = getProvAndSubProvFromDB();
+        Long zoneCode = getZoneCode(provAndSubProvFromDBFromDB[1]);
         /*
          * RSS데이터를 Dom 형태로 받아왔다.
          * tag = "pop"이 강수량이고, "pubDate" 로부터 관측시간 기준 "hour"이후의 "pop"을 알 수 있다 ! (알고리즘 짜야함)
@@ -425,6 +427,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             doc = backgroundThreadForXML.execute(zoneCode).get();
             NodeList nodeList = doc.getElementsByTagName("pop");
+            String location = provAndSubProvFromDBFromDB[0] + " " + provAndSubProvFromDBFromDB[1];
             Log.e("log", "지역 : " + doc.getElementsByTagName("category").item(0).getTextContent());
 
             /* 현재 시간 구하기 */
@@ -442,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
             }
             /* 설정한 시간대+강수확률과 실제 받아온 데이터를 비교 */
             HashMap<Integer, Integer> entirePopMap = compareSetTimedataWithWeatherCast(castedHourList, popMap);
-            compareSetPrecipitationDataWithPopMap(entirePopMap);
+            compareSetPrecipitationDataWithPopMap(entirePopMap, location);
             /* 위 두 함수 완료되면 Notification 함수 실행 */
 
         } catch (Exception e) {
@@ -461,36 +464,57 @@ public class MainActivity extends AppCompatActivity {
             timeArr[i] = cursor.getInt(i);
         }
         int timeZoneStart = 6;
-        HashMap<Integer, Integer> entirePopMap = new HashMap<>(); // 설정 안해놓은 시간의 value는 -1
+        HashMap<Integer, Integer> entirePopMap = new HashMap<>(); // 설정 안해놓은 시간의 value는 -2
         for (int i = 0; i < 6; i++) {
             int eachPopValue = 0;
             int count = 0;
             if (timeArr[i] == 1) { //설정해놓은 시간일 때
                 for (int each : castedHourList) {
-                    if (each >= timeZoneStart && each <= timeZoneStart + 3) {
+                    if (each >= timeZoneStart + (3 * i) && each <= timeZoneStart + (3 * i) + 3) {
                         eachPopValue += popMap.get(each);
                         count++;
                     }
-                    if (each > timeZoneStart + 3) {
+                    if (each > timeZoneStart + (3 * i) + 3) {
                         break;
                     }
                 }
-                timeZoneStart += 3;
                 if (count <= 0) {
+                    Log.e("log", "-1 저장");
                     entirePopMap.put(i, -1); // -1 : 알람 시간이 강수예측 시간보다 느림
                 } else {
                     entirePopMap.put(i, eachPopValue / count);
                 }
             } else { // 설정 안해놓은 시간일 때
-                entirePopMap.put(i, -1);
+                entirePopMap.put(i, -2);
             }
         }
         return entirePopMap;
     }
 
-    /* 유저가 설정한 알람 작동 강수확률과 실제 예보 강수확률의 비교 결과를 반환 */
-    public void compareSetPrecipitationDataWithPopMap(HashMap<Integer, Integer> entirePopMap) {
+    /* 유저가 설정한 알람 작동 강수확률과 실제 예보 강수확률의 비교 결과를 notification()으로 보냄 */
+    public void compareSetPrecipitationDataWithPopMap(HashMap<Integer, Integer> entirePopMap, String location) {
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT precipitation FROM " + dbTableName, null);
+        cursor.moveToNext();
+//        int setPrecipitation = cursor.getInt(0); -> 설정해놓은 강수확률
+        int setPrecipitation = 0; // 테스트(강수확률 0)
+        String notificationMessage = "";
 
+        for (int i = 0; i < 6; i++) {
+            if (entirePopMap.get(i) >= setPrecipitation) { //실제 예보 강수확률(pop)이 설정한 강수확률 이상일 때
+                if (i < 2) {
+                    notificationMessage += "오전 " + (6 + i * 3) + "시 - " + (9 + i * 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%\n";
+                } else {
+                    int time = (i - 2) * 3;
+                    if (i == 2) {
+                        notificationMessage += "오후 12시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%\n";
+                    } else {
+                        notificationMessage += "오후 " + time + "시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%\n";
+                    }
+                }
+            }
+        }
+        Log.e("log", "notificationMessage : " + notificationMessage);
+        notification(notificationMessage, location);
     }
 
 
