@@ -23,8 +23,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -77,7 +79,13 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout dataBoard;
 
     /* Display Data from DB */
-    private TextView dayText;
+    private TextView dayText_mon;
+    private TextView dayText_tue;
+    private TextView dayText_wed;
+    private TextView dayText_thu;
+    private TextView dayText_fri;
+    private TextView dayText_sat;
+    private TextView dayText_sun;
     private TextView locationText;
     private TextView timeText;
     private TextView precipitationText;
@@ -107,7 +115,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /* Data display by text */
-        dayText = findViewById(R.id.dayText);
+        dayText_mon = findViewById(R.id.dayText_mon);
+        dayText_tue = findViewById(R.id.dayText_tue);
+        dayText_wed = findViewById(R.id.dayText_wed);
+        dayText_thu = findViewById(R.id.dayText_thu);
+        dayText_fri = findViewById(R.id.dayText_fri);
+        dayText_sat = findViewById(R.id.dayText_sat);
+        dayText_sun = findViewById(R.id.dayText_sun);
+
         locationText = findViewById(R.id.locationText);
         timeText = findViewById(R.id.timeText);
         precipitationText = findViewById(R.id.precipitationText);
@@ -601,27 +616,26 @@ public class MainActivity extends AppCompatActivity {
         cursor.moveToNext();
 
         /* set days */
-        String setDays = "설정 요일 : ";
+        String color = "#ffffff";
         for (int i = 1; i < 8; i++) {
             if (cursor.getInt(i) == 1) {
                 if (i == 1) {
-                    setDays += "월 ";
+                    dayText_mon.setTextColor(Color.parseColor(color));
                 } else if (i == 2) {
-                    setDays += "화 ";
+                    dayText_tue.setTextColor(Color.parseColor(color));
                 } else if (i == 3) {
-                    setDays += "수 ";
+                    dayText_wed.setTextColor(Color.parseColor(color));
                 } else if (i == 4) {
-                    setDays += "목 ";
+                    dayText_thu.setTextColor(Color.parseColor(color));
                 } else if (i == 5) {
-                    setDays += "금 ";
+                    dayText_fri.setTextColor(Color.parseColor(color));
                 } else if (i == 6) {
-                    setDays += "토 ";
+                    dayText_sat.setTextColor(Color.parseColor(color));
                 } else {
-                    setDays += "일 ";
+                    dayText_sun.setTextColor(Color.parseColor(color));
                 }
             }
         }
-        dayText.setText(setDays);
 
         /* set location */
         String getProvince = cursor.getString(8);
