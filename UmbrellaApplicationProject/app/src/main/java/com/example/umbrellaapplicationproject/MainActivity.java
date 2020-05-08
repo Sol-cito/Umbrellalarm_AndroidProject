@@ -39,6 +39,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -342,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
         /* test */
         int currentTime = (int) System.currentTimeMillis();
         calendar.set(Calendar.SECOND, currentTime + 10);
-        setAlarm();
+//        setAlarm();
     }
 
     /* Set alarm */
@@ -602,6 +603,15 @@ public class MainActivity extends AppCompatActivity {
 
         /* set days */
         String whiteColor = "#ffffff";
+        String greyColor = "#606060";
+        /* initialize */
+        dayText_mon.setTextColor(Color.parseColor(greyColor));
+        dayText_tue.setTextColor(Color.parseColor(greyColor));
+        dayText_wed.setTextColor(Color.parseColor(greyColor));
+        dayText_thu.setTextColor(Color.parseColor(greyColor));
+        dayText_fri.setTextColor(Color.parseColor(greyColor));
+        dayText_sat.setTextColor(Color.parseColor(greyColor));
+        dayText_sun.setTextColor(Color.parseColor(greyColor));
         for (int i = 1; i < 8; i++) {
             if (cursor.getInt(i) == 1) {
                 if (i == 1) {
@@ -628,6 +638,13 @@ public class MainActivity extends AppCompatActivity {
         locationText.setText(getProvince + " " + getSubProvince);
 
         /* set timeText */
+        /* initialize */
+        timeText_6to9.setTextColor(Color.parseColor(greyColor));
+        timeText_9to12.setTextColor(Color.parseColor(greyColor));
+        timeText_12to15.setTextColor(Color.parseColor(greyColor));
+        timeText_15to18.setTextColor(Color.parseColor(greyColor));
+        timeText_18to21.setTextColor(Color.parseColor(greyColor));
+        timeText_21to24.setTextColor(Color.parseColor(greyColor));
         for (int i = 11; i < 17; i++) {
             if (cursor.getInt(i) == 1) {
                 if (i == 11) {
@@ -647,13 +664,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /* set precipitation */
+        /* initialize */
+        precipitationText_30.setTextColor(Color.parseColor(greyColor));
+        precipitationText_50.setTextColor(Color.parseColor(greyColor));
+        precipitationText_70.setTextColor(Color.parseColor(greyColor));
+
         int precipitationFromDB = Integer.parseInt(cursor.getString(17));
         if (precipitationFromDB == 30) {
             precipitationText_30.setTextColor(Color.parseColor(whiteColor));
         } else if (precipitationFromDB == 50) {
-            precipitationText_30.setTextColor(Color.parseColor(whiteColor));
+            precipitationText_50.setTextColor(Color.parseColor(whiteColor));
         } else {
-            precipitationText_30.setTextColor(Color.parseColor(whiteColor));
+            precipitationText_70.setTextColor(Color.parseColor(whiteColor));
         }
 
 //        /*alarmPointText*/

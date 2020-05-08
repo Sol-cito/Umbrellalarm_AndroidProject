@@ -177,7 +177,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="설정 위치"
+                                android:text="강수예측 위치"
                                 android:textColor="#8C2CFF"
                                 android:textSize="18sp" />
 
@@ -204,7 +204,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="알람 강수량"
+                                android:text="알람 강수량 기준"
                                 android:textColor="#8C2CFF"
                                 android:textSize="18sp" />
 
@@ -248,13 +248,13 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="15sp"
                         android:layout_marginTop="15sp"
                         android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="15sp"
                             android:gravity="center"
                             android:text="강수확률 예측 시간대"
                             android:textColor="#8C2CFF"
@@ -272,9 +272,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:text="6AM-9AM"
+                                android:text="6am-9am"
                                 android:textColor="#606060"
-                                android:textSize="18sp" />
+                                android:textSize="20sp" />
 
                             <TextView
                                 android:id="@+id/timeText_9to12"
@@ -282,9 +282,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:text="9AM-12PM"
+                                android:text="9am-12pm"
                                 android:textColor="#606060"
-                                android:textSize="18sp" />
+                                android:textSize="20sp" />
 
                             <TextView
                                 android:id="@+id/timeText_12to15"
@@ -292,9 +292,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:text="12PM-3PM"
+                                android:text="12pm-3pm"
                                 android:textColor="#606060"
-                                android:textSize="18sp" />
+                                android:textSize="20sp" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -310,9 +310,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:text="3PM-6PM"
+                                android:text="3pm-6pm"
                                 android:textColor="#606060"
-                                android:textSize="18sp" />
+                                android:textSize="20sp" />
 
                             <TextView
                                 android:id="@+id/timeText_18to21"
@@ -320,9 +320,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:text="6PM-9PM"
+                                android:text="6pm-9pm"
                                 android:textColor="#606060"
-                                android:textSize="18sp" />
+                                android:textSize="20sp" />
 
                             <TextView
                                 android:id="@+id/timeText_21to24"
@@ -330,9 +330,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:text="9PM-12AM"
+                                android:text="9pm-12am"
                                 android:textColor="#606060"
-                                android:textSize="18sp" />
+                                android:textSize="20sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
