@@ -16,17 +16,14 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -40,20 +37,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.lang.reflect.Array;
-import java.nio.channels.Channel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -87,10 +73,16 @@ public class MainActivity extends AppCompatActivity {
     private TextView dayText_sat;
     private TextView dayText_sun;
     private TextView locationText;
-    private TextView timeText;
-    private TextView precipitationText;
+    private TextView timeText_6to9;
+    private TextView timeText_9to12;
+    private TextView timeText_12to15;
+    private TextView timeText_15to18;
+    private TextView timeText_18to21;
+    private TextView timeText_21to24;
+    private TextView precipitationText_30;
+    private TextView precipitationText_50;
+    private TextView precipitationText_70;
     private TextView alarmTimeText;
-    private TextView alarmPointText;
 
     /* 임시 DB삭제버튼 */
     private Button tempDeleteButton;
@@ -124,10 +116,16 @@ public class MainActivity extends AppCompatActivity {
         dayText_sun = findViewById(R.id.dayText_sun);
 
         locationText = findViewById(R.id.locationText);
-        timeText = findViewById(R.id.timeText);
-        precipitationText = findViewById(R.id.precipitationText);
+        timeText_6to9 = findViewById(R.id.timeText_6to9);
+        timeText_9to12 = findViewById(R.id.timeText_9to12);
+        timeText_12to15 = findViewById(R.id.timeText_12to15);
+        timeText_15to18 = findViewById(R.id.timeText_15to18);
+        timeText_18to21 = findViewById(R.id.timeText_18to21);
+        timeText_21to24 = findViewById(R.id.timeText_21to24);
+        precipitationText_30 = findViewById(R.id.precipitationText_30);
+        precipitationText_50 = findViewById(R.id.precipitationText_50);
+        precipitationText_70 = findViewById(R.id.precipitationText_70);
         alarmTimeText = findViewById(R.id.alarmTimeText);
-        alarmPointText = findViewById(R.id.alarmPointText);
 
         /*추가 버튼 클릭 로직 구현*/
         addButton = findViewById(R.id.addButton);
@@ -136,19 +134,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "우산알라미를 추가합니다", Toast.LENGTH_SHORT).show();
                 replaceFragment();
-            }
-        });
-
-        /* 임시 DB삭제 버튼 */
-        tempDeleteButton = findViewById(R.id.tempDeleteButton);
-        tempDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkIfDBexists()) {
-//                    deleteDB();
-                } else {
-                    Toast.makeText(MainActivity.this, "DB전부삭제해서없음", Toast.LENGTH_SHORT).show();
-                }
             }
         });
 
@@ -616,23 +601,23 @@ public class MainActivity extends AppCompatActivity {
         cursor.moveToNext();
 
         /* set days */
-        String color = "#ffffff";
+        String whiteColor = "#ffffff";
         for (int i = 1; i < 8; i++) {
             if (cursor.getInt(i) == 1) {
                 if (i == 1) {
-                    dayText_mon.setTextColor(Color.parseColor(color));
+                    dayText_mon.setTextColor(Color.parseColor(whiteColor));
                 } else if (i == 2) {
-                    dayText_tue.setTextColor(Color.parseColor(color));
+                    dayText_tue.setTextColor(Color.parseColor(whiteColor));
                 } else if (i == 3) {
-                    dayText_wed.setTextColor(Color.parseColor(color));
+                    dayText_wed.setTextColor(Color.parseColor(whiteColor));
                 } else if (i == 4) {
-                    dayText_thu.setTextColor(Color.parseColor(color));
+                    dayText_thu.setTextColor(Color.parseColor(whiteColor));
                 } else if (i == 5) {
-                    dayText_fri.setTextColor(Color.parseColor(color));
+                    dayText_fri.setTextColor(Color.parseColor(whiteColor));
                 } else if (i == 6) {
-                    dayText_sat.setTextColor(Color.parseColor(color));
+                    dayText_sat.setTextColor(Color.parseColor(whiteColor));
                 } else {
-                    dayText_sun.setTextColor(Color.parseColor(color));
+                    dayText_sun.setTextColor(Color.parseColor(whiteColor));
                 }
             }
         }
@@ -643,49 +628,61 @@ public class MainActivity extends AppCompatActivity {
         locationText.setText(getProvince + " " + getSubProvince);
 
         /* set timeText */
-        String setTimeText = "";
         for (int i = 11; i < 17; i++) {
             if (cursor.getInt(i) == 1) {
                 if (i == 11) {
-                    setTimeText += "6AM - 9AM ";
+                    timeText_6to9.setTextColor(Color.parseColor(whiteColor));
                 } else if (i == 12) {
-                    setTimeText += "9AM - 12PM ";
+                    timeText_9to12.setTextColor(Color.parseColor(whiteColor));
                 } else if (i == 13) {
-                    setTimeText += "12PM - 3PM";
+                    timeText_12to15.setTextColor(Color.parseColor(whiteColor));
                 } else if (i == 14) {
-                    setTimeText += "3PM - 6PM";
+                    timeText_15to18.setTextColor(Color.parseColor(whiteColor));
                 } else if (i == 15) {
-                    setTimeText += "6PM - 9PM";
-                } else {
-                    setTimeText += "9PM - 12AM";
+                    timeText_18to21.setTextColor(Color.parseColor(whiteColor));
+                } else if (i == 16) {
+                    timeText_21to24.setTextColor(Color.parseColor(whiteColor));
                 }
             }
         }
-        timeText.setText(setTimeText);
 
         /* set precipitation */
-        precipitationText.setText("설정 강수량 : " + cursor.getString(17) + "%");
-
-        /*alarmPointText*/
-        int setPoint = cursor.getInt(18);
-
-        if (setPoint == 1) {
-            alarmPointText.setText("알람 전날");
+        int precipitationFromDB = Integer.parseInt(cursor.getString(17));
+        if (precipitationFromDB == 30) {
+            precipitationText_30.setTextColor(Color.parseColor(whiteColor));
+        } else if (precipitationFromDB == 50) {
+            precipitationText_30.setTextColor(Color.parseColor(whiteColor));
         } else {
-            alarmPointText.setText("알람 당일");
+            precipitationText_30.setTextColor(Color.parseColor(whiteColor));
         }
+
+//        /*alarmPointText*/
+//        int setPoint = cursor.getInt(18);
+//
+//        if (setPoint == 1) {
+//            alarmPointText.setText("알람 전날");
+//        } else {
+//            alarmPointText.setText("알람 당일");
+//        }
 
         /*alarmTimeText*/
         String setHour = "";
+        String AMorPM = "";
         int intHour = cursor.getInt(19);
         if (intHour - 13 < 0) {
-            setHour = "오전 " + intHour + "시";
+            AMorPM = "am";
         } else {
             intHour -= 12;
-            setHour = "오후 " + intHour + "시";
+            AMorPM = "pm";
         }
+        setHour += intHour + " : ";
         int setMinute = cursor.getInt(20);
-        alarmTimeText.setText(setHour + setMinute + "분");
+        if (setMinute < 10) {
+            setHour += "0" + setMinute;
+        } else {
+            setHour += setMinute;
+        }
+        alarmTimeText.setText(setHour + " " + AMorPM);
     }
 
     public void deleteDB() {
