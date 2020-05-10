@@ -12,7 +12,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -57,7 +56,6 @@ public class Fragment_alarmSetting extends Fragment {
 
     /* precipitation radio */
     private RadioGroup radioGroupOfPrecipitation;
-    private RadioGroup radioGroupOfAlarmPoint;
 
     /* Layout and spinners for selecting location*/
     private Spinner location_province;
@@ -84,7 +82,6 @@ public class Fragment_alarmSetting extends Fragment {
     private int subProvSeq;
     private boolean[] timeList;
     private int precipitation;
-    private int alarmPoint; //0 : default, 1 : a day ahead , 2 : on the very day
     private int pickedHour;
     private int pickedMinute;
 
@@ -345,8 +342,8 @@ public class Fragment_alarmSetting extends Fragment {
         /* When clicking '경기' */
         location_kyeunggi.setSelection(0, false);
         /* 위 selection을 왜 했는지 궁금하면
-        * https://stackoverflow.com/questions/2562248/how-to-keep-onitemselected-from-firing-off-on-a-newly-instantiated-spinner?rq=1
-        * 참고 */
+         * https://stackoverflow.com/questions/2562248/how-to-keep-onitemselected-from-firing-off-on-a-newly-instantiated-spinner?rq=1
+         * 참고 */
         location_kyeunggi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -374,21 +371,6 @@ public class Fragment_alarmSetting extends Fragment {
                     precipitation = 50;
                 } else {
                     precipitation = 70;
-                }
-            }
-        });
-
-        /* Set AlarmPoint */
-        radioGroupOfAlarmPoint = rootView.findViewById(R.id.radioGroupOfAlarmPoint);
-        alarmPoint = 0; // Default value when radio buttons are left blank
-        radioGroupOfAlarmPoint.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // 4: 알람 전날, 5: 알람 당일
-                if (checkedId == R.id.alarmPointRadioButtonBeforehand) {
-                    alarmPoint = 1;
-                } else {
-                    alarmPoint = 2;
                 }
             }
         });
@@ -509,18 +491,9 @@ public class Fragment_alarmSetting extends Fragment {
         }
         precipitation = getPrecipitation;
 
-        /* set alarm point and display them */
-        int getAlarmPoint = cursor.getInt(18);
-        if (getAlarmPoint == 1) {
-            radioGroupOfAlarmPoint.check(R.id.alarmPointRadioButtonBeforehand);
-        } else {
-            radioGroupOfAlarmPoint.check(R.id.alarmPointRadioButtonOnTheDay);
-        }
-        alarmPoint = getAlarmPoint;
-
         /* set alarmtime and display them */
-        int getHour = cursor.getInt(19);
-        int getMinute = cursor.getInt(20);
+        int getHour = cursor.getInt(18);
+        int getMinute = cursor.getInt(19);
         if (Build.VERSION.SDK_INT >= 23) {
             timePicker.setHour(getHour);
             timePicker.setMinute(getMinute);
@@ -598,14 +571,6 @@ public class Fragment_alarmSetting extends Fragment {
         } else {
             valid_precipitation.setVisibility(View.GONE);
         }
-        /* checking set alarmPoint */
-        if (alarmPoint == 0) {
-            scrollView.smoothScrollTo(0, 1500);
-            valid_alarmTime.setVisibility(View.VISIBLE);
-        } else {
-            valid_alarmTime.setVisibility(View.GONE);
-        }
-
         if (valid_day.getVisibility() == View.VISIBLE || valid_location.getVisibility() == View.VISIBLE
                 || valid_time.getVisibility() == View.VISIBLE || valid_precipitation.getVisibility() == View.VISIBLE
                 || valid_alarmTime.getVisibility() == View.VISIBLE) {
@@ -647,13 +612,12 @@ public class Fragment_alarmSetting extends Fragment {
         String query = "";
         if (flag == 0) {
             String values = dayListResult + "'" + prov + "', '" + subProv + "', " + subProvSeq + ", " +
-                    timeListResult + precipitation + ", " + alarmPoint + ", " + pickedHour + ", " + pickedMinute;
+                    timeListResult + precipitation + ", " + pickedHour + ", " + pickedMinute;
             query = "INSERT INTO " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, subProvSeq, " +
-                    "time1, time2, time3, time4, time5, time6, precipitation, alarmPoint, setHour, setMinute) " +
+                    "time1, time2, time3, time4, time5, time6, precipitation, setHour, setMinute) " +
                     " values ( " + values + " )";
         } else if (flag == 1) {
             query = "UPDATE " + dbTableName + " SET " +
-                    /* dayList가 Boolean이라서 integer인 DB에 안들어감.....integer로 바꾸거나 DB를 수정 */
                     "mon = " + dayListResult_int[0] + ", " +
                     "tue = " + dayListResult_int[1] + ", " +
                     "wed = " + dayListResult_int[2] + ", " +
@@ -672,7 +636,6 @@ public class Fragment_alarmSetting extends Fragment {
                     "time5 = " + timeListResult_int[4] + ", " +
                     "time6 = " + timeListResult_int[5] + ", " +
                     "precipitation = " + precipitation + ", " +
-                    "alarmPoint = " + alarmPoint + ", " +
                     "setHour = " + pickedHour + ", " +
                     "setMinute = " + pickedMinute;
         }

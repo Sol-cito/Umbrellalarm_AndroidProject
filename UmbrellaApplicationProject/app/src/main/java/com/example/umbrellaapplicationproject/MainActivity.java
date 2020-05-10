@@ -39,7 +39,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -94,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
 
     /* Alarm components */
     private Calendar calendar;
+
+    /* set days to toss over to the AlarmManager by intent */
+    private int[] days;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -333,37 +335,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setCalender() {
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT setHour, setMinute FROM " + dbTableName, null);
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT sun, mon, tue, wed, thu, fri, sat, setHour, setMinute FROM " + dbTableName, null);
         cursor.moveToNext();
-        int setHour = cursor.getInt(0);
-        int setMinute = cursor.getInt(1);
+        int setHour = cursor.getInt(7);
+        int setMinute = cursor.getInt(8);
+        days = new int[7];
+        for (int i = 0; i < 7; i++) {
+            if (cursor.getInt(i) == 1) {
+                days[i] = 1; // value is 1 if checked
+            } else {
+                days[i] = 0; // otherwise 0
+            }
+        }
         calendar = Calendar.getInstance();
+        /* hour, minute, days setting */
 //        calendar.set(Calendar.HOUR_OF_DAY, setHour);
 //        calendar.set(Calendar.MINUTE, setMinute);
         /* test */
         int currentTime = (int) System.currentTimeMillis();
         calendar.set(Calendar.SECOND, currentTime + 10);
-//        setAlarm();
+        setAlarm();
     }
 
     /* Set alarm */
     public void setAlarm() {
         /* 알람을 설정하는 메소드 */
         Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.putExtra("ID", 1);
-        intent.putExtra("time", calendar);
+        intent.putExtra("days", days);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        // setRepeating 하면 반복알람임.
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000*20, pendingIntent);
+        // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정, 아래 블로그 참고.
         // https://debugdaldal.tistory.com/124 참고. 설명 잘 되어있음.
-
-        /*
-         * 알람 설정을 누르면 calender가 설정되고, setAlarm이 됨..
-         * AlarmReceiver에서 getRSSdata가 먼저 작동되고, DB에 있는 설정 강수확률에 따라
-         * Notification 함수가 작동되어야 함.*/
-
     }
 
     /* Set notification service */
@@ -592,7 +596,7 @@ public class MainActivity extends AppCompatActivity {
         String querie = "create table if not exists " + dbTableName + "( id integer PRIMARY KEY autoincrement, " +
                 " mon integer, tue integer, wed integer, thu integer, fri integer, sat integer, sun integer, " +
                 "prov string, subProv string, subProvSeq integer, time1 integer, time2 integer, time3 integer, time4 integer," +
-                " time5 integer, time6 integer, precipitation integer, alarmPoint integer, setHour integer, setMinute integer)";
+                " time5 integer, time6 integer, precipitation integer, setHour integer, setMinute integer)";
         sqLiteDatabase.execSQL(querie);
     }
 
@@ -678,19 +682,10 @@ public class MainActivity extends AppCompatActivity {
             precipitationText_70.setTextColor(Color.parseColor(whiteColor));
         }
 
-//        /*alarmPointText*/
-//        int setPoint = cursor.getInt(18);
-//
-//        if (setPoint == 1) {
-//            alarmPointText.setText("알람 전날");
-//        } else {
-//            alarmPointText.setText("알람 당일");
-//        }
-
         /*alarmTimeText*/
         String setHour = "";
         String AMorPM = "";
-        int intHour = cursor.getInt(19);
+        int intHour = cursor.getInt(18);
         if (intHour - 13 < 0) {
             AMorPM = "am";
         } else {
@@ -698,7 +693,7 @@ public class MainActivity extends AppCompatActivity {
             AMorPM = "pm";
         }
         setHour += intHour + " : ";
-        int setMinute = cursor.getInt(20);
+        int setMinute = cursor.getInt(19);
         if (setMinute < 10) {
             setHour += "0" + setMinute;
         } else {

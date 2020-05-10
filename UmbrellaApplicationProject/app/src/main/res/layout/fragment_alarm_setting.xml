@@ -345,7 +345,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10sp"
                 android:layout_marginTop="20sp"
-                android:text="푸시알람을 받을 시간을 설정하세요"
+                android:text="우산알람을 받을 시간을 설정하세요"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
 
@@ -368,32 +368,6 @@
                 android:text="* 설정시간을 기준으로 강수확률 정보를 받아옵니다."
                 android:textColor="#ffffff"
                 android:textSize="15sp" />
-
-            <RadioGroup
-                android:id="@+id/radioGroupOfAlarmPoint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/alarmPointRadioButtonBeforehand"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="80sp"
-                    android:buttonTint="#ffffff"
-                    android:text="알람 전날"
-                    android:textColor="#ffffff" />
-
-                <RadioButton
-                    android:id="@+id/alarmPointRadioButtonOnTheDay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#ffffff"
-                    android:text="알람 당일"
-                    android:textColor="#ffffff" />
-
-            </RadioGroup>
 
             <TimePicker
                 android:id="@+id/timePicker"
