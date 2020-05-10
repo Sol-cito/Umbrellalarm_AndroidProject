@@ -9,7 +9,7 @@
     tools:context=".LoadingActivity">
 
     <ImageView
-        android:layout_width="257dp"
+        android:layout_width="300sp"
         android:layout_height="100sp"
         android:layout_gravity="center"
         android:layout_weight="1"

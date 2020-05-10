@@ -204,7 +204,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="알람 강수량 기준"
+                                android:text="알람 기준 강수량"
                                 android:textColor="#8C2CFF"
                                 android:textSize="18sp" />
 

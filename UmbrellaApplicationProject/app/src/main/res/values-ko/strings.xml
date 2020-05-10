@@ -5,8 +5,8 @@
     <string name="title_activity_loading">LoadingActivity</string>
 
     <!--메인화면-->
-    <string name="main_title">현재 설정된 우산알라미 </string>
+    <string name="main_title">현재 설정된 우산알람</string>
 
     <!--알라미 추가 프래그먼트-->
-    <string name="frag_title">우산알라미 추가</string>
+    <string name="frag_title">우산알람 추가</string>
 </resources>
