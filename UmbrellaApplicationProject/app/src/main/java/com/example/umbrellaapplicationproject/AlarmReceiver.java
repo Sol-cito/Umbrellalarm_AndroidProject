@@ -3,12 +3,16 @@ package com.example.umbrellaapplicationproject;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.util.Calendar;
 
 public class AlarmReceiver extends BroadcastReceiver {
+
+    private Context context;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         int[] days = intent.getIntArrayExtra("days");
@@ -30,6 +34,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         /* 위 INTENT가 전달되어 activity 실행될 때 애니메이션 제거해서 자연스럽긴 한데,
          * activity가 2개 겹쳐있는 상태라, 뒤에꺼 제거하는 로직 추가하면서 애니메이션 제거하면 될듯 */
         context.startActivity(activityIntent);
+
         // 알람이 울렸을 때 activity가 작동하게 해야한다
         // Intent로 setClass를 하여 MainActivity를 붙여야 할듯
 

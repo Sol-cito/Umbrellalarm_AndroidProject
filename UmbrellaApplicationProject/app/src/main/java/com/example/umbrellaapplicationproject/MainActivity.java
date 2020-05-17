@@ -55,11 +55,10 @@ public class MainActivity extends AppCompatActivity {
 
     /* 강수확률 request 관련 변수*/
     private String currentDate;
-    private String currentTime;
 
     /* DataBase */
     private SQLiteDatabase sqLiteDatabase;
-    private String dbTableName = "alarmData";
+    private final String dbTableName = "alarmData";
 
     private LinearLayout addAndDeleteLayout;
     private LinearLayout dataBoard;
@@ -351,9 +350,10 @@ public class MainActivity extends AppCompatActivity {
         /* hour, minute, days setting */
 //        calendar.set(Calendar.HOUR_OF_DAY, setHour);
 //        calendar.set(Calendar.MINUTE, setMinute);
+//        calendar.set(Calendar.SECOND, 0);
         /* test */
         int currentTime = (int) System.currentTimeMillis();
-        calendar.set(Calendar.SECOND, currentTime + 10);
+        calendar.set(Calendar.SECOND, currentTime + 5000);
         setAlarm();
     }
 
@@ -362,12 +362,10 @@ public class MainActivity extends AppCompatActivity {
         /* 알람을 설정하는 메소드 */
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("days", days);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000*20, pendingIntent);
-        // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정, 아래 블로그 참고.
-        // https://debugdaldal.tistory.com/124 참고. 설명 잘 되어있음.
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정
     }
 
     /* Set notification service */
@@ -411,22 +409,7 @@ public class MainActivity extends AppCompatActivity {
         }
         String[] provAndSubProvFromDBFromDB = getProvAndSubProvFromDB();
         Long zoneCode = getZoneCode(provAndSubProvFromDBFromDB[1]);
-        /*
-         * RSS데이터를 Dom 형태로 받아왔다.
-         * tag = "pop"이 강수량이고, "pubDate" 로부터 관측시간 기준 "hour"이후의 "pop"을 알 수 있다 ! (알고리즘 짜야함)
-         * 따라서, 알람을 설정한 location으로 URL zone을 설정(하드코딩)하고, => 완료
-         * 이를 기준으로 알람을 설정한 시간이 되면 url에 request하여 받아온 data를 통해 pop을 얻고,
-         * 얻은 pop에 따라 설정한 강수확률과 비교, 해당되면 우산 가져가라는 알람이 울리고(알람 로직 설정 완료),
-         * 아니면 맑다는 메시지를 띄운다(2번째 알람).
-         *
-         * <Tasks>
-         * 1. hour / pop 알고리즘 짜기
-         * 2. DB에 들어있는 설정된 강수확률(precipitation)과 비교, return 값 내기
-         * 3. 설정한 시간이 되면 특정 위 1,2번 메소드가 작동하도록 하기
-         * 4. 1,2,번 메소드의 결과값으로 인해 notification 메소드가 동작하도록 하기.
-         * 5. notification contents should be more elaborated
-         *
-         * */
+
         Document doc = null;
         BackgroundThreadForXML backgroundThreadForXML = new BackgroundThreadForXML();
         try {
