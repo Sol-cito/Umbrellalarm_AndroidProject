@@ -1,7 +1,6 @@
 package com.example.umbrellaapplicationproject;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
