@@ -19,11 +19,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,12 +74,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView precipitationText_70;
     private TextView alarmTimeText;
 
-    /* 임시 DB삭제버튼 */
-    private Button tempDeleteButton;
-
     /* Delete & Modify Buttons and flag */
     private Button deleteButton;
     private Button modifyButton;
+
+    /* switch button and transparent layout*/
+    private Switch firstAlarmSwitch;
+    private LinearLayout transparentLayout;
 
     /* Alarm components */
     private Calendar calendar;
@@ -142,12 +143,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /* Switch button function */
+        firstAlarmSwitch = findViewById(R.id.firstAlarmSwitch);
+        transparentLayout = findViewById(R.id.transparentLayout);
+        firstAlarmSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (firstAlarmSwitch.isChecked()) {
+                    /* transparentLayout 투명도 #00000000*/
+                } else {
+                    /* transparentLayout 투명도 #70000000*/
+                }
+            }
+        });
+
         /* Check if DB has been created */
         dataBoard = findViewById(R.id.dataBoard);
         addAndDeleteLayout = findViewById(R.id.addAndDeleteLayout);
         if (checkIfDBexists()) {
             addAndDeleteHideAndShow(true);
             selectDBAndDisplayDataOnMainActivity();
+            firstAlarmSwitch.setChecked(true);
         } else {
             addAndDeleteHideAndShow(false);
         }
@@ -362,6 +378,7 @@ public class MainActivity extends AppCompatActivity {
         provAndSub[1] = cursor.getString(1);
         return provAndSub;
     }
+
     /* DB create */
     public void createDB() {
         sqLiteDatabase = openOrCreateDatabase(dbTableName, MODE_PRIVATE, null);

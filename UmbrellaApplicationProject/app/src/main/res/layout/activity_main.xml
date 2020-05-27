@@ -34,336 +34,347 @@
                 android:background="@drawable/main_layoutshape"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/dataBoard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="15sp"
-                    android:background="#000000"
-                    android:orientation="vertical">
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
+                        android:id="@+id/transparentLayout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="15sp"
-                        android:layout_marginTop="10sp"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent">
 
                         <LinearLayout
+                            android:id="@+id/dataBoard"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="283dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="알람 시간"
-                                android:textColor="#8C2CFF"
-                                android:textSize="18sp" />
-
-                            <Switch
-                                android:id="@+id/alarmSwitch"
-                                android:track="@drawable/main_switch_selector"
-                                android:thumbTint="#ffffff"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
-
-
-                        </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/alarmTimeText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="야야야야야"
-                            android:textColor="#ffffff"
-                            android:textSize="60sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="15sp"
-                        android:layout_marginTop="20sp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="설정 요일"
-                            android:textColor="#8C2CFF"
-                            android:textSize="18sp" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8sp"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/dayText_mon"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="월"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/dayText_tue"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="화"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/dayText_wed"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="수"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/dayText_thu"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="목"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/dayText_fri"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="금"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/dayText_sat"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="토"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/dayText_sun"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="일"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10sp"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="15sp"
-                            android:layout_marginTop="15sp"
-                            android:layout_weight="1"
+                            android:layout_margin="15sp"
+                            android:background="#000000"
                             android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="강수예측 위치"
-                                android:textColor="#8C2CFF"
-                                android:textSize="18sp" />
-
-                            <TextView
-                                android:id="@+id/locationText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="5sp"
-                                android:gravity="center"
-                                android:text="야야야야야"
-                                android:textColor="#ffffff"
-                                android:textSize="20sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="15sp"
-                            android:layout_marginVertical="15sp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="알람 기준 강수량"
-                                android:textColor="#8C2CFF"
-                                android:textSize="18sp" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="15sp"
+                                android:layout_marginTop="10sp"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="283dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="알람 시간"
+                                        android:textColor="#8C2CFF"
+                                        android:textSize="18sp" />
+
+                                    <Switch
+                                        android:id="@+id/firstAlarmSwitch"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:thumbTint="#ffffff"
+                                        android:track="@drawable/main_switch_selector" />
+
+
+                                </LinearLayout>
 
                                 <TextView
-                                    android:id="@+id/precipitationText_30"
-                                    android:layout_width="wrap_content"
+                                    android:id="@+id/alarmTimeText"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="5sp"
-                                    android:layout_weight="1"
-                                    android:text="30%"
-                                    android:textColor="#606060"
-                                    android:textSize="20sp" />
+                                    android:gravity="center"
+                                    android:text="야야야야야"
+                                    android:textColor="#ffffff"
+                                    android:textSize="60sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="15sp"
+                                android:layout_marginTop="20sp"
+                                android:orientation="vertical">
 
                                 <TextView
-                                    android:id="@+id/precipitationText_50"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="5sp"
+                                    android:text="설정 요일"
+                                    android:textColor="#8C2CFF"
+                                    android:textSize="18sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8sp"
+                                    android:gravity="center"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/dayText_mon"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="월"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/dayText_tue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="화"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/dayText_wed"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="수"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/dayText_thu"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="목"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/dayText_fri"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="금"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/dayText_sat"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="토"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/dayText_sun"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="일"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10sp"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="15sp"
+                                    android:layout_marginTop="15sp"
                                     android:layout_weight="1"
-                                    android:text="50%"
-                                    android:textColor="#606060"
-                                    android:textSize="20sp" />
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:text="강수예측 위치"
+                                        android:textColor="#8C2CFF"
+                                        android:textSize="18sp" />
+
+                                    <TextView
+                                        android:id="@+id/locationText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5sp"
+                                        android:gravity="center"
+                                        android:text="야야야야야"
+                                        android:textColor="#ffffff"
+                                        android:textSize="20sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="15sp"
+                                    android:layout_marginVertical="15sp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:text="알람 기준 강수량"
+                                        android:textColor="#8C2CFF"
+                                        android:textSize="18sp" />
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <TextView
+                                            android:id="@+id/precipitationText_30"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="5sp"
+                                            android:layout_weight="1"
+                                            android:text="30%"
+                                            android:textColor="#606060"
+                                            android:textSize="20sp" />
+
+                                        <TextView
+                                            android:id="@+id/precipitationText_50"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="5sp"
+                                            android:layout_weight="1"
+                                            android:text="50%"
+                                            android:textColor="#606060"
+                                            android:textSize="20sp" />
+
+                                        <TextView
+                                            android:id="@+id/precipitationText_70"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="5sp"
+                                            android:layout_weight="1"
+                                            android:text="70%"
+                                            android:textColor="#606060"
+                                            android:textSize="20sp" />
+                                    </LinearLayout>
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15sp"
+                                android:orientation="vertical">
 
                                 <TextView
-                                    android:id="@+id/precipitationText_70"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="15sp"
+                                    android:gravity="center"
+                                    android:text="강수확률 예측 시간대"
+                                    android:textColor="#8C2CFF"
+                                    android:textSize="18sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginTop="5sp"
-                                    android:layout_weight="1"
-                                    android:text="70%"
-                                    android:textColor="#606060"
-                                    android:textSize="20sp" />
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/timeText_6to9"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="6am-9am"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/timeText_9to12"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="9am-12pm"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/timeText_12to15"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="12pm-3pm"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5sp"
+                                    android:layout_marginBottom="20sp"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/timeText_15to18"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="3pm-6pm"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/timeText_18to21"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="6pm-9pm"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/timeText_21to24"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="9pm-12am"
+                                        android:textColor="#606060"
+                                        android:textSize="20sp" />
+                                </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="15sp"
-                        android:orientation="vertical">
+                    <Button
+                        android:id="@+id/addButton"
+                        android:layout_width="150sp"
+                        android:layout_height="50sp"
+                        android:background="@drawable/main_click_selector"
+                        android:layout_gravity="center"
+                        android:clickable="true"
+                        android:text="+  추 가"
+                        android:textColor="#8C2CFF"
+                        android:textSize="22sp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="15sp"
-                            android:gravity="center"
-                            android:text="강수확률 예측 시간대"
-                            android:textColor="#8C2CFF"
-                            android:textSize="18sp" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5sp"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/timeText_6to9"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="6am-9am"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/timeText_9to12"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="9am-12pm"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/timeText_12to15"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="12pm-3pm"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5sp"
-                            android:layout_marginBottom="20sp"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/timeText_15to18"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="3pm-6pm"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/timeText_18to21"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="6pm-9pm"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/timeText_21to24"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:text="9pm-12am"
-                                android:textColor="#606060"
-                                android:textSize="20sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/addButton"
-                    android:layout_width="150sp"
-                    android:layout_height="50sp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="250sp"
-                    android:background="@drawable/main_click_selector"
-                    android:clickable="true"
-                    android:text="+  추 가"
-                    android:textColor="#8C2CFF"
-                    android:textSize="22sp" />
+                </FrameLayout>
 
                 <LinearLayout
                     android:id="@+id/addAndDeleteLayout"
@@ -371,7 +382,6 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal">
-                    <!--                    android:visibility="gone">-->
 
                     <Button
                         android:id="@+id/modifyButton"
@@ -395,35 +405,6 @@
                         android:textSize="22sp" />
                 </LinearLayout>
             </LinearLayout>
-
-            <!--<LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50sp"
-                android:gravity="right"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/add"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@android:drawable/ic_menu_add" />
-
-                <ImageButton
-                    android:id="@+id/editing"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15sp"
-                    android:layout_marginRight="15sp"
-                    android:src="@android:drawable/ic_menu_edit" />
-
-                <ImageButton
-                    android:id="@+id/delete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="20sp"
-                    android:src="@android:drawable/ic_menu_close_clear_cancel" />
-            </LinearLayout>-->
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>
