@@ -34,6 +34,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -53,6 +54,14 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout addAndDeleteLayout;
     private LinearLayout dataBoard;
+
+    /* Description textx*/
+    private TextView description_1;
+    private TextView description_2;
+    private TextView description_3;
+    private TextView description_4;
+    private TextView description_5;
+    private TextView[] descriptionTextArr;
 
     /* Display Data from DB */
     private TextView dayText_mon;
@@ -80,13 +89,15 @@ public class MainActivity extends AppCompatActivity {
 
     /* switch button and transparent layout*/
     private Switch firstAlarmSwitch;
-    private LinearLayout transparentLayout;
 
     /* Alarm components */
     private Calendar calendar;
 
     /* set days to toss over to the AlarmManager by intent */
     private int[] days;
+
+    /* selected View List */
+    private ArrayList<TextView> selectedView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +125,21 @@ public class MainActivity extends AppCompatActivity {
         precipitationText_50 = findViewById(R.id.precipitationText_50);
         precipitationText_70 = findViewById(R.id.precipitationText_70);
         alarmTimeText = findViewById(R.id.alarmTimeText);
+
+        description_1 = findViewById(R.id.description_1);
+        description_2 = findViewById(R.id.description_2);
+        description_3 = findViewById(R.id.description_3);
+        description_4 = findViewById(R.id.description_4);
+        description_5 = findViewById(R.id.description_5);
+        descriptionTextArr = new TextView[5];
+        descriptionTextArr[0] = description_1;
+        descriptionTextArr[1] = description_2;
+        descriptionTextArr[2] = description_3;
+        descriptionTextArr[3] = description_4;
+        descriptionTextArr[4] = description_5;
+
+        /* View ArrayList */
+        selectedView = new ArrayList<>();
 
         /*추가 버튼 클릭 로직 구현*/
         addButton = findViewById(R.id.addButton);
@@ -145,14 +171,17 @@ public class MainActivity extends AppCompatActivity {
 
         /* Switch button function */
         firstAlarmSwitch = findViewById(R.id.firstAlarmSwitch);
-        transparentLayout = findViewById(R.id.transparentLayout);
         firstAlarmSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (firstAlarmSwitch.isChecked()) {
-                    /* transparentLayout 투명도 #00000000*/
+                    String query = "UPDATE " + dbTableName + " SET switch = 1 WHERE id = 1 ";
+                    sqLiteDatabase.execSQL(query);
+                    switchViewColor(1);
                 } else {
-                    /* transparentLayout 투명도 #70000000*/
+                    String query = "UPDATE " + dbTableName + " SET switch = 0 WHERE id = 1";
+                    sqLiteDatabase.execSQL(query);
+                    switchViewColor(0);
                 }
             }
         });
@@ -163,11 +192,29 @@ public class MainActivity extends AppCompatActivity {
         if (checkIfDBexists()) {
             addAndDeleteHideAndShow(true);
             selectDBAndDisplayDataOnMainActivity();
-            firstAlarmSwitch.setChecked(true);
         } else {
             addAndDeleteHideAndShow(false);
         }
     } // onCreate End
+
+    /* view color switch - 1 : on // 2 : off*/
+    public void switchViewColor(int switchNum) {
+        if (switchNum == 0) {
+            for (int i = 0; i < descriptionTextArr.length; i++) {
+                descriptionTextArr[i].setTextColor(Color.parseColor("#9D4FFA"));
+            }
+            for (TextView each : selectedView) {
+                each.setTextColor(Color.parseColor("#9D8D8D"));
+            }
+        } else {
+            for (int i = 0; i < descriptionTextArr.length; i++) {
+                descriptionTextArr[i].setTextColor(Color.parseColor("#8C2CFF"));
+            }
+            for (TextView each : selectedView) {
+                each.setTextColor(Color.parseColor("#ffffff"));
+            }
+        }
+    }
 
     /*뒤로 가기 버튼 2번 누를 시 종료 & 알람 세팅 프래그먼트 끄기*/
     @Override
@@ -385,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
         String querie = "create table if not exists " + dbTableName + "( id integer PRIMARY KEY autoincrement, " +
                 " mon integer, tue integer, wed integer, thu integer, fri integer, sat integer, sun integer, " +
                 "prov string, subProv string, subProvSeq integer, time1 integer, time2 integer, time3 integer, time4 integer," +
-                " time5 integer, time6 integer, precipitation integer, setHour integer, setMinute integer)";
+                " time5 integer, time6 integer, precipitation integer, setHour integer, setMinute integer, switch integer )";
         sqLiteDatabase.execSQL(querie);
     }
 
@@ -409,18 +456,25 @@ public class MainActivity extends AppCompatActivity {
             if (cursor.getInt(i) == 1) {
                 if (i == 1) {
                     dayText_mon.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(dayText_mon);
                 } else if (i == 2) {
                     dayText_tue.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(dayText_tue);
                 } else if (i == 3) {
                     dayText_wed.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(dayText_wed);
                 } else if (i == 4) {
                     dayText_thu.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(dayText_thu);
                 } else if (i == 5) {
                     dayText_fri.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(dayText_fri);
                 } else if (i == 6) {
                     dayText_sat.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(dayText_sat);
                 } else {
                     dayText_sun.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(dayText_sun);
                 }
             }
         }
@@ -429,6 +483,7 @@ public class MainActivity extends AppCompatActivity {
         String getProvince = cursor.getString(8);
         String getSubProvince = cursor.getString(9);
         locationText.setText(getProvince + " " + getSubProvince);
+        selectedView.add(locationText);
 
         /* set timeText */
         /* initialize */
@@ -442,16 +497,22 @@ public class MainActivity extends AppCompatActivity {
             if (cursor.getInt(i) == 1) {
                 if (i == 11) {
                     timeText_6to9.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(timeText_6to9);
                 } else if (i == 12) {
                     timeText_9to12.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(timeText_9to12);
                 } else if (i == 13) {
                     timeText_12to15.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(timeText_12to15);
                 } else if (i == 14) {
                     timeText_15to18.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(timeText_15to18);
                 } else if (i == 15) {
                     timeText_18to21.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(timeText_18to21);
                 } else if (i == 16) {
                     timeText_21to24.setTextColor(Color.parseColor(whiteColor));
+                    selectedView.add(timeText_21to24);
                 }
             }
         }
@@ -465,10 +526,13 @@ public class MainActivity extends AppCompatActivity {
         int precipitationFromDB = Integer.parseInt(cursor.getString(17));
         if (precipitationFromDB == 30) {
             precipitationText_30.setTextColor(Color.parseColor(whiteColor));
+            selectedView.add(precipitationText_30);
         } else if (precipitationFromDB == 50) {
             precipitationText_50.setTextColor(Color.parseColor(whiteColor));
+            selectedView.add(precipitationText_50);
         } else {
             precipitationText_70.setTextColor(Color.parseColor(whiteColor));
+            selectedView.add(precipitationText_70);
         }
 
         /*alarmTimeText*/
@@ -489,6 +553,17 @@ public class MainActivity extends AppCompatActivity {
             setHour += setMinute;
         }
         alarmTimeText.setText(setHour + " " + AMorPM);
+        selectedView.add(alarmTimeText);
+
+        /* set switch */
+        int alarmSwitch = cursor.getInt(20);
+        if (alarmSwitch == 1) {
+            firstAlarmSwitch.setChecked(true);
+            switchViewColor(1);
+        } else {
+            firstAlarmSwitch.setChecked(false);
+            switchViewColor(0);
+        }
     }
 
     public void deleteDB() {

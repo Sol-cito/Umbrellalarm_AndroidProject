@@ -76,6 +76,7 @@
                                     android:orientation="horizontal">
 
                                     <TextView
+                                        android:id="@+id/description_1"
                                         android:layout_width="283dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
@@ -111,6 +112,7 @@
                                 android:orientation="vertical">
 
                                 <TextView
+                                    android:id="@+id/description_2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="설정 요일"
@@ -211,6 +213,7 @@
                                     android:orientation="vertical">
 
                                     <TextView
+                                        android:id="@+id/description_3"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:gravity="center"
@@ -238,6 +241,7 @@
                                     android:orientation="vertical">
 
                                     <TextView
+                                        android:id="@+id/description_4"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:gravity="center"
@@ -289,6 +293,7 @@
                                 android:orientation="vertical">
 
                                 <TextView
+                                    android:id="@+id/description_5"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginHorizontal="15sp"

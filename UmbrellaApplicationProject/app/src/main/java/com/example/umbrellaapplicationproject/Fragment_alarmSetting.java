@@ -503,7 +503,6 @@ public class Fragment_alarmSetting extends Fragment {
         }
     }
 
-
     /* 요일, 날짜 버튼 클릭 시 색 변경 메소드*/
     public void colorChangeOnClick(Button intputButton, Boolean dayBoolean) {
         if (dayBoolean == false) {
@@ -612,9 +611,9 @@ public class Fragment_alarmSetting extends Fragment {
         String query = "";
         if (flag == 0) {
             String values = dayListResult + "'" + prov + "', '" + subProv + "', " + subProvSeq + ", " +
-                    timeListResult + precipitation + ", " + pickedHour + ", " + pickedMinute;
+                    timeListResult + precipitation + ", " + pickedHour + ", " + pickedMinute + ", 1";
             query = "INSERT INTO " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, subProvSeq, " +
-                    "time1, time2, time3, time4, time5, time6, precipitation, setHour, setMinute) " +
+                    "time1, time2, time3, time4, time5, time6, precipitation, setHour, setMinute, switch) " +
                     " values ( " + values + " )";
         } else if (flag == 1) {
             query = "UPDATE " + dbTableName + " SET " +
@@ -625,7 +624,6 @@ public class Fragment_alarmSetting extends Fragment {
                     "fri = " + dayListResult_int[4] + ", " +
                     "sat = " + dayListResult_int[5] + ", " +
                     "sun = " + dayListResult_int[6] + ", " +
-                    /* 아래 두개는 왜 안될까....*/
                     "prov = '" + locationList[0] + "', " +
                     "subProv = '" + locationList[1] + "', " +
                     "subProvSeq = " + subProvSeq + ", " +
@@ -637,7 +635,8 @@ public class Fragment_alarmSetting extends Fragment {
                     "time6 = " + timeListResult_int[5] + ", " +
                     "precipitation = " + precipitation + ", " +
                     "setHour = " + pickedHour + ", " +
-                    "setMinute = " + pickedMinute;
+                    "setMinute = " + pickedMinute + ", " +
+                    "switch = 1";
         }
         sqLiteDatabase.execSQL(query);
     }
