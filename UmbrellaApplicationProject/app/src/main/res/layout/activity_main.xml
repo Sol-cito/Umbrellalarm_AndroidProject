@@ -35,13 +35,25 @@
                 android:orientation="vertical">
 
                 <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:id="@+id/addButton"
+                        android:layout_width="150sp"
+                        android:layout_height="50sp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/main_click_selector"
+                        android:clickable="true"
+                        android:text="+  추 가"
+                        android:textColor="#8C2CFF"
+                        android:textSize="22sp" />
 
                     <LinearLayout
                         android:id="@+id/transparentLayout"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:id="@+id/dataBoard"
@@ -361,49 +373,38 @@
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/addAndDeleteLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/modifyButton"
+                                android:layout_width="150sp"
+                                android:layout_height="50sp"
+                                android:layout_marginRight="40sp"
+                                android:background="@drawable/main_click_selector"
+                                android:clickable="true"
+                                android:text="수 정"
+                                android:textColor="#8C2CFF"
+                                android:textSize="22sp" />
+
+                            <Button
+                                android:id="@+id/deleteButton"
+                                android:layout_width="150sp"
+                                android:layout_height="50sp"
+                                android:background="@drawable/main_click_selector"
+                                android:clickable="true"
+                                android:text="삭 제"
+                                android:textColor="#8C2CFF"
+                                android:textSize="22sp" />
+                        </LinearLayout>
+
                     </LinearLayout>
-
-                    <Button
-                        android:id="@+id/addButton"
-                        android:layout_width="150sp"
-                        android:layout_height="50sp"
-                        android:background="@drawable/main_click_selector"
-                        android:layout_gravity="center"
-                        android:clickable="true"
-                        android:text="+  추 가"
-                        android:textColor="#8C2CFF"
-                        android:textSize="22sp" />
-
                 </FrameLayout>
-
-                <LinearLayout
-                    android:id="@+id/addAndDeleteLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/modifyButton"
-                        android:layout_width="150sp"
-                        android:layout_height="50sp"
-                        android:layout_marginRight="40sp"
-                        android:background="@drawable/main_click_selector"
-                        android:clickable="true"
-                        android:text="수 정"
-                        android:textColor="#8C2CFF"
-                        android:textSize="22sp" />
-
-                    <Button
-                        android:id="@+id/deleteButton"
-                        android:layout_width="150sp"
-                        android:layout_height="50sp"
-                        android:background="@drawable/main_click_selector"
-                        android:clickable="true"
-                        android:text="삭 제"
-                        android:textColor="#8C2CFF"
-                        android:textSize="22sp" />
-                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </FrameLayout>
