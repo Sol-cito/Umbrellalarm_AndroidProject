@@ -11,11 +11,13 @@ DB삭제(tmp)버튼을 누르면 table 자체가 drop되어서, 그 다음에 �
 
 package com.example.umbrellaapplicationproject;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -100,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
     /* selected View List */
     private ArrayList<TextView> selectedView;
 
+    /* SharedPreference */
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,18 +175,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /* Switch button function */
+        /* Switch button function with shared preference*/
+        sharedPreferences = getSharedPreferences("switch", Activity.MODE_PRIVATE);
+
         firstAlarmSwitch = findViewById(R.id.firstAlarmSwitch);
         firstAlarmSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
                 if (firstAlarmSwitch.isChecked()) {
-                    String query = "UPDATE " + dbTableName + " SET switch = 1 WHERE id = 1 ";
-                    sqLiteDatabase.execSQL(query);
+                    editor.putInt("switch", 1);
+                    editor.commit();
                     switchViewColor(1);
                 } else {
-                    String query = "UPDATE " + dbTableName + " SET switch = 0 WHERE id = 1";
-                    sqLiteDatabase.execSQL(query);
+                    editor.putInt("switch", 0);
+                    editor.commit();
                     switchViewColor(0);
                 }
             }
@@ -433,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
         String querie = "create table if not exists " + dbTableName + "( id integer PRIMARY KEY autoincrement, " +
                 " mon integer, tue integer, wed integer, thu integer, fri integer, sat integer, sun integer, " +
                 "prov string, subProv string, subProvSeq integer, time1 integer, time2 integer, time3 integer, time4 integer," +
-                " time5 integer, time6 integer, precipitation integer, setHour integer, setMinute integer, switch integer )";
+                " time5 integer, time6 integer, precipitation integer, setHour integer, setMinute integer)";
         sqLiteDatabase.execSQL(querie);
     }
 
@@ -521,14 +529,11 @@ public class MainActivity extends AppCompatActivity {
 
         /* set precipitation */
         /* initialize */
-
         precipitationText_30.setTextColor(Color.parseColor(greyColor));
         precipitationText_50.setTextColor(Color.parseColor(greyColor));
         precipitationText_70.setTextColor(Color.parseColor(greyColor));
-        Log.e("log", "이니셜라이즈 : " + precipitationText_30.getTextColors());
 
         int precipitationFromDB = Integer.parseInt(cursor.getString(17));
-        Log.e("log", "세팅 : " + precipitationFromDB);
         if (precipitationFromDB == 30) {
             precipitationText_30.setTextColor(Color.parseColor(whiteColor));
             selectedView.add(precipitationText_30);
@@ -561,7 +566,7 @@ public class MainActivity extends AppCompatActivity {
         selectedView.add(alarmTimeText);
 
         /* set switch */
-        int alarmSwitch = cursor.getInt(20);
+        int alarmSwitch = sharedPreferences.getInt("switch", 0);
         if (alarmSwitch == 1) {
             firstAlarmSwitch.setChecked(true);
             switchViewColor(1);
@@ -593,5 +598,10 @@ public class MainActivity extends AppCompatActivity {
     /*Method for the fragment to get SQLiteDatabase */
     public SQLiteDatabase sqLiteDatabaseGetter() {
         return sqLiteDatabase;
+    }
+
+    /*Method for the fragment to get SharedPreference */
+    public SharedPreferences sharedPreferenceGetter() {
+        return sharedPreferences;
     }
 }

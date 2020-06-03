@@ -8,6 +8,7 @@
 
 package com.example.umbrellaapplicationproject;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
@@ -612,9 +613,9 @@ public class Fragment_alarmSetting extends Fragment {
         String query = "";
         if (flag == 0) {
             String values = dayListResult + "'" + prov + "', '" + subProv + "', " + subProvSeq + ", " +
-                    timeListResult + precipitation + ", " + pickedHour + ", " + pickedMinute + ", 1";
+                    timeListResult + precipitation + ", " + pickedHour + ", " + pickedMinute;
             query = "INSERT INTO " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, subProvSeq, " +
-                    "time1, time2, time3, time4, time5, time6, precipitation, setHour, setMinute, switch) " +
+                    "time1, time2, time3, time4, time5, time6, precipitation, setHour, setMinute) " +
                     " values ( " + values + " )";
         } else if (flag == 1) {
             query = "UPDATE " + dbTableName + " SET " +
@@ -636,10 +637,13 @@ public class Fragment_alarmSetting extends Fragment {
                     "time6 = " + timeListResult_int[5] + ", " +
                     "precipitation = " + precipitation + ", " +
                     "setHour = " + pickedHour + ", " +
-                    "setMinute = " + pickedMinute + ", " +
-                    "switch = 1";
+                    "setMinute = " + pickedMinute;
         }
-        Log.e("log", "데이터 업데이트");
+        MainActivity mainActivity = (MainActivity)getActivity();
+        SharedPreferences sharedPreferences = mainActivity.sharedPreferenceGetter();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("switch", 1);
+        editor.commit();
         sqLiteDatabase.execSQL(query);
     }
 }
