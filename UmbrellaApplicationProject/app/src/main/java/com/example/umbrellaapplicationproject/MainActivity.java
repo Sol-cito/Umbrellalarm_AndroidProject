@@ -187,10 +187,12 @@ public class MainActivity extends AppCompatActivity {
                     editor.putInt("switch", 1);
                     editor.commit();
                     switchViewColor(1);
+                    setAlarm();
                 } else {
                     editor.putInt("switch", 0);
                     editor.commit();
                     switchViewColor(0);
+                    cancelAlarm();
                 }
             }
         });
@@ -408,6 +410,7 @@ public class MainActivity extends AppCompatActivity {
 //        calendar.set(Calendar.HOUR_OF_DAY, setHour);
 //        calendar.set(Calendar.MINUTE, setMinute);
 //        calendar.set(Calendar.SECOND, 0);
+
         /* test */
         int currentTime = (int) System.currentTimeMillis();
         calendar.set(Calendar.SECOND, currentTime + 5000);
@@ -416,13 +419,22 @@ public class MainActivity extends AppCompatActivity {
 
     /* Set alarm */
     public void setAlarm() {
-        /* 알람을 설정하는 메소드 */
+        Log.e("log", "셋 알람");
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("days", days);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정
+    }
+
+    /* cancel Alarm*/
+    public void cancelAlarm() {
+        Log.e("log", "알람 캔슬");
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        alarmManager.cancel(pendingIntent);
     }
 
     /* get subProv data from DB */

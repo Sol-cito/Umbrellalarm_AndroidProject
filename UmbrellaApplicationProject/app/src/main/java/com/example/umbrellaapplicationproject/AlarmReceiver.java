@@ -12,6 +12,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.e("log", "알람리시버 작동?");
         int[] days = intent.getIntArrayExtra("days");
         Calendar calendar = Calendar.getInstance();
         int today = calendar.get(Calendar.DAY_OF_WEEK); // sun : 1 ~ sat : 7
