@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -638,6 +639,7 @@ public class Fragment_alarmSetting extends Fragment {
                     "setMinute = " + pickedMinute + ", " +
                     "switch = 1";
         }
+        Log.e("log", "데이터 업데이트");
         sqLiteDatabase.execSQL(query);
     }
 }

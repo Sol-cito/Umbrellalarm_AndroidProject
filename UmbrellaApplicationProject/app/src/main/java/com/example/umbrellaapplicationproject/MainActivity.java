@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -438,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void selectDBAndDisplayDataOnMainActivity() {
+        selectedView.clear(); // ArrayList initialize
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + dbTableName, null);
         cursor.moveToNext();
 
@@ -519,11 +521,14 @@ public class MainActivity extends AppCompatActivity {
 
         /* set precipitation */
         /* initialize */
+
         precipitationText_30.setTextColor(Color.parseColor(greyColor));
         precipitationText_50.setTextColor(Color.parseColor(greyColor));
         precipitationText_70.setTextColor(Color.parseColor(greyColor));
+        Log.e("log", "이니셜라이즈 : " + precipitationText_30.getTextColors());
 
         int precipitationFromDB = Integer.parseInt(cursor.getString(17));
+        Log.e("log", "세팅 : " + precipitationFromDB);
         if (precipitationFromDB == 30) {
             precipitationText_30.setTextColor(Color.parseColor(whiteColor));
             selectedView.add(precipitationText_30);
