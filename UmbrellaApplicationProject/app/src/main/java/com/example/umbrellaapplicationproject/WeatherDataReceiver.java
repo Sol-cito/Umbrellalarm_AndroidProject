@@ -204,11 +204,12 @@ public class WeatherDataReceiver {
     public void notification(String notificationMessage, String location, Context context) {
         //알림 세부 내용 수정 요망
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Log.e("log", "노티피케이션 매니저 : " + notificationManager);
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (notificationManager.getNotificationChannel("channel_1") == null) {
                 notificationManager.createNotificationChannel(new NotificationChannel(
-                        "channel_id", "createdChannel", NotificationManager.IMPORTANCE_DEFAULT
+                        "channel_1", "createdChannel", NotificationManager.IMPORTANCE_DEFAULT
                 ));
                 builder = new NotificationCompat.Builder(context, "channel_1");
             } else {
