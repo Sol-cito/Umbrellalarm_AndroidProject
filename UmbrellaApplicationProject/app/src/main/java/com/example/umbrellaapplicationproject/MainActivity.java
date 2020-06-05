@@ -405,15 +405,10 @@ public class MainActivity extends AppCompatActivity {
                 days[i] = 0; // otherwise 0
             }
         }
-        calendar = Calendar.getInstance();
         /* hour, minute, days setting */
 //        calendar.set(Calendar.HOUR_OF_DAY, setHour);
 //        calendar.set(Calendar.MINUTE, setMinute);
 //        calendar.set(Calendar.SECOND, 0);
-
-        /* test */
-        int currentTime = (int) System.currentTimeMillis();
-        calendar.set(Calendar.SECOND, currentTime + 5000);
         setAlarm();
     }
 
@@ -422,7 +417,15 @@ public class MainActivity extends AppCompatActivity {
         Log.e("log", "셋 알람");
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("days", days);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        Log.e("log", "데이즈 사이즈 : " + days.length);
+        for (int i = 0; i < days.length; i++) {
+            Log.e("log", "각각 : " + i + " / " + days[i]);
+        }
+        /* test */
+        int currentTime = (int) System.currentTimeMillis();
+        calendar = Calendar.getInstance();
+        calendar.set(Calendar.SECOND, currentTime + 3000);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정
@@ -433,8 +436,9 @@ public class MainActivity extends AppCompatActivity {
         Log.e("log", "알람 캔슬");
         Intent intent = new Intent(this, AlarmReceiver.class);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager.cancel(pendingIntent);
+        pendingIntent.cancel();
     }
 
     /* get subProv data from DB */
