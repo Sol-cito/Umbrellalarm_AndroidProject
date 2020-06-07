@@ -9,7 +9,7 @@
     tools:context=".Fragment_alarmSetting">
 
     <LinearLayout
-    android:layout_width="match_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#000000"
         android:orientation="horizontal">
@@ -68,64 +68,72 @@
                 android:visibility="gone" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="20sp"
+                android:layout_marginHorizontal="5sp"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/button_monday"
-                    android:layout_width="50sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_customized_day_unselected"
                     android:text="월"
                     android:textColor="#ffffff" />
 
                 <Button
                     android:id="@+id/button_tuesday"
-                    android:layout_width="50sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_customized_day_unselected"
                     android:text="화"
                     android:textColor="#ffffff" />
 
                 <Button
                     android:id="@+id/button_wednesday"
-                    android:layout_width="50sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_customized_day_unselected"
                     android:text="수"
                     android:textColor="#ffffff" />
 
                 <Button
                     android:id="@+id/button_thursday"
-                    android:layout_width="50sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_customized_day_unselected"
                     android:text="목"
                     android:textColor="#ffffff" />
 
                 <Button
                     android:id="@+id/button_friday"
-                    android:layout_width="50sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_customized_day_unselected"
                     android:text="금"
                     android:textColor="#ffffff" />
 
                 <Button
                     android:id="@+id/button_saturday"
-                    android:layout_width="50sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_customized_day_unselected"
                     android:text="토"
                     android:textColor="#ffffff" />
 
                 <Button
                     android:id="@+id/button_sunday"
-                    android:layout_width="50sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_customized_day_unselected"
                     android:text="일"
                     android:textColor="#ffffff" />
@@ -166,6 +174,7 @@
                         android:id="@+id/location_province"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/spinner_customized"
                         android:entries="@array/province"
                         android:spinnerMode="dropdown" />
                 </FrameLayout>
@@ -183,6 +192,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:entries="@array/seoul"
+                        android:background="@drawable/spinner_customized"
                         android:spinnerMode="dialog" />
 
                     <Spinner
@@ -231,7 +241,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/btn_customized_day_unselected"
-                        android:text="오전6시~오전9시"
+                        android:text="6AM-9AM"
                         android:textColor="#ffffff" />
 
                     <Button
@@ -241,7 +251,7 @@
                         android:layout_marginLeft="10sp"
                         android:layout_marginRight="10sp"
                         android:background="@drawable/btn_customized_day_unselected"
-                        android:text="오전9시~오후12시"
+                        android:text="9AM-12PM"
                         android:textColor="#ffffff" />
 
                     <Button
@@ -249,7 +259,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/btn_customized_day_unselected"
-                        android:text="오후12시~오후3시"
+                        android:text="12PM-3PM"
                         android:textColor="#ffffff" />
                 </LinearLayout>
 
@@ -265,7 +275,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/btn_customized_day_unselected"
-                        android:text="오후3시~오후6시"
+                        android:text="3PM-6PM"
                         android:textColor="#ffffff" />
 
                     <Button
@@ -275,7 +285,7 @@
                         android:layout_marginLeft="10sp"
                         android:layout_marginRight="10sp"
                         android:background="@drawable/btn_customized_day_unselected"
-                        android:text="오후6시 ~ 오후9시"
+                        android:text="6PM-9PM"
                         android:textColor="#ffffff" />
 
                     <Button
@@ -283,7 +293,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/btn_customized_day_unselected"
-                        android:text="오후9시~오전12시"
+                        android:text="9PM-12AM"
                         android:textColor="#ffffff" />
                 </LinearLayout>
             </LinearLayout>
@@ -375,7 +385,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="20sp"
-                android:background="#ffffff"
+                android:outlineAmbientShadowColor="#ffffff"
                 android:timePickerMode="spinner" />
 
             <Button
