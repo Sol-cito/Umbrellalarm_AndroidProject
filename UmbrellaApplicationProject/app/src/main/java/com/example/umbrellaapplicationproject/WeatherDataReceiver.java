@@ -204,7 +204,6 @@ public class WeatherDataReceiver {
     public void notification(String notificationMessage, String location, Context context) {
         //알림 세부 내용 수정 요망
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Log.e("log", "노티피케이션 매니저 : " + notificationManager);
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (notificationManager.getNotificationChannel("channel_1") == null) {
@@ -218,9 +217,32 @@ public class WeatherDataReceiver {
         } else {
             builder = new NotificationCompat.Builder(context);
         }
-        builder.setContentTitle("우산알라미 알림");
-        builder.setContentText(location + " 강수확률\n" + notificationMessage);
-        builder.setSmallIcon(R.drawable.loading_icon); //알림 아이콘
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        builder.setStyle(inboxStyle);
+
+      /* String[] events = new String[6];
+        events[0] = "Monday";
+        events[1] = "Tuesday";
+        events[2] = "Wedsnday";
+        events[3] = "Thursday";
+        events[4] = "Friday";
+        events[5] = "Saturday";
+        for (String str : events) {
+            inboxStyle.addLine(str);
+        }
+        출처 : https://blog.geusan.com/34*/
+
+        builder.setContentTitle("우산 가져가쇼");
+
+//        builder.setContentText(location + " 강수확률\n" + notificationMessage);
+        inboxStyle.addLine(location + " 강수확률\n" + notificationMessage);
+        /* line 1 : location 의 강수확률 */
+        /* line 2 : ~시의 강수확률 : 30% */
+        /* line 3 : ~시의 강수확률 : 30% */
+        /* line 4 : ~시의 강수확률 : 30% */
+        /* 이렇게 나오도록 하면 될듯? */
+
+        builder.setSmallIcon(R.drawable.notification_icon); //알림 아이콘
         Notification notification = builder.build();
         notificationManager.notify(1, notification); //알림 실행
     }
