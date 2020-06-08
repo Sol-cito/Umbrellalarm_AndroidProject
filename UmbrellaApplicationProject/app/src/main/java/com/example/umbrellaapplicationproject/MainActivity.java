@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout addAndDeleteLayout;
     private LinearLayout dataBoard;
 
-    /* Description textx*/
+    /* Description text */
     private TextView description_1;
     private TextView description_2;
     private TextView description_3;
@@ -187,12 +187,10 @@ public class MainActivity extends AppCompatActivity {
                     editor.putInt("switch", 1);
                     editor.commit();
                     switchViewColor(1);
-                    setAlarm();
                 } else {
                     editor.putInt("switch", 0);
                     editor.commit();
                     switchViewColor(0);
-                    cancelAlarm();
                 }
             }
         });
@@ -271,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     deleteDB();
+                    cancelAlarm();
                     recreate();
                 }
             });
@@ -417,10 +416,6 @@ public class MainActivity extends AppCompatActivity {
         Log.e("log", "셋 알람");
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("days", days);
-        Log.e("log", "데이즈 사이즈 : " + days.length);
-        for (int i = 0; i < days.length; i++) {
-            Log.e("log", "각각 : " + i + " / " + days[i]);
-        }
         /* test */
         int currentTime = (int) System.currentTimeMillis();
         calendar = Calendar.getInstance();
@@ -431,9 +426,8 @@ public class MainActivity extends AppCompatActivity {
         // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정
     }
 
-    /* cancel Alarm*/
+    /* cancel Alarm when delete it */
     public void cancelAlarm() {
-        Log.e("log", "알람 캔슬");
         Intent intent = new Intent(this, AlarmReceiver.class);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -593,7 +587,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void deleteDB() {
-        Toast.makeText(this, "DB를 삭제함", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "우산 알람 삭제", Toast.LENGTH_SHORT).show();
         String querie = "drop table " + dbTableName;
         sqLiteDatabase.execSQL(querie);
     }
