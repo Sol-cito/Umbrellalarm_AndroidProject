@@ -180,28 +180,27 @@ public class WeatherDataReceiver {
         cursor.moveToNext();
 //        int setPrecipitation = cursor.getInt(0); -> 설정해놓은 강수확률
         int setPrecipitation = 0; // 테스트(강수확률 0)
-        String notificationMessage = "";
+        String[] notificationMessage = new String[6];
 
         for (int i = 0; i < 6; i++) {
             if (entirePopMap.get(i) >= setPrecipitation) { //실제 예보 강수확률(pop)이 설정한 강수확률 이상일 때
                 if (i < 2) {
-                    notificationMessage += "오전 " + (6 + i * 3) + "시 - " + (9 + i * 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%\n";
+                    notificationMessage[i] = (6 + i * 3) + "시 - " + (9 + i * 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
                 } else {
-                    int time = (i - 2) * 3;
+                    int time = 12 + ((i - 2) * 3);
                     if (i == 2) {
-                        notificationMessage += "오후 12시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%\n";
+                        notificationMessage[i] = "12시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
                     } else {
-                        notificationMessage += "오후 " + time + "시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%\n";
+                        notificationMessage[i] = time + "시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
                     }
                 }
             }
         }
-        Log.e("log", "notificationMessage : " + notificationMessage);
         notification(notificationMessage, location, context);
     }
 
     /* Set notification service */
-    public void notification(String notificationMessage, String location, Context context) {
+    public void notification(String[] notificationMessage, String location, Context context) {
         //알림 세부 내용 수정 요망
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder;
@@ -219,29 +218,11 @@ public class WeatherDataReceiver {
         }
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         builder.setStyle(inboxStyle);
-
-      /* String[] events = new String[6];
-        events[0] = "Monday";
-        events[1] = "Tuesday";
-        events[2] = "Wedsnday";
-        events[3] = "Thursday";
-        events[4] = "Friday";
-        events[5] = "Saturday";
-        for (String str : events) {
-            inboxStyle.addLine(str);
-        }
-        출처 : https://blog.geusan.com/34*/
-
         builder.setContentTitle("우산 가져가쇼");
-
-//        builder.setContentText(location + " 강수확률\n" + notificationMessage);
-        inboxStyle.addLine(location + " 강수확률\n" + notificationMessage);
-        /* line 1 : location 의 강수확률 */
-        /* line 2 : ~시의 강수확률 : 30% */
-        /* line 3 : ~시의 강수확률 : 30% */
-        /* line 4 : ~시의 강수확률 : 30% */
-        /* 이렇게 나오도록 하면 될듯? */
-
+        builder.setSubText(location + " 강수확률");
+        for (String eachLine : notificationMessage) {
+            inboxStyle.addLine(eachLine);
+        }
         builder.setSmallIcon(R.drawable.notification_icon); //알림 아이콘
         Notification notification = builder.build();
         notificationManager.notify(1, notification); //알림 실행
