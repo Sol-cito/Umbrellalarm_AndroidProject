@@ -48,9 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private Fragment_alarmSetting fragment_alarmSetting;
     private long lastBackPresseed = 0;
 
-    /* 강수확률 request 관련 변수*/
-    private String currentDate;
-
     /* DataBase */
     private SQLiteDatabase sqLiteDatabase;
     private final String dbTableName = "alarmData";
@@ -319,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
             alertDialogBuilder.setMessage("우산알라미를 수정하시겠습니까?");
             alertDialogBuilder.setCancelable(false);
             whichButtonClicked = 1;
+            cancelAlarm(); // 수정할 경우 기존 알람을 취소하고 다시 intent를 보내야하므로 이 메소드를 호출해줌
         } else {
             alertDialogBuilder.setTitle("우산 알라미 설정");
             alertDialogBuilder.setMessage("우산알라미를 설정하시겠습니까?");
@@ -329,9 +327,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 scrollUptotheTopOfFragmentDisplay();
-                getCurrentDateAndTime(); //현재 시간 얻기
                 dataInsertOrUpdate(whichButtonClicked);
-                setCalender();
+                setAlarm();
                 removeFragment();
             }
         });
@@ -384,11 +381,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /* Method for getting the current time */
-    public void getCurrentDateAndTime() {
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
-        Date date = new Date();
-        currentDate = format.format(date);
+    /* Set alarm */
+    public void setAlarm() {
+        Log.e("log", "셋 알람");
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        calendar = Calendar.getInstance();
+        setCalender(); // <- test끝나면 이 메소드 작동
+        intent.putExtra("days", days);
+        int currentTime = (int) System.currentTimeMillis();
+        calendar.set(Calendar.SECOND, currentTime + 3000); // test
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정
     }
 
     public void setCalender() {
@@ -399,50 +404,23 @@ public class MainActivity extends AppCompatActivity {
         days = new int[7];
         for (int i = 0; i < 7; i++) {
             if (cursor.getInt(i) == 1) {
-                days[i] = 1; // value is 1 if checked
-            } else {
-                days[i] = 0; // otherwise 0
+                days[i] = 1; //  if checked 1,  else 0
             }
         }
-        /* hour, minute, days setting */
+//        /* hour, minute, days setting */
 //        calendar.set(Calendar.HOUR_OF_DAY, setHour);
 //        calendar.set(Calendar.MINUTE, setMinute);
 //        calendar.set(Calendar.SECOND, 0);
-        setAlarm();
-    }
-
-    /* Set alarm */
-    public void setAlarm() {
-        Log.e("log", "셋 알람");
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.putExtra("days", days);
-        /* test */
-        int currentTime = (int) System.currentTimeMillis();
-        calendar = Calendar.getInstance();
-        calendar.set(Calendar.SECOND, currentTime + 3000);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-        // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정
     }
 
     /* cancel Alarm when delete it */
     public void cancelAlarm() {
+        Log.e("log", "캔슬 알람");
         Intent intent = new Intent(this, AlarmReceiver.class);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager.cancel(pendingIntent);
         pendingIntent.cancel();
-    }
-
-    /* get subProv data from DB */
-    public String[] getProvAndSubProvFromDB() {
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT prov, subProv FROM " + dbTableName, null);
-        cursor.moveToNext();
-        String[] provAndSub = new String[2];
-        provAndSub[0] = cursor.getString(0);
-        provAndSub[1] = cursor.getString(1);
-        return provAndSub;
     }
 
     /* DB create */
