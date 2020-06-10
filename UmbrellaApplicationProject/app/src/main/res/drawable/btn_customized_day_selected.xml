@@ -4,7 +4,7 @@
     android:shape="rectangle">
 
     <!-- 테두리 내부 색상 설정 -->
-    <solid android:color="#8C2CFF" />
+    <solid android:color="@color/color_theme" />
 
     <!-- 테두리 내부 여백 설정 -->
     <padding

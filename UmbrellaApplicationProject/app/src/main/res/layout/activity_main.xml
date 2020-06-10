@@ -46,7 +46,7 @@
                         android:background="@drawable/main_click_selector"
                         android:clickable="true"
                         android:text="+  추 가"
-                        android:textColor="#8C2CFF"
+                        android:textColor="@color/color_theme"
                         android:textSize="22sp" />
 
                     <LinearLayout
@@ -85,7 +85,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
                                             android:text="알람 시간"
-                                            android:textColor="#8C2CFF"
+                                            android:textColor="@color/color_theme"
                                             android:textSize="18sp" />
 
                                         <Switch
@@ -120,7 +120,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="설정 요일"
-                                        android:textColor="#8C2CFF"
+                                        android:textColor="@color/color_theme"
                                         android:textSize="18sp" />
 
                                     <LinearLayout
@@ -222,7 +222,7 @@
                                             android:layout_height="wrap_content"
                                             android:gravity="center"
                                             android:text="강수예측 위치"
-                                            android:textColor="#8C2CFF"
+                                            android:textColor="@color/color_theme"
                                             android:textSize="18sp" />
 
                                         <TextView
@@ -250,7 +250,7 @@
                                             android:layout_height="wrap_content"
                                             android:gravity="center"
                                             android:text="알람 기준 강수량"
-                                            android:textColor="#8C2CFF"
+                                            android:textColor="@color/color_theme"
                                             android:textSize="18sp" />
 
                                         <LinearLayout
@@ -303,7 +303,7 @@
                                         android:layout_marginHorizontal="15sp"
                                         android:gravity="center"
                                         android:text="강수확률 예측 시간대"
-                                        android:textColor="#8C2CFF"
+                                        android:textColor="@color/color_theme"
                                         android:textSize="18sp" />
 
                                     <LinearLayout
@@ -399,19 +399,19 @@
                                 android:background="@drawable/main_click_selector"
                                 android:clickable="true"
                                 android:text="수 정"
-                                android:textColor="#8C2CFF"
+                                android:textColor="@color/color_theme"
                                 android:textSize="22sp" />
 
                             <Button
-                                android:layout_marginLeft="15sp"
                                 android:id="@+id/deleteButton"
                                 android:layout_width="wrap_content"
                                 android:layout_height="50sp"
+                                android:layout_marginLeft="15sp"
                                 android:layout_weight="1"
                                 android:background="@drawable/main_click_selector"
                                 android:clickable="true"
                                 android:text="삭 제"
-                                android:textColor="#8C2CFF"
+                                android:textColor="@color/color_theme"
                                 android:textSize="22sp" />
                         </LinearLayout>
 

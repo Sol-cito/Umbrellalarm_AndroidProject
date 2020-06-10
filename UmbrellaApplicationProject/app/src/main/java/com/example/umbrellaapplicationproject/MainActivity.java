@@ -203,18 +203,18 @@ public class MainActivity extends AppCompatActivity {
         }
     } // onCreate End
 
-    /* view color switch - 1 : on // 2 : off*/
+    /* view color switch - 0 : on // 1 : off*/
     public void switchViewColor(int switchNum) {
         if (switchNum == 0) {
             for (int i = 0; i < descriptionTextArr.length; i++) {
-                descriptionTextArr[i].setTextColor(Color.parseColor("#9D4FFA"));
+                descriptionTextArr[i].setTextColor(Color.parseColor("#9D8D8D"));
             }
             for (TextView each : selectedView) {
                 each.setTextColor(Color.parseColor("#9D8D8D"));
             }
         } else {
             for (int i = 0; i < descriptionTextArr.length; i++) {
-                descriptionTextArr[i].setTextColor(Color.parseColor("#8C2CFF"));
+                descriptionTextArr[i].setTextColor(Color.parseColor("#5D48ED"));
             }
             for (TextView each : selectedView) {
                 each.setTextColor(Color.parseColor("#ffffff"));
@@ -316,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
             alertDialogBuilder.setMessage("우산알라미를 수정하시겠습니까?");
             alertDialogBuilder.setCancelable(false);
             whichButtonClicked = 1;
-            cancelAlarm(); // 수정할 경우 기존 알람을 취소하고 다시 intent를 보내야하므로 이 메소드를 호출해줌
         } else {
             alertDialogBuilder.setTitle("우산 알라미 설정");
             alertDialogBuilder.setMessage("우산알라미를 설정하시겠습니까?");
@@ -388,8 +387,10 @@ public class MainActivity extends AppCompatActivity {
         calendar = Calendar.getInstance();
         setCalender(); // <- test끝나면 이 메소드 작동
         intent.putExtra("days", days);
-        int currentTime = (int) System.currentTimeMillis();
-        calendar.set(Calendar.SECOND, currentTime + 3000); // test
+        /* test */
+//        int currentTime = (int) System.currentTimeMillis();
+//        calendar.set(Calendar.SECOND, currentTime + 3000);
+        /* test end */
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
@@ -408,9 +409,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 //        /* hour, minute, days setting */
-//        calendar.set(Calendar.HOUR_OF_DAY, setHour);
-//        calendar.set(Calendar.MINUTE, setMinute);
-//        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, setHour);
+        calendar.set(Calendar.MINUTE, setMinute);
+        calendar.set(Calendar.SECOND, 0);
     }
 
     /* cancel Alarm when delete it */
