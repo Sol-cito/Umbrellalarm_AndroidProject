@@ -7,6 +7,9 @@
     <!--메인화면-->
     <string name="main_title">현재 설정된 알람</string>
 
-    <!--알라미 추가 프래그먼트-->
+    <!--알람 추가 프래그먼트-->
     <string name="frag_title">알람 설정</string>
+
+    <!--Notification title -->
+    <string name="notification_title">우산을 가져가쇼</string>
 </resources>

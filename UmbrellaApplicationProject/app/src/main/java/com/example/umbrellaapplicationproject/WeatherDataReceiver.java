@@ -218,7 +218,7 @@ public class WeatherDataReceiver {
         }
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         builder.setStyle(inboxStyle);
-        builder.setContentTitle("우산 가져가쇼");
+        builder.setContentTitle(context.getString(R.string.notification_title));
         builder.setSubText(location + " 강수확률");
         for (String eachLine : notificationMessage) {
             inboxStyle.addLine(eachLine);

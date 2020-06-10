@@ -9,4 +9,7 @@
 
     <!--알람 추가 프래그먼트-->
     <string name="frag_title">Add Alarm</string>
+
+    <!--Notification title -->
+    <string name="notification_title">Bring your umbrella</string>
 </resources>
