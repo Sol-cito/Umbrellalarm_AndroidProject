@@ -46,9 +46,10 @@ public class WeatherDataReceiver {
             int currentHour = Integer.parseInt(simpleDateFormat.format(currentTime));
             ArrayList<Integer> castedHourList = new ArrayList<>();
             HashMap<Integer, Integer> popMap = new HashMap<>();
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                //이거 16개(48시간)을 받아오는데, 굳이 16개 다 안받아와도 될듯..? 당일 데이터만 받아오면 될듯(3*8개 = 24시간)
+            Log.e("log", "커렌트 : " + currentHour);
+            for (int i = 0; i < 9; i++) { // 총 16개 중 8개만 받아옴 ( 3*8 = 24 이므로 당일 전체 데이터를 받음
                 int castedHour = currentHour + 3 * (i + 1);
+                Log.e("log", "캐스티드 아워 : " + castedHour);
                 castedHourList.add(castedHour); //3시간 후의 시간을 list에 저장
                 popMap.put(castedHour, Integer.parseInt(nodeList.item(i).getTextContent()));
                 Log.e("log", "저장한 시간 : " + castedHour + " / pop : " + Integer.parseInt(nodeList.item(i).getTextContent()));
@@ -152,7 +153,9 @@ public class WeatherDataReceiver {
             int eachPopValue = 0;
             int count = 0;
             if (timeArr[i] == 1) { //설정해놓은 시간일 때
+                Log.e("log", "캐스티드 아워 리스트 : " + castedHourList);
                 for (int each : castedHourList) {
+                    Log.e("log", "캐스티드 아워 이치 : " + each);
                     if (each >= timeZoneStart + (3 * i) && each <= timeZoneStart + (3 * i) + 3) {
                         eachPopValue += popMap.get(each);
                         count++;
