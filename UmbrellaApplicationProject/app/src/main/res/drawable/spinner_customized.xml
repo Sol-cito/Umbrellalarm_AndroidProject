@@ -6,6 +6,10 @@
 
     <stroke
         android:width="1sp"
-        android:color="#000000" />
+        android:color="#ffffff" />
+
+    <size
+        android:width="50sp"
+        android:height="20sp" />
 
 </shape>
