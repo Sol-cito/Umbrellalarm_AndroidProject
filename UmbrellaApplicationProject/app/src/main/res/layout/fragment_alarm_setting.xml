@@ -172,7 +172,7 @@
 
                     <Spinner
                         android:id="@+id/location_province"
-                        android:layout_width="wrap_content"
+                        android:layout_width="60sp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/spinner_customized"
                         android:entries="@array/province"
@@ -183,13 +183,13 @@
                     android:id="@+id/locationBundle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="50sp"
+                    android:layout_marginLeft="20sp"
                     android:background="#ffffff"
                     android:visibility="invisible">
 
                     <Spinner
                         android:id="@+id/location_seoul"
-                        android:layout_width="wrap_content"
+                        android:layout_width="80sp"
                         android:layout_height="wrap_content"
                         android:entries="@array/seoul"
                         android:background="@drawable/spinner_customized"
@@ -197,8 +197,9 @@
 
                     <Spinner
                         android:id="@+id/location_kyeunggi"
-                        android:layout_width="wrap_content"
+                        android:layout_width="80sp"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/spinner_customized"
                         android:entries="@array/kyeunggi"
                         android:spinnerMode="dialog" />
 
