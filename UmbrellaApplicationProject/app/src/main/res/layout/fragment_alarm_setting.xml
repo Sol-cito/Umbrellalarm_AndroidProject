@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10sp"
                 android:layout_marginTop="30sp"
-                android:text="알람을 원하는 요일을 선택하세요"
+                android:text="알람 요일을 선택하세요"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
 
@@ -144,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10sp"
                 android:layout_marginTop="20sp"
-                android:text="강수확률 정보를 받을 지역을 선택하세요"
+                android:text="지역을 선택하세요"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
 
@@ -172,7 +172,7 @@
 
                     <Spinner
                         android:id="@+id/location_province"
-                        android:layout_width="60sp"
+                        android:layout_width="80sp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/spinner_customized"
                         android:entries="@array/province"
@@ -356,7 +356,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10sp"
                 android:layout_marginTop="20sp"
-                android:text="우산알람을 받을 시간을 설정하세요"
+                android:text="푸시알람 시간을 설정하세요"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
 
@@ -375,8 +375,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20sp"
                 android:layout_marginTop="5sp"
-                android:layout_marginBottom="20sp"
-                android:text="* 설정시간을 기준으로 강수확률 정보를 받아옵니다."
+                android:text="* 설정한 시간의 강수확률 정보를 받아옵니다."
                 android:textColor="#ffffff"
                 android:textSize="15sp" />
 
@@ -385,7 +384,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="20sp"
                 android:outlineAmbientShadowColor="#ffffff"
                 android:timePickerMode="spinner" />
 
