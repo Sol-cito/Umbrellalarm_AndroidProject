@@ -13,11 +13,23 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class WeatherDataReceiver {
@@ -25,6 +37,47 @@ public class WeatherDataReceiver {
     private SQLiteDatabase sqLiteDatabase;
     private final String DBNAME = "alarmData";
     private BackgroundThreadForXML backgroundThreadForXML;
+    private final static String SERVICE_KEY = "c1g26jTnByGW5kb0HXyLjLfpLsO%2FcByKq4WxxOygJ2GBxWCHOVvFPVSbrHJ6LY2uMqkHDT7kkLVAUKyit3ykEg%3D%3D";
+    private int firstAlarmTimeFromAlarmReceiver;
+    private String[] notificationMessage = new String[6];
+    private Context globalContext;
+
+    public void getAPIdata(Context context, int firstAlarmTime) {
+        globalContext = context;
+        Log.e("log", "getAPIdata 작동");
+        firstAlarmTimeFromAlarmReceiver = firstAlarmTime;
+        final RequestQueue requestQueue = Volley.newRequestQueue(context);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        String baseDate = simpleDateFormat.format(new Date());
+        String url = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst?serviceKey="
+                + SERVICE_KEY + "&numOfRows=1&pageNo=1&dataType=JSON&base_date=" + baseDate +
+                "&base_time=" + (firstAlarmTime - 4) + "00" + "&nx=55&ny=127"; // 위도 경도 조절해야 함 + baseTime 조절해야 함
+        Log.e("log", "URL : " + url);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONObject body = response.getJSONObject("response").getJSONObject("body");
+                    JSONObject item = body.getJSONObject("items").getJSONArray("item").getJSONObject(0);
+                    String fcstValue = item.getString("fcstValue");
+                    Log.e("log", "volley 성공 / 강수량 : " + fcstValue);
+                    int messageIndex = firstAlarmTimeFromAlarmReceiver / 3 - 2;
+                    notificationMessage[messageIndex] = firstAlarmTimeFromAlarmReceiver + "시 - " + (firstAlarmTimeFromAlarmReceiver + 3) + "시의 평균 강수확률 : " + fcstValue + "%" + "getAPI세팅";
+                    Log.e("log", "첫 번째 메시지 세팅(getAPIdata) : " + notificationMessage[0]);
+                    getRSSdata(globalContext); // 첫 번째 메시지를 설정한 후 getRSSdata를 불러야 함
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("log", "volley 실패 : " + error);
+            }
+        });
+        jsonObjectRequest.setShouldCache(false);
+        requestQueue.add(jsonObjectRequest);
+    }
 
     public void getRSSdata(Context context) {
         sqLiteDatabase = context.openOrCreateDatabase(DBNAME, context.MODE_PRIVATE, null);
@@ -183,9 +236,11 @@ public class WeatherDataReceiver {
         cursor.moveToNext();
 //        int setPrecipitation = cursor.getInt(0); -> 설정해놓은 강수확률
         int setPrecipitation = 0; // 테스트(강수확률 0)
-        String[] notificationMessage = new String[6];
 
         for (int i = 0; i < 6; i++) {
+            if (notificationMessage[i] != null) { // 이미 getAPI 메소드에서 메시지가 설정되어있으면 continue
+                continue;
+            }
             if (entirePopMap.get(i) >= setPrecipitation) { //실제 예보 강수확률(pop)이 설정한 강수확률 이상일 때
                 if (i < 2) {
                     notificationMessage[i] = (6 + i * 3) + "시 - " + (9 + i * 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
@@ -197,14 +252,19 @@ public class WeatherDataReceiver {
                         notificationMessage[i] = time + "시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
                     }
                 }
+                /* test */
+                Log.e("log", "getRSS에서 설정한 메시지 : " + notificationMessage[i]);
             }
+        }
+        /* test */
+        for (String each : notificationMessage) {
+            Log.e("log", "메시지 ; " + each);
         }
         notification(notificationMessage, location, context);
     }
 
     /* Set notification service */
     public void notification(String[] notificationMessage, String location, Context context) {
-        //알림 세부 내용 수정 요망
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
