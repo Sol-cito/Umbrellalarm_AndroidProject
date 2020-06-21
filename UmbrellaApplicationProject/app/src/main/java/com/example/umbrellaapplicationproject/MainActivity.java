@@ -96,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
     /* set days to toss over to the AlarmManager by intent */
     private int[] days;
 
+    /* first set alarm time to toss over to the AlarmManager by intent */
+    private int firstAlarmTime;
+
     /* selected View List */
     private ArrayList<TextView> selectedView;
 
@@ -329,6 +332,11 @@ public class MainActivity extends AppCompatActivity {
                 dataInsertOrUpdate(whichButtonClicked);
                 setAlarm();
                 removeFragment();
+                if (whichButtonClicked == 0) {
+                    Toast.makeText(MainActivity.this, "알람이 설정되었습니다", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "알람이 수정되었습니다", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
@@ -385,12 +393,13 @@ public class MainActivity extends AppCompatActivity {
         Log.e("log", "셋 알람");
         Intent intent = new Intent(this, AlarmReceiver.class);
         calendar = Calendar.getInstance();
-        setCalender(); // <- test끝나면 이 메소드 작동
-        intent.putExtra("days", days);
-        /* test */
+        setCalender();
+        /* test(10초 후 알람 울림) */
 //        int currentTime = (int) System.currentTimeMillis();
 //        calendar.set(Calendar.SECOND, currentTime + 3000);
         /* test end */
+        intent.putExtra("days", days);
+        intent.putExtra("firstAlarmTime", firstAlarmTime);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
@@ -398,7 +407,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setCalender() {
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT sun, mon, tue, wed, thu, fri, sat, setHour, setMinute FROM " + dbTableName, null);
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT sun, mon, tue, wed, thu, fri, sat, setHour, setMinute, " +
+                "time1, time2, time3, time4, time5, time6 FROM " + dbTableName, null);
         cursor.moveToNext();
         int setHour = cursor.getInt(7);
         int setMinute = cursor.getInt(8);
@@ -406,6 +416,34 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 7; i++) {
             if (cursor.getInt(i) == 1) {
                 days[i] = 1; //  if checked 1,  else 0
+            }
+        }
+        /* get firstAlarmTime*/
+        for (int i = 9; i < 15; i++) {
+            if (cursor.getInt(i) == 1) {
+                int parsedTime = i - 9;
+                switch (parsedTime) {
+                    case 0:
+                        firstAlarmTime = 6;
+                        break;
+                    case 1:
+                        firstAlarmTime = 9;
+                        break;
+                    case 2:
+                        firstAlarmTime = 12;
+                        break;
+                    case 3:
+                        firstAlarmTime = 15;
+                        break;
+                    case 4:
+                        firstAlarmTime = 18;
+                        break;
+                    case 5:
+                        firstAlarmTime = 21;
+                        break;
+                }
+                Log.e("log", "setCalender() -> firstAlarmTime : " + firstAlarmTime);
+                break;
             }
         }
 //        /* hour, minute, days setting */
@@ -566,7 +604,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void deleteDB() {
-        Toast.makeText(this, "우산 알람 삭제", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "알람이 삭제되었습니다", Toast.LENGTH_SHORT).show();
         String querie = "drop table " + dbTableName;
         sqLiteDatabase.execSQL(querie);
     }
