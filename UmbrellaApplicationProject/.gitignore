@@ -8,7 +8,10 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
-/build
+/app/build
+/app/proguard-rules.pro
+/app/androidTest
+/app/test
 /captures
 .externalNativeBuild
 .cxx
