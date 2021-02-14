@@ -37,11 +37,13 @@ public class AlarmReceiver extends BroadcastReceiver {
         /* test */
 //        weatherDataReceiver.getAPIdata(context, firstAlarmTime);
         /* test end */
-        if (hourRightNow > firstAlarmTime && hourRightNow <= firstAlarmTime + 3) {
-            weatherDataReceiver.getAPIdata(context, firstAlarmTime);
-        } else {
-            weatherDataReceiver.getRSSdata(context);
-        }
-        Toast.makeText(context, "test : 알람 실행됨", Toast.LENGTH_SHORT).show();
+        Log.e("log", "hourRightNow : " + hourRightNow);
+        Log.e("log", "firstAlarmTime : " + firstAlarmTime);
+//        if (hourRightNow > firstAlarmTime && hourRightNow <= firstAlarmTime + 3) {
+//            weatherDataReceiver.getAPIdata(context, firstAlarmTime);
+//        } else {
+        weatherDataReceiver.getRSSdata(context);
+//        }
+        Toast.makeText(context, "우산알라미가 실행되었습니다", Toast.LENGTH_SHORT).show();
     }
 }

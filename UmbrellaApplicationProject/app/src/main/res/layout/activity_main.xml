@@ -244,49 +244,50 @@
                                         android:layout_weight="1"
                                         android:orientation="vertical">
 
-                                        <TextView
-                                            android:id="@+id/description_4"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:gravity="center"
-                                            android:text="알람 기준 강수량"
-                                            android:textColor="@color/color_theme"
-                                            android:textSize="18sp" />
+<!--                                        2021.02.15 선택한 시간대의 강수확률을 모두 보여주기 위해 주석처리 -->
+<!--                                        <TextView-->
+<!--                                            android:id="@+id/description_4"-->
+<!--                                            android:layout_width="wrap_content"-->
+<!--                                            android:layout_height="wrap_content"-->
+<!--                                            android:gravity="center"-->
+<!--                                            android:text="알람 기준 강수량"-->
+<!--                                            android:textColor="@color/color_theme"-->
+<!--                                            android:textSize="18sp" />-->
 
-                                        <LinearLayout
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content">
+<!--                                        <LinearLayout-->
+<!--                                            android:layout_width="match_parent"-->
+<!--                                            android:layout_height="wrap_content">-->
 
-                                            <TextView
-                                                android:id="@+id/precipitationText_30"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:layout_marginTop="5sp"
-                                                android:layout_weight="1"
-                                                android:text="30%"
-                                                android:textColor="#606060"
-                                                android:textSize="20sp" />
+<!--                                            <TextView-->
+<!--                                                android:id="@+id/precipitationText_30"-->
+<!--                                                android:layout_width="wrap_content"-->
+<!--                                                android:layout_height="wrap_content"-->
+<!--                                                android:layout_marginTop="5sp"-->
+<!--                                                android:layout_weight="1"-->
+<!--                                                android:text="30%"-->
+<!--                                                android:textColor="#606060"-->
+<!--                                                android:textSize="20sp" />-->
 
-                                            <TextView
-                                                android:id="@+id/precipitationText_50"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:layout_marginTop="5sp"
-                                                android:layout_weight="1"
-                                                android:text="50%"
-                                                android:textColor="#606060"
-                                                android:textSize="20sp" />
+<!--                                            <TextView-->
+<!--                                                android:id="@+id/precipitationText_50"-->
+<!--                                                android:layout_width="wrap_content"-->
+<!--                                                android:layout_height="wrap_content"-->
+<!--                                                android:layout_marginTop="5sp"-->
+<!--                                                android:layout_weight="1"-->
+<!--                                                android:text="50%"-->
+<!--                                                android:textColor="#606060"-->
+<!--                                                android:textSize="20sp" />-->
 
-                                            <TextView
-                                                android:id="@+id/precipitationText_70"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:layout_marginTop="5sp"
-                                                android:layout_weight="1"
-                                                android:text="70%"
-                                                android:textColor="#606060"
-                                                android:textSize="20sp" />
-                                        </LinearLayout>
+<!--                                            <TextView-->
+<!--                                                android:id="@+id/precipitationText_70"-->
+<!--                                                android:layout_width="wrap_content"-->
+<!--                                                android:layout_height="wrap_content"-->
+<!--                                                android:layout_marginTop="5sp"-->
+<!--                                                android:layout_weight="1"-->
+<!--                                                android:text="70%"-->
+<!--                                                android:textColor="#606060"-->
+<!--                                                android:textSize="20sp" />-->
+<!--                                        </LinearLayout>-->
                                     </LinearLayout>
                                 </LinearLayout>
 
@@ -297,7 +298,7 @@
                                     android:orientation="vertical">
 
                                     <TextView
-                                        android:id="@+id/description_5"
+                                        android:id="@+id/description_4"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginHorizontal="15sp"

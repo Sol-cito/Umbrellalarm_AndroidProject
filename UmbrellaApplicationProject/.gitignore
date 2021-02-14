@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 hihi.txt
+gradle.properties
+build.gradle
+gradlew
+gradlew.bat
+settings.gradle

@@ -299,57 +299,58 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10sp"
-                android:layout_marginTop="20sp"
-                android:text="예측할 강수확률을 설정하세요"
-                android:textColor="#ffffff"
-                android:textSize="20sp" />
+<!--            2021.02.15 선택한 시간대의 강수확률을 모두 보여주기 위해 주석처리 -->
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginLeft="10sp"-->
+<!--                android:layout_marginTop="20sp"-->
+<!--                android:text="예측할 강수확률을 설정하세요"-->
+<!--                android:textColor="#ffffff"-->
+<!--                android:textSize="20sp" />-->
 
-            <TextView
-                android:id="@+id/valid_precipitation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10sp"
-                android:text=" * 강수확률을 선택하세요"
-                android:textColor="#FF0000"
-                android:textSize="15sp"
-                android:visibility="gone" />
+<!--            <TextView-->
+<!--                android:id="@+id/valid_precipitation"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginLeft="10sp"-->
+<!--                android:text=" * 강수확률을 선택하세요"-->
+<!--                android:textColor="#FF0000"-->
+<!--                android:textSize="15sp"-->
+<!--                android:visibility="gone" />-->
 
-            <RadioGroup
-                android:id="@+id/radioGroupOfPrecipitation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15sp"
-                android:orientation="vertical">
+<!--            <RadioGroup-->
+<!--                android:id="@+id/radioGroupOfPrecipitation"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginLeft="15sp"-->
+<!--                android:orientation="vertical">-->
 
-                <RadioButton
-                    android:id="@+id/precipitationRadioButtonAbove30"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#ffffff"
-                    android:text="30% 이상"
-                    android:textColor="#ffffff" />
+<!--                <RadioButton-->
+<!--                    android:id="@+id/precipitationRadioButtonAbove30"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:buttonTint="#ffffff"-->
+<!--                    android:text="30% 이상"-->
+<!--                    android:textColor="#ffffff" />-->
 
-                <RadioButton
-                    android:id="@+id/precipitationRadioButtonAbove50"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#ffffff"
-                    android:text="50% 이상"
-                    android:textColor="#ffffff" />
+<!--                <RadioButton-->
+<!--                    android:id="@+id/precipitationRadioButtonAbove50"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:buttonTint="#ffffff"-->
+<!--                    android:text="50% 이상"-->
+<!--                    android:textColor="#ffffff" />-->
 
-                <RadioButton
-                    android:id="@+id/precipitationRadioButtonAbove70"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#ffffff"
-                    android:text="70% 이상"
-                    android:textColor="#ffffff" />
+<!--                <RadioButton-->
+<!--                    android:id="@+id/precipitationRadioButtonAbove70"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:buttonTint="#ffffff"-->
+<!--                    android:text="70% 이상"-->
+<!--                    android:textColor="#ffffff" />-->
 
-            </RadioGroup>
+<!--            </RadioGroup>-->
 
             <TextView
                 android:layout_width="wrap_content"

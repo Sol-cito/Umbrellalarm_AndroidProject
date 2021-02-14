@@ -13,7 +13,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -56,9 +55,6 @@ public class Fragment_alarmSetting extends Fragment {
     private Button time_ninePMToTwelve;
     private Button[] timeButtonArr;
 
-    /* precipitation radio */
-    private RadioGroup radioGroupOfPrecipitation;
-
     /* Layout and spinners for selecting location*/
     private Spinner location_province;
     private Spinner location_seoul;
@@ -75,7 +71,6 @@ public class Fragment_alarmSetting extends Fragment {
     private TextView valid_day;
     private TextView valid_location;
     private TextView valid_time;
-    private TextView valid_precipitation;
     private TextView valid_alarmTime;
 
     /* Data sets to transfer to MainActivity / to save in DB */
@@ -83,7 +78,6 @@ public class Fragment_alarmSetting extends Fragment {
     private String[] locationList = new String[2];
     private int subProvSeq;
     private boolean[] timeList;
-    private int precipitation;
     private int pickedHour;
     private int pickedMinute;
 
@@ -361,26 +355,30 @@ public class Fragment_alarmSetting extends Fragment {
             }
         });
 
-        /* Set precipitation */
-        radioGroupOfPrecipitation = rootView.findViewById(R.id.radioGroupOfPrecipitation);
-        precipitation = 0;
-        radioGroupOfPrecipitation.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.precipitationRadioButtonAbove30) {
-                    precipitation = 30;
-                } else if (checkedId == R.id.precipitationRadioButtonAbove50) {
-                    precipitation = 50;
-                } else {
-                    precipitation = 70;
-                }
-            }
-        });
+/* 2021.02.15 선택한 시간대의 강수확률을 모두 보여주기 위해 주석처리 */
+//        /* Set precipitation */
+//        radioGroupOfPrecipitation = rootView.findViewById(R.id.radioGroupOfPrecipitation);
+//        precipitation = 0;
+//        radioGroupOfPrecipitation.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                if (checkedId == R.id.precipitationRadioButtonAbove30) {
+//                    precipitation = 30;
+//                } else if (checkedId == R.id.precipitationRadioButtonAbove50) {
+//                    precipitation = 50;
+//                } else {
+//                    precipitation = 70;
+//                }
+//            }
+//        });
 
         valid_day = rootView.findViewById(R.id.valid_day);
         valid_location = rootView.findViewById(R.id.valid_location);
         valid_time = rootView.findViewById(R.id.valid_time);
-        valid_precipitation = rootView.findViewById(R.id.valid_precipitation);
+
+        /* 2021.02.15 선택한 시간대의 강수확률을 모두 보여주기 위해 주석처리 */
+//        valid_precipitation = rootView.findViewById(R.id.valid_precipitation);
+
         valid_alarmTime = rootView.findViewById(R.id.valid_alarmTime);
 
         /* 설정 버튼 클릭*/
@@ -482,20 +480,22 @@ public class Fragment_alarmSetting extends Fragment {
                 }
             }
         }
-        /* set precipitation and display them */
-        int getPrecipitation = cursor.getInt(17);
-        if (getPrecipitation == 30) {
-            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove30);
-        } else if (getPrecipitation == 50) {
-            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove50);
-        } else {
-            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove70);
-        }
-        precipitation = getPrecipitation;
+
+/* 2021.02.15 선택한 시간대의 강수확률을 모두 보여주기 위해 주석처리 */
+//        /* set precipitation and display them */
+//        int getPrecipitation = cursor.getInt(17);
+//        if (getPrecipitation == 30) {
+//            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove30);
+//        } else if (getPrecipitation == 50) {
+//            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove50);
+//        } else {
+//            radioGroupOfPrecipitation.check(R.id.precipitationRadioButtonAbove70);
+//        }
+//        precipitation = getPrecipitation;
 
         /* set alarmtime and display them */
-        int getHour = cursor.getInt(18);
-        int getMinute = cursor.getInt(19);
+        int getHour = cursor.getInt(17);
+        int getMinute = cursor.getInt(18);
         if (Build.VERSION.SDK_INT >= 23) {
             timePicker.setHour(getHour);
             timePicker.setMinute(getMinute);
@@ -565,18 +565,19 @@ public class Fragment_alarmSetting extends Fragment {
             valid_time.setVisibility(View.GONE);
         }
 
+        /* 2021.02.15 선택한 시간대의 강수확률을 모두 보여주기 위해 주석처리 */
         /* checking set precipitation */
-        if (precipitation == 0) {
-            scrollView.smoothScrollTo(0, 600);
-            valid_precipitation.setVisibility(View.VISIBLE);
-        } else {
-            valid_precipitation.setVisibility(View.GONE);
-        }
-        if (valid_day.getVisibility() == View.VISIBLE || valid_location.getVisibility() == View.VISIBLE
-                || valid_time.getVisibility() == View.VISIBLE || valid_precipitation.getVisibility() == View.VISIBLE
-                || valid_alarmTime.getVisibility() == View.VISIBLE) {
-            return false;
-        }
+//        if (precipitation == 0) {
+//            scrollView.smoothScrollTo(0, 600);
+//            valid_precipitation.setVisibility(View.VISIBLE);
+//        } else {
+//            valid_precipitation.setVisibility(View.GONE);
+//        }
+//        if (valid_day.getVisibility() == View.VISIBLE || valid_location.getVisibility() == View.VISIBLE
+//                || valid_time.getVisibility() == View.VISIBLE || valid_precipitation.getVisibility() == View.VISIBLE
+//                || valid_alarmTime.getVisibility() == View.VISIBLE) {
+//            return false;
+//        }
         return true;
     }
 
@@ -613,9 +614,9 @@ public class Fragment_alarmSetting extends Fragment {
         String query = "";
         if (flag == 0) {
             String values = dayListResult + "'" + prov + "', '" + subProv + "', " + subProvSeq + ", " +
-                    timeListResult + precipitation + ", " + pickedHour + ", " + pickedMinute;
+                    timeListResult + pickedHour + ", " + pickedMinute;
             query = "INSERT INTO " + dbTableName + "(mon, tue, wed, thu, fri, sat, sun, prov, subProv, subProvSeq, " +
-                    "time1, time2, time3, time4, time5, time6, precipitation, setHour, setMinute) " +
+                    "time1, time2, time3, time4, time5, time6, setHour, setMinute) " +
                     " values ( " + values + " )";
         } else if (flag == 1) {
             query = "UPDATE " + dbTableName + " SET " +
@@ -635,7 +636,6 @@ public class Fragment_alarmSetting extends Fragment {
                     "time4 = " + timeListResult_int[3] + ", " +
                     "time5 = " + timeListResult_int[4] + ", " +
                     "time6 = " + timeListResult_int[5] + ", " +
-                    "precipitation = " + precipitation + ", " +
                     "setHour = " + pickedHour + ", " +
                     "setMinute = " + pickedMinute;
         }

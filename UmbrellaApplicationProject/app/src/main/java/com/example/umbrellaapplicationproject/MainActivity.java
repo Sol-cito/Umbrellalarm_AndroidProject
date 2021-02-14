@@ -35,12 +35,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private Button addButton;
@@ -60,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView description_2;
     private TextView description_3;
     private TextView description_4;
-    private TextView description_5;
     private TextView[] descriptionTextArr;
 
     /* Display Data from DB */
@@ -127,22 +122,17 @@ public class MainActivity extends AppCompatActivity {
         timeText_15to18 = findViewById(R.id.timeText_15to18);
         timeText_18to21 = findViewById(R.id.timeText_18to21);
         timeText_21to24 = findViewById(R.id.timeText_21to24);
-        precipitationText_30 = findViewById(R.id.precipitationText_30);
-        precipitationText_50 = findViewById(R.id.precipitationText_50);
-        precipitationText_70 = findViewById(R.id.precipitationText_70);
         alarmTimeText = findViewById(R.id.alarmTimeText);
 
         description_1 = findViewById(R.id.description_1);
         description_2 = findViewById(R.id.description_2);
         description_3 = findViewById(R.id.description_3);
         description_4 = findViewById(R.id.description_4);
-        description_5 = findViewById(R.id.description_5);
-        descriptionTextArr = new TextView[5];
+        descriptionTextArr = new TextView[4];
         descriptionTextArr[0] = description_1;
         descriptionTextArr[1] = description_2;
         descriptionTextArr[2] = description_3;
         descriptionTextArr[3] = description_4;
-        descriptionTextArr[4] = description_5;
 
         /* View ArrayList */
         selectedView = new ArrayList<>();
@@ -394,10 +384,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AlarmReceiver.class);
         calendar = Calendar.getInstance();
         setCalender();
-        /* test(10초 후 알람 울림) */
+//        /* test(10초 후 알람 울림) */
 //        int currentTime = (int) System.currentTimeMillis();
 //        calendar.set(Calendar.SECOND, currentTime + 3000);
-        /* test end */
+//        /* test end */
         intent.putExtra("days", days);
         intent.putExtra("firstAlarmTime", firstAlarmTime);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -446,7 +436,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
-//        /* hour, minute, days setting */
+        /* hour, minute, days setting */
         calendar.set(Calendar.HOUR_OF_DAY, setHour);
         calendar.set(Calendar.MINUTE, setMinute);
         calendar.set(Calendar.SECOND, 0);
@@ -468,7 +458,7 @@ public class MainActivity extends AppCompatActivity {
         String querie = "create table if not exists " + dbTableName + "( id integer PRIMARY KEY autoincrement, " +
                 " mon integer, tue integer, wed integer, thu integer, fri integer, sat integer, sun integer, " +
                 "prov string, subProv string, subProvSeq integer, time1 integer, time2 integer, time3 integer, time4 integer," +
-                " time5 integer, time6 integer, precipitation integer, setHour integer, setMinute integer)";
+                " time5 integer, time6 integer, setHour integer, setMinute integer)";
         sqLiteDatabase.execSQL(querie);
     }
 
@@ -554,28 +544,29 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        /* set precipitation */
-        /* initialize */
-        precipitationText_30.setTextColor(Color.parseColor(greyColor));
-        precipitationText_50.setTextColor(Color.parseColor(greyColor));
-        precipitationText_70.setTextColor(Color.parseColor(greyColor));
-
-        int precipitationFromDB = Integer.parseInt(cursor.getString(17));
-        if (precipitationFromDB == 30) {
-            precipitationText_30.setTextColor(Color.parseColor(whiteColor));
-            selectedView.add(precipitationText_30);
-        } else if (precipitationFromDB == 50) {
-            precipitationText_50.setTextColor(Color.parseColor(whiteColor));
-            selectedView.add(precipitationText_50);
-        } else {
-            precipitationText_70.setTextColor(Color.parseColor(whiteColor));
-            selectedView.add(precipitationText_70);
-        }
+        /* 2021.02.15 선택한 시간대의 강수확률을 모두 보여주기 위해 주석처리 */
+//        /* set precipitation */
+//        /* initialize */
+//        precipitationText_30.setTextColor(Color.parseColor(greyColor));
+//        precipitationText_50.setTextColor(Color.parseColor(greyColor));
+//        precipitationText_70.setTextColor(Color.parseColor(greyColor));
+//
+//        int precipitationFromDB = Integer.parseInt(cursor.getString(17));
+//        if (precipitationFromDB == 30) {
+//            precipitationText_30.setTextColor(Color.parseColor(whiteColor));
+//            selectedView.add(precipitationText_30);
+//        } else if (precipitationFromDB == 50) {
+//            precipitationText_50.setTextColor(Color.parseColor(whiteColor));
+//            selectedView.add(precipitationText_50);
+//        } else {
+//            precipitationText_70.setTextColor(Color.parseColor(whiteColor));
+//            selectedView.add(precipitationText_70);
+//        }
 
         /*alarmTimeText*/
         String setHour = "";
         String AMorPM = "";
-        int intHour = cursor.getInt(18);
+        int intHour = cursor.getInt(17);
         if (intHour - 13 < 0) {
             AMorPM = "am";
         } else {
@@ -583,7 +574,7 @@ public class MainActivity extends AppCompatActivity {
             AMorPM = "pm";
         }
         setHour += intHour + " : ";
-        int setMinute = cursor.getInt(19);
+        int setMinute = cursor.getInt(18);
         if (setMinute < 10) {
             setHour += "0" + setMinute;
         } else {

@@ -11,5 +11,5 @@
     <string name="frag_title">알람 설정</string>
 
     <!--Notification title -->
-    <string name="notification_title">우산을 가져가쇼</string>
+    <string name="notification_title">우산을 가져가세요</string>
 </resources>

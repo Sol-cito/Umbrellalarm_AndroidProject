@@ -1,11 +1,9 @@
 package com.example.umbrellaapplicationproject;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
@@ -18,17 +16,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -39,45 +33,9 @@ public class WeatherDataReceiver {
     private BackgroundThreadForXML backgroundThreadForXML;
     private final static String SERVICE_KEY = "c1g26jTnByGW5kb0HXyLjLfpLsO%2FcByKq4WxxOygJ2GBxWCHOVvFPVSbrHJ6LY2uMqkHDT7kkLVAUKyit3ykEg%3D%3D";
     private int firstAlarmTimeFromAlarmReceiver;
+    private String location;
     private String[] notificationMessage = new String[6];
-    private Context globalContext;
-
-    public void getAPIdata(Context context, int firstAlarmTime) {
-        globalContext = context;
-        Log.e("log", "getAPIdata 작동");
-        firstAlarmTimeFromAlarmReceiver = firstAlarmTime;
-        final RequestQueue requestQueue = Volley.newRequestQueue(context);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        String baseDate = simpleDateFormat.format(new Date());
-        String url = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst?serviceKey="
-                + SERVICE_KEY + "&numOfRows=1&pageNo=1&dataType=JSON&base_date=" + baseDate +
-                "&base_time=" + (firstAlarmTime - 4) + "00" + "&nx=55&ny=127"; // 위도 경도 조절해야 함 + baseTime 조절해야 함
-        Log.e("log", "URL : " + url);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONObject body = response.getJSONObject("response").getJSONObject("body");
-                    JSONObject item = body.getJSONObject("items").getJSONArray("item").getJSONObject(0);
-                    String fcstValue = item.getString("fcstValue");
-                    Log.e("log", "volley 성공 / 강수량 : " + fcstValue);
-                    int messageIndex = firstAlarmTimeFromAlarmReceiver / 3 - 2;
-                    notificationMessage[messageIndex] = firstAlarmTimeFromAlarmReceiver + "시 - " + (firstAlarmTimeFromAlarmReceiver + 3) + "시의 평균 강수확률 : " + fcstValue + "%" + "getAPI세팅";
-                    Log.e("log", "첫 번째 메시지 세팅(getAPIdata) : " + notificationMessage[0]);
-                    getRSSdata(globalContext); // 첫 번째 메시지를 설정한 후 getRSSdata를 불러야 함
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("log", "volley 실패 : " + error);
-            }
-        });
-        jsonObjectRequest.setShouldCache(false);
-        requestQueue.add(jsonObjectRequest);
-    }
+    private HashMap<Integer, Integer> entirePopMap;
 
     public void getRSSdata(Context context) {
         sqLiteDatabase = context.openOrCreateDatabase(DBNAME, context.MODE_PRIVATE, null);
@@ -90,27 +48,26 @@ public class WeatherDataReceiver {
         try {
             doc = backgroundThreadForXML.execute(zoneCode).get();
             NodeList nodeList = doc.getElementsByTagName("pop");
-            String location = provAndSubProvFromDBFromDB[0] + " " + provAndSubProvFromDBFromDB[1];
+            location = provAndSubProvFromDBFromDB[0] + " " + provAndSubProvFromDBFromDB[1];
             Log.e("log", "지역 : " + doc.getElementsByTagName("category").item(0).getTextContent());
 
             /* 현재 시간 구하기 */
             long currentTime = System.currentTimeMillis();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH");
             int currentHour = Integer.parseInt(simpleDateFormat.format(currentTime));
-            ArrayList<Integer> castedHourList = new ArrayList<>();
+            int[] castedHourArr = new int[8];
             HashMap<Integer, Integer> popMap = new HashMap<>();
-            Log.e("log", "커렌트 : " + currentHour);
-            for (int i = 0; i < 9; i++) { // 총 16개 중 8개만 받아옴 ( 3*8 = 24 이므로 당일 전체 데이터를 받음
+            for (int i = 0; i < 8; i++) { // 총 16개 중 8개만 받아옴 ( 3*8 = 24 이므로 당일 전체 데이터를 받음
                 int castedHour = currentHour + 3 * (i + 1);
-                Log.e("log", "캐스티드 아워 : " + castedHour);
-                castedHourList.add(castedHour); //3시간 후의 시간을 list에 저장
+                Log.e("log", "받아온 시간 : " + castedHour);
+                castedHourArr[i] = castedHour; //3시간 후의 시간을 array에 저장
                 popMap.put(castedHour, Integer.parseInt(nodeList.item(i).getTextContent()));
-                Log.e("log", "저장한 시간 : " + castedHour + " / pop : " + Integer.parseInt(nodeList.item(i).getTextContent()));
             }
             /* 설정한 시간대+강수확률과 실제 받아온 데이터를 비교 */
-            HashMap<Integer, Integer> entirePopMap = compareSetTimedataWithWeatherCast(castedHourList, popMap);
-            compareSetPrecipitationDataWithPopMap(entirePopMap, location, context);
-            /* 위 두 함수 완료되면 Notification 함수 실행 */
+            compareSetTimedataWithWeatherCast(castedHourArr, popMap, currentHour, context);
+            Log.e("log", "엔타이어 팝맵 : " + entirePopMap);
+            setPrecipitationDataWithPopMap(entirePopMap);
+            notification(notificationMessage, location, context); //<- test로 getApiData 뒤에 붙여봄
             Log.e("log", "RSSdata 리시버 성공");
         } catch (Exception e) {
             Log.e("log", "값 받아오기 실패");
@@ -192,75 +149,114 @@ public class WeatherDataReceiver {
         return zoneMap.get(subProvFromDB);
     }
 
-    public HashMap<Integer, Integer> compareSetTimedataWithWeatherCast(ArrayList<Integer> castedHourList, HashMap<Integer, Integer> popMap) {
+    public void compareSetTimedataWithWeatherCast(int[] castedHourArr, HashMap<Integer, Integer> popMap, int currentHour, Context context) {
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT time1, time2, time3, time4, time5, time6 " +
                 "FROM " + DBNAME, null);
         cursor.moveToNext();
         int[] timeArr = new int[6];
         for (int i = 0; i < 6; i++) {
             timeArr[i] = cursor.getInt(i);
+            Log.e("log", i + "번째 설정 시간 확인 : " + timeArr[i]);
         }
-        int timeZoneStart = 6;
-        HashMap<Integer, Integer> entirePopMap = new HashMap<>(); // 설정 안해놓은 시간의 value는 -2
+        entirePopMap = new HashMap<>(); // 설정 안해놓은 시간의 value는 -2
         for (int i = 0; i < 6; i++) {
             int eachPopValue = 0;
-            int count = 0;
+            int numOfStoredPopValue = 0;
             if (timeArr[i] == 1) { //설정해놓은 시간일 때
-                Log.e("log", "캐스티드 아워 리스트 : " + castedHourList);
-                for (int each : castedHourList) {
-                    Log.e("log", "캐스티드 아워 이치 : " + each);
-                    if (each >= timeZoneStart + (3 * i) && each <= timeZoneStart + (3 * i) + 3) {
-                        eachPopValue += popMap.get(each);
-                        count++;
-                    }
-                    if (each > timeZoneStart + (3 * i) + 3) {
+                Log.e("log", "알람 설정 시간 : " + i);
+                int timeZoneStartPoint = (3 * i) + 6;
+                int timeZoneEndPoint = timeZoneStartPoint + 3;
+                if (currentHour >= timeZoneStartPoint && currentHour < timeZoneEndPoint) { // 설정해놓은 시간 중 현재 시간과 겹칠 때
+                    Log.e("log", "설정 시간 중 현재 시간과 겹침");
+//                    getAPIdata(context, timeZoneStartPoint);
+                    entirePopMap.put(i, -1); // 얘도 -1 저장
+                    continue;
+                }
+                for (int each : castedHourArr) {
+                    if (each > timeZoneEndPoint) {
                         break;
                     }
-                }
-                if (count <= 0) {
-                    Log.e("log", "-1 저장");
-                    entirePopMap.put(i, -1); // -1 : 알람 시간이 강수예측 시간보다 느림
-                } else {
-                    entirePopMap.put(i, eachPopValue / count);
-                }
-            } else { // 설정 안해놓은 시간일 때
-                entirePopMap.put(i, -2);
-            }
-        }
-        return entirePopMap;
-    }
-
-    /* 유저가 설정한 알람 작동 강수확률과 실제 예보 강수확률의 비교 결과를 notification()으로 보냄 */
-    public void compareSetPrecipitationDataWithPopMap(HashMap<Integer, Integer> entirePopMap, String location, Context context) {
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT precipitation FROM " + DBNAME, null);
-        cursor.moveToNext();
-//        int setPrecipitation = cursor.getInt(0); -> 설정해놓은 강수확률
-        int setPrecipitation = 0; // 테스트(강수확률 0)
-
-        for (int i = 0; i < 6; i++) {
-            if (notificationMessage[i] != null) { // 이미 getAPI 메소드에서 메시지가 설정되어있으면 continue
-                continue;
-            }
-            if (entirePopMap.get(i) >= setPrecipitation) { //실제 예보 강수확률(pop)이 설정한 강수확률 이상일 때
-                if (i < 2) {
-                    notificationMessage[i] = (6 + i * 3) + "시 - " + (9 + i * 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
-                } else {
-                    int time = 12 + ((i - 2) * 3);
-                    if (i == 2) {
-                        notificationMessage[i] = "12시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
-                    } else {
-                        notificationMessage[i] = time + "시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
+                    if (each >= timeZoneStartPoint && each <= timeZoneEndPoint) {
+                        eachPopValue += popMap.get(each);
+                        numOfStoredPopValue++;
                     }
                 }
-                /* test */
-                Log.e("log", "getRSS에서 설정한 메시지 : " + notificationMessage[i]);
+                if (numOfStoredPopValue <= 0) { // 설정은 해놓았지만 알람 시간이 설정시간보다 느릴 때 (notification 줄 필요 없음)
+                    Log.e("log", "설정은 해놓았지만 알람 시간이 설정시간보다 느릴 때");
+                    Log.e("log", "-1 저장");
+                    entirePopMap.put(i, -1); // value : -1
+                } else {
+                    entirePopMap.put(i, eachPopValue / numOfStoredPopValue);
+                    Log.e("log", "현재 시간과 겹치지 않고 이후 시간이라 entirePop 저장");
+                }
+            } else { // 설정 안해놓은 시간일 때
+                Log.e("log", "설정 안해놓은 시간임");
+                entirePopMap.put(i, -2); // value : -2
             }
+        }
+    }
+
+    public void getAPIdata(Context context, int timeZoneStartPoint) {
+        Log.e("log", "getAPIdata 작동");
+        firstAlarmTimeFromAlarmReceiver = timeZoneStartPoint;
+        final RequestQueue requestQueue = Volley.newRequestQueue(context);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        String baseDate = simpleDateFormat.format(new Date());
+        String url = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst?serviceKey="
+                + SERVICE_KEY + "&numOfRows=1&pageNo=1&dataType=JSON&base_date=" + baseDate +
+                "&base_time=" + (timeZoneStartPoint - 4) + "00" + "&nx=55&ny=127"; // 위도 경도 조절해야 함 + baseTime 조절해야 함
+        Log.e("log", "URL : " + url);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONObject body = response.getJSONObject("response").getJSONObject("body");
+                    JSONObject item = body.getJSONObject("items").getJSONArray("item").getJSONObject(0);
+                    String fcstValue = item.getString("fcstValue");
+                    Log.e("log", "volley 성공 / 강수량 : " + fcstValue);
+                    int messageIndex = firstAlarmTimeFromAlarmReceiver / 3 - 2;
+                    notificationMessage[messageIndex] = firstAlarmTimeFromAlarmReceiver + "시 - " + (firstAlarmTimeFromAlarmReceiver + 3) + "시의 평균 강수확률 : " + fcstValue + "%" + "getAPI세팅";
+                    Log.e("log", messageIndex + "번째 메시지 세팅(getAPIdata) : " + notificationMessage[messageIndex]);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("log", "volley 실패 : " + error);
+            }
+        });
+        jsonObjectRequest.setShouldCache(false);
+        requestQueue.add(jsonObjectRequest);
+        Log.e("log", "노티피케이션 직전(getAPIdata)");
+        notification(notificationMessage, location, context);
+    }
+
+    /* 실제 예보 강수확률의 비교 결과를 notification()으로 보냄 */
+    public void setPrecipitationDataWithPopMap(HashMap<Integer, Integer> entirePopMap) {
+        Log.e("log", "===========메시지 설정 시작");
+        for (int i = 0; i < 6; i++) {
+            if (entirePopMap.get(i) < 0) {
+                continue; // -1이 value로 저장되어있으면 pass
+            }
+            Log.e("log", "<----메시지" + i + "번째");
+            if (i < 2) {
+                notificationMessage[i] = (6 + i * 3) + "시 - " + (9 + i * 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
+            } else {
+                int time = 12 + ((i - 2) * 3);
+                if (i == 2) {
+                    notificationMessage[i] = "12시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
+                } else {
+                    notificationMessage[i] = time + "시 - " + (time + 3) + "시의 평균 강수확률 : " + entirePopMap.get(i) + "%";
+                }
+            }
+            Log.e("log", "getRSS에서 설정한 메시지 : " + notificationMessage[i]);
         }
         /* test */
         for (String each : notificationMessage) {
             Log.e("log", "메시지 ; " + each);
         }
-        notification(notificationMessage, location, context);
     }
 
     /* Set notification service */
