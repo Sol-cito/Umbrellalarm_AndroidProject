@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -392,8 +393,18 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("firstAlarmTime", firstAlarmTime);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-        // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정
+        if (Build.VERSION.SDK_INT < 19) { // 19 이하는 setReapeating 함수로 오차 없는 알람 설정
+            Log.e("log", "알람 함수 : setRepeating()");
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+            // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정
+        } else if (Build.VERSION.SDK_INT < 23) { // 22 이하는 setExact 함수로 오차 없는 알람 설정
+            Log.e("log", "알람 함수 : setExact()");
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else { // 23부터는 setAlarmClock() 함수로 오차 없는 알람 설정
+            Log.e("log", "알람 함수 : setAlarmClock()");
+            AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(), pendingIntent);
+            alarmManager.setAlarmClock(alarmClockInfo, pendingIntent);
+        }
     }
 
     public void setCalender() {
