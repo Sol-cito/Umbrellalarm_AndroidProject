@@ -385,10 +385,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AlarmReceiver.class);
         calendar = Calendar.getInstance();
         setCalender();
-//        /* test(10초 후 알람 울림) */
-//        int currentTime = (int) System.currentTimeMillis();
-//        calendar.set(Calendar.SECOND, currentTime + 3000);
-//        /* test end */
         intent.putExtra("days", days);
         intent.putExtra("firstAlarmTime", firstAlarmTime);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
