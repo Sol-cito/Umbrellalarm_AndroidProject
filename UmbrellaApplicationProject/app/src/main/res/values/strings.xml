@@ -11,5 +11,5 @@
     <string name="frag_title">Add Alarm</string>
 
     <!--Notification title -->
-    <string name="notification_title">Bring your umbrella</string>
+    <string name="notification_title">Click it to expand and to see weather cast</string>
 </resources>

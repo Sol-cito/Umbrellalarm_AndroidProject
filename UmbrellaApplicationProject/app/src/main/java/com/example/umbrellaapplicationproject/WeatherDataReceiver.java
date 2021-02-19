@@ -65,12 +65,12 @@ public class WeatherDataReceiver {
             }
             /* 설정한 시간대+강수확률과 실제 받아온 데이터를 비교 */
             /*
-            * 로직이 분기한다.
-            * getAPIdata 는 백그라운드 쓰레드이기 때문에, response 콜백 함수에서 setPrecipitationDataWithPopMap 및 notification 함수를 실행해야 한다.
-            * 따라서, timeZoneStartPointdl -1일 때(알람 시간과 현재 시간이 겹치지 않을 때)는 바로 다음 함수로 진행,
-            * 그렇지 않을 때는 getAPIdata의 onResponse 함수에서 다음 함수로 진행한다.
-            * */
-            int timeZoneStartPoint = compareSetTimedataWithWeatherCast(castedHourArr, popMap, currentHour, context);
+             * 로직이 분기한다.
+             * getAPIdata 는 백그라운드 쓰레드이기 때문에, response 콜백 함수에서 setPrecipitationDataWithPopMap 및 notification 함수를 실행해야 한다.
+             * 따라서, timeZoneStartPointdl -1일 때(알람 시간과 현재 시간이 겹치지 않을 때)는 바로 다음 함수로 진행,
+             * 그렇지 않을 때는 getAPIdata의 onResponse 함수에서 다음 함수로 진행한다.
+             * */
+            int timeZoneStartPoint = compareSetTimedataWithWeatherCast(castedHourArr, popMap, currentHour);
             if (timeZoneStartPoint == -1) {
                 setPrecipitationDataWithPopMap(entirePopMap);
                 notification(notificationMessage, location, context);
@@ -86,7 +86,7 @@ public class WeatherDataReceiver {
     }
 
 
-    public int compareSetTimedataWithWeatherCast(int[] castedHourArr, HashMap<Integer, Integer> popMap, int currentHour, Context context) {
+    public int compareSetTimedataWithWeatherCast(int[] castedHourArr, HashMap<Integer, Integer> popMap, int currentHour) {
         int returnTimeZone = -1;
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT time1, time2, time3, time4, time5, time6 " +
                 "FROM " + DBNAME, null);
@@ -107,6 +107,8 @@ public class WeatherDataReceiver {
                 if (currentHour >= timeZoneStartPoint && currentHour < timeZoneEndPoint) { // 설정해놓은 시간 중 현재 시간과 겹칠 때
                     Log.e("log", "설정 시간 중 현재 시간과 겹침");
                     entirePopMap.put(i, -1); // 얘도 -1 저장
+                    Log.e("log", "returnTimeZone : " + returnTimeZone);
+                    Log.e("log", "timeZoneStartPoint : " + timeZoneStartPoint);
                     returnTimeZone = timeZoneStartPoint;
                     continue;
                 }
@@ -132,7 +134,26 @@ public class WeatherDataReceiver {
                 entirePopMap.put(i, -2); // value : -2
             }
         }
+        Log.e("log", "최종 리턴 returnTimeZone : " + returnTimeZone);
         return returnTimeZone;
+    }
+
+    public String basetimeParsing(int timeZoneStartPoint) {
+        /*
+         * 동네예보 basetime은
+         * Base_time : 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회)
+         * timeZoneStartPoint : 0600, 0900, 1200, 1500, 1800, 2100
+         * 이므로, 가장 가까운 시간에 매핑한다.
+         * */
+        String[] basetimeList = {"0500", "0800", "1100", "1400", "1700", "2000"};
+        int[] timeZoneStartPointList = {6, 9, 12, 15, 18, 21};
+        String baseTime = "";
+        for (int i = 0; i < timeZoneStartPointList.length; i++) {
+            if (timeZoneStartPoint == timeZoneStartPointList[i]) {
+                baseTime = basetimeList[i];
+            }
+        }
+        return baseTime;
     }
 
     public void getAPIdata(Context context, int timeZoneStartPoint) {
@@ -144,8 +165,9 @@ public class WeatherDataReceiver {
         String baseDate = simpleDateFormat.format(new Date());
         String url = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst?serviceKey="
                 + SERVICE_KEY + "&numOfRows=1&pageNo=1&dataType=JSON&base_date=" + baseDate +
-                "&base_time=" + (timeZoneStartPoint - 4) + "00" + "&nx=55&ny=127"; // 위도 경도 조절해야 함 + baseTime 조절해야 함
+                "&base_time=" + basetimeParsing(timeZoneStartPoint) + "&nx=55&ny=127"; // 위도 경도 조절해야 함 + baseTime 조절해야 함
         Log.e("log", "URL : " + url);
+        Log.e("log", "-----basetime : " + basetimeParsing(timeZoneStartPoint));
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {

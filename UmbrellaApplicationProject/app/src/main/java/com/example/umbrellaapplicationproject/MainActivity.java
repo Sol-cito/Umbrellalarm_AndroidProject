@@ -574,10 +574,12 @@ public class MainActivity extends AppCompatActivity {
         String setHour = "";
         String AMorPM = "";
         int intHour = cursor.getInt(17);
-        if (intHour - 13 < 0) {
+        if (intHour - 12 < 0) {
             AMorPM = "am";
         } else {
-            intHour -= 12;
+            if (intHour != 12) {
+                intHour -= 12;
+            }
             AMorPM = "pm";
         }
         setHour += intHour + " : ";
