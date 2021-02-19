@@ -21,7 +21,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -321,7 +320,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 scrollUptotheTopOfFragmentDisplay();
                 dataInsertOrUpdate(whichButtonClicked);
-                setAlarm();
+                AlarmSetter alarmSetter = new AlarmSetter(MainActivity.this);
+                alarmSetter.setAlarm();
                 removeFragment();
                 if (whichButtonClicked == 0) {
                     Toast.makeText(MainActivity.this, "알람이 설정되었습니다", Toast.LENGTH_SHORT).show();
@@ -377,76 +377,6 @@ public class MainActivity extends AppCompatActivity {
             fragment_alarmSetting.DBdataInsertOrUpdate(1);
             selectDBAndDisplayDataOnMainActivity();
         }
-    }
-
-    /* Set alarm */
-    public void setAlarm() {
-        Log.e("log", "셋 알람");
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        calendar = Calendar.getInstance();
-        setCalender();
-        intent.putExtra("days", days);
-        intent.putExtra("firstAlarmTime", firstAlarmTime);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        if (Build.VERSION.SDK_INT < 19) { // 19 이하는 setReapeating 함수로 오차 없는 알람 설정
-            Log.e("log", "알람 함수 : setRepeating()");
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-            // setRepeating INTERVAL : 하루에 한 번씩 울려야 하므로 AlarmManager.INTERVAL_DAY로 설정
-        } else if (Build.VERSION.SDK_INT < 23) { // 22 이하는 setExact 함수로 오차 없는 알람 설정
-            Log.e("log", "알람 함수 : setExact()");
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        } else { // 23부터는 setAlarmClock() 함수로 오차 없는 알람 설정
-            Log.e("log", "알람 함수 : setAlarmClock()");
-            AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(), pendingIntent);
-            alarmManager.setAlarmClock(alarmClockInfo, pendingIntent);
-        }
-    }
-
-    public void setCalender() {
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT sun, mon, tue, wed, thu, fri, sat, setHour, setMinute, " +
-                "time1, time2, time3, time4, time5, time6 FROM " + dbTableName, null);
-        cursor.moveToNext();
-        int setHour = cursor.getInt(7);
-        int setMinute = cursor.getInt(8);
-        days = new int[7];
-        for (int i = 0; i < 7; i++) {
-            if (cursor.getInt(i) == 1) {
-                days[i] = 1; //  if checked 1,  else 0
-            }
-        }
-        /* get firstAlarmTime*/
-        for (int i = 9; i < 15; i++) {
-            if (cursor.getInt(i) == 1) {
-                int parsedTime = i - 9;
-                switch (parsedTime) {
-                    case 0:
-                        firstAlarmTime = 6;
-                        break;
-                    case 1:
-                        firstAlarmTime = 9;
-                        break;
-                    case 2:
-                        firstAlarmTime = 12;
-                        break;
-                    case 3:
-                        firstAlarmTime = 15;
-                        break;
-                    case 4:
-                        firstAlarmTime = 18;
-                        break;
-                    case 5:
-                        firstAlarmTime = 21;
-                        break;
-                }
-                Log.e("log", "setCalender() -> firstAlarmTime : " + firstAlarmTime);
-                break;
-            }
-        }
-        /* hour, minute, days setting */
-        calendar.set(Calendar.HOUR_OF_DAY, setHour);
-        calendar.set(Calendar.MINUTE, setMinute);
-        calendar.set(Calendar.SECOND, 0);
     }
 
     /* cancel Alarm when delete it */
@@ -550,25 +480,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
-        /* 2021.02.15 선택한 시간대의 강수확률을 모두 보여주기 위해 주석처리 */
-//        /* set precipitation */
-//        /* initialize */
-//        precipitationText_30.setTextColor(Color.parseColor(greyColor));
-//        precipitationText_50.setTextColor(Color.parseColor(greyColor));
-//        precipitationText_70.setTextColor(Color.parseColor(greyColor));
-//
-//        int precipitationFromDB = Integer.parseInt(cursor.getString(17));
-//        if (precipitationFromDB == 30) {
-//            precipitationText_30.setTextColor(Color.parseColor(whiteColor));
-//            selectedView.add(precipitationText_30);
-//        } else if (precipitationFromDB == 50) {
-//            precipitationText_50.setTextColor(Color.parseColor(whiteColor));
-//            selectedView.add(precipitationText_50);
-//        } else {
-//            precipitationText_70.setTextColor(Color.parseColor(whiteColor));
-//            selectedView.add(precipitationText_70);
-//        }
 
         /*alarmTimeText*/
         String setHour = "";

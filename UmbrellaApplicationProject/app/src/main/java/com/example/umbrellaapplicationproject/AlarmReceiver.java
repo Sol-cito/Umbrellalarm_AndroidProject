@@ -23,27 +23,18 @@ public class AlarmReceiver extends BroadcastReceiver {
             return;
         }
         int[] days = intent.getIntArrayExtra("days");
-        int firstAlarmTime = intent.getIntExtra("firstAlarmTime", 0);
-        Log.e("log", "firstAlarmTime(알리시버) : " + firstAlarmTime);
         Calendar calendar = Calendar.getInstance();
         int today = calendar.get(Calendar.DAY_OF_WEEK); // sun : 1 ~ sat : 7
-        int hourRightNow = calendar.get(Calendar.HOUR_OF_DAY);
 
         if (days[today - 1] != 1) {
             Log.e("log", today - 1 + " : 알람 설정한 날이 아님");
             return;
         }
         WeatherDataReceiver weatherDataReceiver = new WeatherDataReceiver();
-        /* test */
-//        weatherDataReceiver.getAPIdata(context, firstAlarmTime);
-        /* test end */
-        Log.e("log", "hourRightNow : " + hourRightNow);
-        Log.e("log", "firstAlarmTime : " + firstAlarmTime);
-//        if (hourRightNow > firstAlarmTime && hourRightNow <= firstAlarmTime + 3) {
-//            weatherDataReceiver.getAPIdata(context, firstAlarmTime);
-//        } else {
         weatherDataReceiver.getRSSdata(context);
-//        }
         Toast.makeText(context, "우산알라미가 실행되었습니다", Toast.LENGTH_SHORT).show();
+        /* 알람 실행 된 이후 반복 알람을 위해 다시 알람 세팅 */
+        AlarmSetter alarmSetter = new AlarmSetter(context);
+        alarmSetter.setAlarm();
     }
 }
