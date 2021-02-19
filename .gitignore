@@ -9,3 +9,6 @@ UmbrellaApplicationProject/UmbrellaApplicationProject.iml
 UmbrellaApplicationProject/gradlew
 UmbrellaApplicationProject/gradlew.bat
 build/
+app/app.iml
+app/build.gradle
+app/proguard-rules.pro
