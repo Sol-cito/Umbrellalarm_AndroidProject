@@ -31,7 +31,6 @@ public class WeatherDataReceiver {
     private SQLiteDatabase sqLiteDatabase;
     private final String DBNAME = "alarmData";
     private BackgroundThreadForXML backgroundThreadForXML;
-    private final static String SERVICE_KEY = "c1g26jTnByGW5kb0HXyLjLfpLsO%2FcByKq4WxxOygJ2GBxWCHOVvFPVSbrHJ6LY2uMqkHDT7kkLVAUKyit3ykEg%3D%3D";
     private int firstAlarmTimeFromAlarmReceiver;
     private String location;
     private String[] notificationMessage = new String[6];
@@ -164,7 +163,7 @@ public class WeatherDataReceiver {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
         String baseDate = simpleDateFormat.format(new Date());
         String url = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst?serviceKey="
-                + SERVICE_KEY + "&numOfRows=1&pageNo=1&dataType=JSON&base_date=" + baseDate +
+                + BuildConfig.API_SERVICE_KEY + "&numOfRows=1&pageNo=1&dataType=JSON&base_date=" + baseDate +
                 "&base_time=" + basetimeParsing(timeZoneStartPoint) + "&nx=55&ny=127"; // 위도 경도 조절해야 함 + baseTime 조절해야 함
         Log.e("log", "URL : " + url);
         Log.e("log", "-----basetime : " + basetimeParsing(timeZoneStartPoint));

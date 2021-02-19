@@ -1,0 +1,11 @@
+gradle/
+.idea/
+.gradle/
+UmbrellaApplicationProject/local.properties
+UmbrellaApplicationProject/build.gradle
+UmbrellaApplicationProject/gradle.properties
+UmbrellaApplicationProject/settings.gradle
+UmbrellaApplicationProject/UmbrellaApplicationProject.iml
+UmbrellaApplicationProject/gradlew
+UmbrellaApplicationProject/gradlew.bat
+build/
